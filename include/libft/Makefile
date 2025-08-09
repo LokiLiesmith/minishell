@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+         #
+#    By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 22:55:52 by mrazem            #+#    #+#              #
-#    Updated: 2025/08/08 16:20:21 by mrazem           ###   ########.fr        #
+#    Updated: 2025/08/09 22:20:54 by msalangi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,18 +24,21 @@ SRC = ft_memset.c ft_strlen.c ft_isprint.c ft_isdigit.c \
 	ft_safe_write.c ft_printchar.c ft_printed.c ft_printf.c ft_printhex.c ft_printnum.c ft_printptr.c \
 	ft_printstring.c ft_printunsigned.c
 
+GNL_SRC = ../get_next_line/get_next_line.c
+
 	
 OBJ =$(SRC:.c=.o)
+GNL_OBJ = $(GNL_SRC:.c=.o)
 
 NAME = libft.a
 
-$(NAME): $(OBJ)
-	@ar rcs $(NAME) $(OBJ)
+$(NAME): $(OBJ) $(GNL_OBJ)
+	@ar rcs $(NAME) $(OBJ) $(GNL_OBJ)
 
 all: $(NAME)
 
 clean:
-	@rm -f $(OBJ)
+	@rm -f $(OBJ) $(GNL_OBJ)
 
 fclean: clean
 	@rm -f $(NAME)
