@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/09 22:10:45 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/08/10 18:32:56 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ typedef	struct s_cmd_node
 // |	argv -> ["echo", "-n", "oh, hi mark", NULL]	|
 // |	redirs -> NULL								|
 // |	builtin = ECHO 								|
-// |_______________________________________________|
+// |________________________________________________|
 // 		|
 // 		V
 // _________________________________________________
@@ -104,7 +104,7 @@ typedef	struct s_cmd_node
 // |_______________________________________________|
 
 	
-// // case for ---> echo -n "oh, hi mark" > out.txt | grep hi >> log.txt
+// // case for ---> echo -n "oh, hi mark" > out.txt < | grep hi >> log.txt
 //				 	^			1st_cmd			   ^  ^		2nd_cmd	   ^
 
 // _________________________________________________
@@ -115,14 +115,14 @@ typedef	struct s_cmd_node
 // |	builtin = ECHO 								|
 // |_______________________________________________|
 // 		|
-// 		V													here's how the redirection list looks
-// _________________________________________________		_____________________________________
-// |	2nd_cmd										|		|	t_redir_node					|
-// |												|		|	type = R_APPEND					|
-// |	argv -> ["grep", "hi", NULL]				|		|	target = "log.txt"				|
-// |	redirs -> [R_APPEND, "log.txt", 1] -> NULL	|		|	fd = 1							|
-// |	builtin = NONE 								|		|	next --------> NULL				|
-// |_______________________________________________|		|___________________________________|
+// 		V													here's how the redirection list looks	
+// _________________________________________________		_____________________________________	________________________________
+// |	2nd_cmd										|		|	t_redir_node					|	|	t_redir_node 2				|
+// |												|		|	type = R_APPEND					|	|	type = R_OUT				|
+// |	argv -> ["grep", "hi", NULL]				|		|	target = "log.txt"				|	|	target = "  asdas"			|
+// |	redirs -> [R_APPEND, "log.txt", 1] -> NULL	|		|	fd = 1							|-->|	fd = 0;						|
+// |	builtin = NONE 								|		|	next --------> *t_redirnode 2	|	|	next ---> NULL				|
+// |_______________________________________________|		|___________________________________|	|_______________________________|
 // 		|
 // 		V
 // 		NULL
