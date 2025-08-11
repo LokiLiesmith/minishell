@@ -6,29 +6,27 @@
 /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 17:54:43 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/10 19:39:25 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/08/11 15:27:01 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// static void	init_test_struct(t_cmd_node *pipeline)
-// {
+static void	init_test_struct(t_cmd_node *pipeline)
+{
+	char *args[] = {"echo", "-n", "hello world", NULL};
+	// char *argv = malloc(sizeof (char *) * 3);
+	pipeline->cmd.argv = args;
 
-// 	char *argv = malloc(sizeof (char *) * 3);
-// 	pipeline->cmd->argv = &argv;
-
-// }
+}
 
 int	main(void)
 {
 	t_cmd_node	pipeline;
 
 	// init_test_struct(&pipeline);
-	char *args[] = {"echo", "-n", "hello world", NULL};
-	
-	pipeline.cmd.argv = args;
+	init_test_struct(&pipeline);
 
-	printf("Test: parser_test.c\n");
+	printf("Test: parser_test.c\n\n");
 	printf("_________________________________________________\n");
 	printf("1st_cmd\n");
 	printf("\n");
