@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 17:51:50 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/12 11:36:31 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/08/12 13:43:06 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,12 @@ typedef struct s_token
 	struct t_token	*next;
 }	t_token;
 
-/////////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////
+//							SCAN WORD										  //
+////////////////////////////////////////////////////////////////////////////////
 //	split? based on space and operator if not inside "" or ''
 // append token
-int	static ft_is_operator(int c)
+static int ft_is_operator(int c)
 {
 	return (c == '<' || c == '>' || c == '|');
 }
@@ -49,6 +50,7 @@ static int	ft_is_space(int c)
 {
 	return ((c == '\t') || c == ' ');
 }
+
 // return len of the word
 static int scan_word(const char *str, size_t i)
 {
@@ -77,35 +79,10 @@ static int scan_word(const char *str, size_t i)
 		return (-1);
 	return (i - start);
 }
-// static int tokenize(char *str)
-// {
-// 	while (*str)
-// 	{
-// 		if (ft_is_operator(*str))
-// 		{
-// 			if (*str == '<')
-// 				if (*(str + 1) == '<')
-// 				{
-// 					append_token(type = T_HEREDOC);
-// 					str++;
-// 				}
-// 				else
-// 					append_token(type = T_IN);
-// 				str++;
-// 			if (*str == '>')
-// 			{
-// 				if (*(str + 1) == '>')
-// 				{
-// 					append_toke(type = T_APPEND);
-// 					str++;
-// 				}
-// 				else
-// 					append_token(type = T_OUT);
-// 			}
-// 		}
-// 	}
-// }
 
+////////////////////////////////////////////////////////////////////////////////
+//							SCAN OPERATOR									  //
+////////////////////////////////////////////////////////////////////////////////
 static int	handle_less_than(const char *str, int i, t_token_type *type)
 {
 	if (str[i + 1] == '<')
@@ -140,30 +117,69 @@ int	scan_operator(const char *str, int i, t_token_type *type)
 		return (handle_more_than(str, i, type));
 	return (0);
 }
-
+////////////////////////////////////////////////////////////////////////////////
+//							TOKENIZE?										  //
+////////////////////////////////////////////////////////////////////////////////
 // TOKENIZE LOOP
 // skip whitespace
 // if operator(push_token based on operator)
 // else its a word, and push_token with len of the word and the string
-// int	tokenize(char *str)
-// {
-// 	// alloc head node
-// 	// t_token	*token;
-// 	int	i;
+void push_token(t_token **head,t_token **tail, t_token_type type, char *start, int len)
+{
+	t_token *new;
+	
+	new = malloc(sizeof(t_token));
+	if (!new)
+		return ;
+	new->type = type;
+	new->value = malloc(sizeof(char) * len + 1);
+	if (!new->value)
+		return ;
+	ft_memcpy(new->value, start, len);
+	new->value[len] = '\0';
+	new->next = NULL;
+	if (*head == NULL)
+		{
+			*head = new;
+			*tail = new;
+		}
+	else
+	{
+		(*tail)->next = new;
+		*tail = new;
+	}
+}
 
-// 	while (*str)
-// 	{
-// 		while(ft_is_space(*str)) //skip whitespace
-// 			str++;
-// 		i = 0;
-// 		if (ft_is_operator(str[i])) //if operator, push node; len = scan_operator(str, i, &type)
-// 		{
-// 			scan_operator(str)
-// 			push_token()
-// 		}
-// 		else	//ELSE ITS A WORD
-// 	}
-// }
+t_token	*tokenize(char *str)
+{
+	t_token *head;
+	t_token *tail;
+	int	i;
+	int len;
+
+	head = NULL;
+	tail = NULL;
+	len = 0;
+
+///
+	printf("Tokenized: %s\n", str);
+
+	
+	while (*str)
+	{
+		while(ft_is_space(*str)) //skip whitespace
+			str++;
+		i = 0;
+		if (ft_is_operator(str[i])) //if operator, push node; len = scan_operator(str, i, &type)
+		{
+			len = scan_operator(str, i, &tail->type);
+			push_token(head, tail, tail->type, str, len);
+			printf("Value: %s, type: \n", tail->value, tail->type);
+		}
+		// else	//ELSE ITS A WORD
+	}
+	return (head);
+}
 
 int	main(void)
 {
@@ -196,6 +212,7 @@ int	main(void)
 	printf("is_operator: %d, is_operator: %d, is_operator: %d\n", ft_is_operator('<'), ft_is_operator('>'), ft_is_operator('|'));
 	printf("is_operator: %d, is_operator: %d, is_operator: %d\n", ft_is_operator('"'), ft_is_operator('\''), ft_is_operator('a'));
 	// print_token_list();
+	tokenize(">");
 	return (0);
 }
 
