@@ -17,7 +17,7 @@ UC_T := $(shell echo $(T) | tr '[:lower:]' '[:upper:]')
 # add more SRC DIRECTORIES etc.)
 SRC_MINISHELL := src/main/main_test.c
 SRC_PARSER    := src/parser/parser_test.c
-SRC_LEXER	  := src/lexer/lexer_test.c
+SRC_LEXER	  := src/lexer/lexer_test.c src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize.c
 SRC_BUILT_INS := src/built_ins/built_ins_test.c
 
 
