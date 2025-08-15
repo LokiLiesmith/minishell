@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/11 16:33:09 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/08/15 21:23:25 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@
 # include "../include/libft/libft.h"
 # include "../include/get_next_line/get_next_line.h"
 
-
-/// 						Main struct idea:
 ////////////////////////////////////////////////////////////////////////////////
-//								  ENUMS										  //
+//								  MAIN STRUCT / ENUMS						  //
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Builtin number enum
@@ -83,51 +81,37 @@ typedef	struct s_cmd_node
 }	t_cmd_node;
 
 ////////////////////////////////////////////////////////////////////////////////
-//								HANDOFF EXAMPLES							  //
+//							TOKENIZER STRUCTS / ENUM						  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// // case for ---> echo -n "oh, hi mark"
-// _________________________________________________
-// |	1st_cmd										|
-// |												|
-// |	argv -> ["echo", "-n", "oh, hi mark", NULL]	|
-// |	redirs -> NULL								|
-// |	builtin = ECHO 								|
-// |________________________________________________|
-// 		|
-// 		V
-// _________________________________________________
-// |	NULL										|
-// |												|
-// |												|
-// |												|
-// |				 								|
-// |_______________________________________________|
+typedef enum e_token_type
+{
+	WORD,
+	PIPE,
+	T_IN,
+	T_OUT,
+	T_APPEND,
+	T_HEREDOC,
+}	t_token_type;
 
-	
-// // case for ---> echo -n "oh, hi mark" > out.txt < | grep hi >> log.txt
-//				 	^			1st_cmd			   ^  ^		2nd_cmd	   ^
+typedef struct s_token
+{
+	t_token_type	type;
+	char			*value;
+	bool			quote_single;
+	bool			quote_double;
+	struct s_token	*next;
+}	t_token;
 
-// _________________________________________________
-// |	1st_cmd										|
-// |												|
-// |	argv -> ["echo", "-n", "oh, hi mark", NULL]	|
-// |	redirs -> [R_OUT, "out.txxt", 1] -> NULL	|
-// |	builtin = ECHO 								|
-// |_______________________________________________|
-// 		|
-// 		V													here's how the redirection list looks	
-// _________________________________________________		_____________________________________	________________________________
-// |	2nd_cmd										|		|	t_redir_node					|	|	t_redir_node 2				|
-// |												|		|	type = R_APPEND					|	|	type = R_OUT				|
-// |	argv -> ["grep", "hi", NULL]				|		|	target = "log.txt"				|	|	target = "  asdas"			|
-// |	redirs -> [R_APPEND, "log.txt", 1] -> NULL	|		|	fd = 1							|-->|	fd = 0;						|
-// |	builtin = NONE 								|		|	next --------> *t_redirnode 2	|	|	next ---> NULL				|
-// |_______________________________________________|		|___________________________________|	|_______________________________|
-// 		|
-// 		V
-// 		NULL
-
+typedef struct s_lexer //had to implement to save lines
+{
+	t_token_type	op;
+	int				i;
+	ssize_t			len;
+	ssize_t			word_len;
+	t_token			*head;
+	t_token			*tail;
+}	t_lexer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  PARSER									  //
@@ -136,6 +120,13 @@ typedef	struct s_cmd_node
 ////////////////////////////////////////////////////////////////////////////////
 //								  LEXER										  //
 ////////////////////////////////////////////////////////////////////////////////
+
+ssize_t		scan_operator(const char *str, int i, t_token_type *type);
+ssize_t		scan_word(const char *str, size_t i);
+t_token		*tokenize(char *str);
+void		push_token(t_token **head,t_token **tail, t_token_type type, char *start, int len);
+int			ft_is_space(int c);
+int			ft_is_operator(int c);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								 BUILT INS 									  //
