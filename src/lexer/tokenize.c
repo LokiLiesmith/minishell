@@ -65,6 +65,51 @@ static void init_lexer(t_lexer *lex)
 // 	printf("lex->tail: %p\n", lex->tail);
 // }
 
+static int	handle_operator(t_lexer *lex, char *str)
+{
+	lex->len = scan_operator(str, lex->i, &lex->op);
+	if (lex->len <= 0)
+		return (0);
+	push_token(&lex->head, &lex->tail, lex->op, str + lex->i, lex->len);
+	lex->i += lex->len;
+	return (1);
+}
+//word handler (if scan_word < 0; => open quotes)
+static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
+{
+	lex->len = scan_word(str, lex->i);
+	if (lex->len < 0)
+	{
+		if (open_quotes) // so they can be NULL, used in main
+			*open_quotes = true;
+		return (0);
+	}
+	push_token(&lex->head, &lex->tail, WORD, str + lex->i, lex->len);
+	lex->i += lex->len;
+	return (1);
+}
+t_token *tokenize(char *str, bool *open_quotes)
+{
+	t_lexer	lex;
+
+	init_lexer(&lex);
+	if (open_quotes)
+		*open_quotes = false;
+	while (str[lex.i])
+	{
+		while (ft_is_space(str[lex.i]))
+			lex.i++;
+		if (handle_operator(&lex, str))
+			continue ;
+		if (!handle_word(&lex, str, open_quotes))
+			return (NULL);
+	}
+	return (lex.head);
+}
+
+
+
+
 // t_token	*tokenize(char *str, bool *open_quotes)
 // {
 // 	t_lexer	lex;
@@ -95,44 +140,3 @@ static void init_lexer(t_lexer *lex)
 // 	}
 // 	return (lex.head);
 // }
-
-static int	handle_operator(t_lexer *lex, char *str)
-{
-	lex->len = scan_operator(str, lex->i, &lex->op);
-	if (lex->len <= 0)
-		return (0);
-	push_token(&lex->head, &lex->tail, lex->op, str + lex->i, lex->len);
-	lex->i += lex->len;
-	return (1);
-}
-//word handler (if scan_word < 0; => open quotes)
-static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
-{
-	lex->len = scan_word(str, lex->i);
-	if (lex->len < 0)
-	{
-		*open_quotes = true;
-		return (0);
-	}
-	push_token(&lex->head, &lex->tail, WORD, str + lex->i, lex->len);
-	lex->i += lex->len;
-	return (1);
-}
-
-t_token *tokenize(char *str, bool *open_quotes)
-{
-	t_lexer	lex;
-
-	init_lexer(&lex);
-	*open_quotes = false;
-	while (str[lex.i])
-	{
-		while (ft_is_space(str[lex.i]))
-			lex.i++;
-		if (handle_operator(&lex, str))
-			continue ;
-		if (!handle_word(&lex, str, open_quotes))
-			return (NULL);
-	}
-	return (lex.head);
-}
