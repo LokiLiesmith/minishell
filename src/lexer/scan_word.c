@@ -45,7 +45,6 @@ ssize_t	scan_word(const char *str, size_t i)
 		}
 		i++;
 	}
-	//return -1 if open quotes at the end?
 	if (in_single_q || in_double_q)
 		return (-1);
 	return (ssize_t)(i - start);

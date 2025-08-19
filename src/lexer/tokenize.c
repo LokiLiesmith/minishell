@@ -32,6 +32,8 @@ void push_token(t_token **head,t_token **tail, t_token_type type, char *start, i
 		return ;
 	ft_memcpy(new->value, start, len);
 	new->value[len] = '\0';
+	new->quote_double = false;
+	new->quote_single = false;
 	new->next = NULL;
 	if (*head == NULL)
 	{
@@ -52,7 +54,6 @@ static void init_lexer(t_lexer *lex)
 	lex->i = 0;
 	lex->head = NULL;
 	lex->tail = NULL;
-	lex->word_len = 0;
 }
 // static void	print_lexer(t_lexer *lex)
 // {
@@ -64,30 +65,74 @@ static void init_lexer(t_lexer *lex)
 // 	printf("lex->tail: %p\n", lex->tail);
 // }
 
-t_token	*tokenize(char *str)
+// t_token	*tokenize(char *str, bool *open_quotes)
+// {
+// 	t_lexer	lex;
+
+// 	init_lexer(&lex);
+// 	while (str[lex.i])
+// 	{
+// 		while (ft_is_space(str[lex.i])) //skip whitespace
+// 			lex.i++;
+// 		lex.len = scan_operator(str, lex.i, &lex.op);
+// 		if (lex.len > 0) //is operator
+// 		{
+// 			push_token(&lex.head, &lex.tail, lex.op, str + lex.i, lex.len);
+// 			lex.i += lex.len;
+// 			continue ;
+// 		}
+// 		lex.word_len = scan_word(str, lex.i);
+// 		if (lex.word_len >= 0)
+// 		{
+// 			push_token(&lex.head, &lex.tail, WORD, str + lex.i, lex.word_len);
+// 			lex.i += lex.word_len;
+// 		}
+// 		if (lex.word_len < 0)
+// 		{	
+// 			*open_quotes = true;
+// 			return NULL;
+// 		}//NEGATIVE from scan word == open quotes
+// 	}
+// 	return (lex.head);
+// }
+
+static int	handle_operator(t_lexer *lex, char *str)
+{
+	lex->len = scan_operator(str, lex->i, &lex->op);
+	if (lex->len <= 0)
+		return (0);
+	push_token(&lex->head, &lex->tail, lex->op, str + lex->i, lex->len);
+	lex->i += lex->len;
+	return (1);
+}
+//word handler (if scan_word < 0; => open quotes)
+static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
+{
+	lex->len = scan_word(str, lex->i);
+	if (lex->len < 0)
+	{
+		*open_quotes = true;
+		return (0);
+	}
+	push_token(&lex->head, &lex->tail, WORD, str + lex->i, lex->len);
+	lex->i += lex->len;
+	return (1);
+}
+
+t_token *tokenize(char *str, bool *open_quotes)
 {
 	t_lexer	lex;
 
 	init_lexer(&lex);
+	*open_quotes = false;
 	while (str[lex.i])
 	{
-		while (ft_is_space(str[lex.i])) //skip whitespace
+		while (ft_is_space(str[lex.i]))
 			lex.i++;
-		lex.len = scan_operator(str, lex.i, &lex.op);
-		if (lex.len > 0) //is operator
-		{
-			push_token(&lex.head, &lex.tail, lex.op, str + lex.i, lex.len);
-			lex.i += lex.len;
+		if (handle_operator(&lex, str))
 			continue ;
-		}
-		lex.word_len = scan_word(str, lex.i);
-		if (lex.word_len >= 0)
-		{
-			push_token(&lex.head, &lex.tail, WORD, str + lex.i, lex.word_len);
-			lex.i += lex.word_len;
-		}
-		if (lex.word_len < 0)//NEGATIVE from scan word == open quotes
-			return NULL;
+		if (!handle_word(&lex, str, open_quotes))
+			return (NULL);
 	}
 	return (lex.head);
 }
