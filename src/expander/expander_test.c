@@ -32,7 +32,7 @@ static void print_tokens(t_token *head, bool *quotes_open)
 		i++;
 	}
 }
-static void	set_quote_flags(t_token *token, bool *quotes_open)
+static void	set_quote_flags(t_token *token)
 {
 	int 	i;
 	bool	in_double_q;
@@ -56,8 +56,8 @@ static void	set_quote_flags(t_token *token, bool *quotes_open)
 		}
 		i++;
 	}
-	if (in_double_q || in_single_q)
-		*quotes_open = true;
+	// if (in_double_q || in_single_q)
+	// 	*quotes_open = true;
 }
 
 // static void strip_quotes(t_token *token)
@@ -65,13 +65,13 @@ static void	set_quote_flags(t_token *token, bool *quotes_open)
 	
 // }
 
-static void	expand_tokens(t_token *head, bool *quotes_open)
+static void	expand_tokens(t_token *head)
 {
 	while (head)
 	{
 		if (head->type == WORD)
 		{
-			set_quote_flags(head, quotes_open);
+			set_quote_flags(head);
 			// strip_quotes(head);
 			// strip_quotes_and_set_flags(head);
 			// expand_vars(head);
@@ -131,7 +131,7 @@ int main(void)
 	// printf("Test: expander_test.c\n");
 	tokens = tokenize(input, &quotes_open);
 	// print_tokens(test);
-	expand_tokens(tokens, &quotes_open);
+	expand_tokens(tokens);
 	print_tokens(tokens, &quotes_open);
 	if (quotes_open)
 		printf("OPEN QUOTES!\n");
