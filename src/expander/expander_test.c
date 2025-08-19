@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void print_tokens(t_token *head, bool *quotes_open)
+static void print_tokens(t_token *head)
 {
 	t_token *current;
 	int		i;
@@ -26,7 +26,7 @@ static void print_tokens(t_token *head, bool *quotes_open)
 		printf("String: %s\n", current->value);
 		printf("Single_quotes: %d\n", current->quote_single);
 		printf("Double_quotes: %d\n", current->quote_double);
-		printf("Open_quotes in main: %d\n", *quotes_open);
+		// printf("Open_quotes in main: %d\n", *quotes_open);
 		printf("______________________\n");
 		current = current->next;
 		i++;
@@ -120,57 +120,82 @@ static void	expand_tokens(t_token *head)
 // 	return (result);
 // }
 
-int main(void)
-{
-	char *input;
-	t_token *tokens;
-	bool	quotes_open;
+// int main(void)
+// {
+// 	char *input;
+// 	t_token *tokens;
+// 	bool	quotes_open;
 
-	quotes_open = false;
-	input = "echo -n \"oh, hi mark > out.txt < | \'grep\' hi >> log.txt";
-	// printf("Test: expander_test.c\n");
-	tokens = tokenize(input, &quotes_open);
-	// print_tokens(test);
-	expand_tokens(tokens);
-	print_tokens(tokens, &quotes_open);
-	if (quotes_open)
-		printf("OPEN QUOTES!\n");
-	return (0);
+// 	quotes_open = false;
+// 	input = "echo -n \"oh, hi mark > out.txt < | \'grep\' hi >> log.txt";
+// 	// printf("Test: expander_test.c\n");
+// 	tokens = tokenize(input, &quotes_open);
+// 	// print_tokens(test);
+// 	expand_tokens(tokens);
+// 	print_tokens(tokens, &quotes_open);
+// 	if (quotes_open)
+// 		printf("OPEN QUOTES!\n");
+// 	return (0);
+// }
+
+static char *read_until_closed_quotes(void)
+{
+	char	*input;
+	char 	*line;
+	char	*tmp;
+	bool	open_quotes;
+	t_token	*tokens;
+
+	open_quotes = false;
+	input = readline("whiskersh$ ");
+	if (!input)
+		return(NULL);
+	while (1)
+	{
+		tokens = tokenize(input, &open_quotes);
+		if (!open_quotes)
+			break ;
+		line = readline("> ");
+		if (!line)
+		{
+			free(input);
+			return (NULL);
+		}
+		tmp = ft_strjoin(input, "\n");
+		free(input);
+		input = ft_strjoin(tmp, line);
+		free(tmp);
+		free(line);
+	}
+	printf("INSIDE TOKENIZE %p\n", tokens);
+	// print_tokens(tokens);
+	return (input);
 }
 
 // READLINE
-// int	main(void)
-// {
-// 	// int		quote_open;
-// 	char 	*input;
-// 	// t_token *tokens;
-// 	t_cmd_node *cmds;
-
-// 	input = NULL;
-// 	// line = NULL;
-// 	// tokens = NULL;
-
-// 	while (1)
-// 	{
-// 		// quote_open = 0;
-// 		input = readline("whiskersh$ ");
-// 		if (!input)
-// 		{
-// 			printf("\n=-.-=\n");
-// 			break;
-// 		}
-// 		if (*input)
-// 			add_history(input);
-// 		printf("%s\n", input);
-// 		free(input);
-// 	}
-
-// 	// // input = "echo -n \"oh, hi mark\" > out.txt < | \'grep\' hi >> log.txt";
-// 	// // printf("Test: expander_test.c\n");
-// 	// tokens = tokenize(input);
-// 	// // print_tokens(test);
-// 	// expand_tokens(tokens);
-// 	// print_tokens(tokens);
-// 	rl_clear_history();
-// 	return (0);
-// }
+int	main(void)
+{
+	// int		quotes_open;
+	char	*input;
+	t_token *tokens;
+	// t_cmd_node *cmds;
+	while (1)
+	{
+		input = read_until_closed_quotes();
+		if (!input)
+		{
+			printf("=^.^=\n");
+			break ;
+		}
+		if (*input)
+			add_history(input);
+		tokens = tokenize(input, NULL);
+		// printf("%s\n", input);
+		expand_tokens(tokens);
+		print_tokens(tokens);
+		// free_tokens(tokens);
+		free(input);
+	}
+	rl_clear_history();
+	return (0);
+}

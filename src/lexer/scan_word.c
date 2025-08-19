@@ -22,7 +22,7 @@ int	ft_is_space(int c)
 	return ((c == '\t') || c == ' ');
 }
 
-// return len of the word
+// return len of the word | -1 if quotes are open
 ssize_t	scan_word(const char *str, size_t i)
 {
 	int	start;
