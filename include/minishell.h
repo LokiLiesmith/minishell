@@ -18,6 +18,13 @@
 # include <stdbool.h>
 # include <signal.h>
 # include <string.h>
+# include <stdio.h>
+
+//READLINE STUFF
+# include <readline/readline.h>
+# include <readline/history.h>
+
+//OUR LIBRARIES
 # include "../include/libft/libft.h"
 # include "../include/get_next_line/get_next_line.h"
 
@@ -108,7 +115,6 @@ typedef struct s_lexer //had to implement to save lines
 	t_token_type	op;
 	int				i;
 	ssize_t			len;
-	ssize_t			word_len;
 	t_token			*head;
 	t_token			*tail;
 }	t_lexer;
@@ -123,7 +129,7 @@ typedef struct s_lexer //had to implement to save lines
 
 ssize_t		scan_operator(const char *str, int i, t_token_type *type);
 ssize_t		scan_word(const char *str, size_t i);
-t_token		*tokenize(char *str);
+t_token		*tokenize(char *str, bool *open_quotes);
 void		push_token(t_token **head,t_token **tail, t_token_type type, char *start, int len);
 int			ft_is_space(int c);
 int			ft_is_operator(int c);

@@ -19,11 +19,12 @@ SRC_MINISHELL := src/main/main_test.c
 SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize.c
 SRC_BUILT_INS := src/built_ins/built_ins_test.c
+SRC_EXPANDER  := src/expander/expander_test.c
 
 
 
 # common sources (if any) go here, e.g. tokenizer, utils, …
-SRC_COMMON :=
+SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize.c
 
 # ========= Resolve chosen set =========
 SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
@@ -43,7 +44,7 @@ OBJ    := $(SELECTED_SRC:src/%.c=$(OBJDIR)/%.o)
 all: $(BINDIR)/$(NAME)
 
 $(BINDIR)/$(NAME): $(OBJ) $(LIBFT_LIB) | $(BINDIR)
-	@$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_PATH) -lft -o $@
+	@$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_PATH) -lft -lreadline -o $@
 	@echo "Built $@"
 
 # ========= Libft =========
@@ -93,6 +94,6 @@ san: clean all
 # ***********			2.	UPDATE PHONY 		 ********************
 # *******************************************************************
 
-.PHONY: all minishell parser built_ins lexer run valgrind debug clean fclean re san
-minishell parser built_ins lexer:
+.PHONY: all minishell parser built_ins lexer run valgrind debug clean expander fclean re san
+minishell parser built_ins lexer expander:
 	@$(MAKE) T=$@ $(BINDIR)/$@
