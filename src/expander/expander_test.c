@@ -44,12 +44,14 @@ static void	set_quote_flags(t_token *token)
 	i = 0;
 	while(token->value[i])
 	{
-		if (!in_double_q && token->value[i] =='\'')
+		if (!in_double_q && token->value[i] =='\'' &&
+			(i == 0 || token->value[i - 1] != '\\'))
 		{
 			in_single_q = !in_single_q;
 			token->quote_single = true;
 		}
-		else if (!in_single_q && token->value[i] == '\"')
+		else if (!in_single_q && token->value[i] == '\"' &&
+				(i == 0 || token->value[i - 1] != '\\'))
 		{
 			in_double_q = !in_double_q;
 			token->quote_double = true;
@@ -77,12 +79,16 @@ static void strip_quotes(t_token *token)
 	{
 		if (token->quote_single && src[i] == '\'')
 			i++;
-		if (token->quote_double && src[i] == '\"')
+		else if (token->quote_double && src[i] == '\"')
 			i++;
-		if (token->quote_double && src[i] == '\\' &&
+		else if (token->quote_double && src[i] == '\\' &&
 			(src[i + 1] == '"' || src[i + 1] == '\\' || src[i + 1] == '$'))
+		{
 			i++;
-		dst[j++] = src[i++];
+			dst[j++] = src[i++];
+		}
+		else
+			dst[j++] = src[i++];
 	}
 	dst[j] = '\0';
 	free(token->value);

@@ -34,9 +34,9 @@ ssize_t	scan_word(const char *str, size_t i)
 	in_double_q = 0;
 	while (str[i])
 	{
-		if (!in_double_q && str[i] == '\'')
+		if (!in_double_q && str[i] == '\'' && (i == 0 || str[i - 1] != '\\'))
 			in_single_q = !in_single_q;
-		else if (!in_single_q && str[i] == '"')
+		else if (!in_single_q && str[i] == '"' && (i == 0 || str[i - 1] != '\\'))
 			in_double_q = !in_double_q;
 		else if (!in_single_q && !in_double_q)
 		{
