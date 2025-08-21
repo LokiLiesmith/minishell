@@ -73,7 +73,6 @@ static void	expand_tokens(t_token *head)
 		{
 			set_quote_flags(head);
 			// strip_quotes(head);
-			// strip_quotes_and_set_flags(head);
 			// expand_vars(head);
 		}
 		head = head->next;
@@ -109,40 +108,36 @@ static void	expand_tokens(t_token *head)
 // $VAR → extract name, getenv()
 // Remove all quote characters from the output
 // Copy everything else into a result string
+static char	*append_line(char *input, char *line)
+{
+	char *tmp;
+	char *joined;
 
-// char *expand_and_remove_quotes(char *str)
-// {
-
-// 	while (str[i])
-// 	{
-
-// 	}
-// 	return (result);
-// }
-
-// int main(void)
-// {
-// 	char *input;
-// 	t_token *tokens;
-// 	bool	quotes_open;
-
-// 	quotes_open = false;
-// 	input = "echo -n \"oh, hi mark > out.txt < | \'grep\' hi >> log.txt";
-// 	// printf("Test: expander_test.c\n");
-// 	tokens = tokenize(input, &quotes_open);
-// 	// print_tokens(test);
-// 	expand_tokens(tokens);
-// 	print_tokens(tokens, &quotes_open);
-// 	if (quotes_open)
-// 		printf("OPEN QUOTES!\n");
-// 	return (0);
-// }
+	tmp = ft_strjoin(input, "\n");
+	free(input);
+	joined = ft_strjoin(tmp, line);
+	free(tmp);
+	free(line);
+	return (joined);
+}
+void free_tokens(t_token *token)
+{
+	t_token *temp;
+	
+	while (token)
+	{
+		temp = token->next;
+		if (token->value)
+			free(token->value);
+		free(token);
+		token = temp;
+	}	
+}
 
 static char *read_until_closed_quotes(void)
 {
 	char	*input;
 	char 	*line;
-	char	*tmp;
 	bool	open_quotes;
 	t_token	*tokens;
 
@@ -153,6 +148,7 @@ static char *read_until_closed_quotes(void)
 	while (1)
 	{
 		tokens = tokenize(input, &open_quotes);
+		free_tokens(tokens);
 		if (!open_quotes)
 			break ;
 		line = readline("> ");
@@ -161,14 +157,8 @@ static char *read_until_closed_quotes(void)
 			free(input);
 			return (NULL);
 		}
-		tmp = ft_strjoin(input, "\n");
-		free(input);
-		input = ft_strjoin(tmp, line);
-		free(tmp);
-		free(line);
+		input = append_line(input, line);
 	}
-	printf("INSIDE TOKENIZE %p\n", tokens);
-	// print_tokens(tokens);
 	return (input);
 }
 
@@ -190,10 +180,12 @@ int	main(void)
 		if (*input)
 			add_history(input);
 		tokens = tokenize(input, NULL);
+		if (!tokens)
+			free(input);
 		// printf("%s\n", input);
 		expand_tokens(tokens);
 		print_tokens(tokens);
-		// free_tokens(tokens);
+		free_tokens(tokens);
 		free(input);
 	}
 	rl_clear_history();
