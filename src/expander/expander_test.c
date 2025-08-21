@@ -60,10 +60,34 @@ static void	set_quote_flags(t_token *token)
 	// 	*quotes_open = true;
 }
 
-// static void strip_quotes(t_token *token)
-// {
-	
-// }
+static void strip_quotes(t_token *token)
+{
+	char *src;
+	char *dst;
+	int i;
+	int j;
+
+	src = token->value;
+	dst = malloc(ft_strlen(src) + 1);
+	i = 0;
+	j = 0;
+	if (!dst)
+		return ;
+	while (src[i])
+	{
+		if (token->quote_single && src[i] == '\'')
+			i++;
+		if (token->quote_double && src[i] == '\"')
+			i++;
+		if (token->quote_double && src[i] == '\\' &&
+			(src[i + 1] == '"' || src[i + 1] == '\\' || src[i + 1] == '$'))
+			i++;
+		dst[j++] = src[i++];
+	}
+	dst[j] = '\0';
+	free(token->value);
+	token->value = dst;
+}
 
 static void	expand_tokens(t_token *head)
 {
@@ -72,7 +96,7 @@ static void	expand_tokens(t_token *head)
 		if (head->type == WORD)
 		{
 			set_quote_flags(head);
-			// strip_quotes(head);
+			strip_quotes(head);
 			// expand_vars(head);
 		}
 		head = head->next;
