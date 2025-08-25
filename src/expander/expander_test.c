@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#define NEW_BUFFER_SIZE 4096
+
+char *expand_and_remove_quotes(const char *str);
 
 static void print_tokens(t_token *head)
 {
@@ -32,68 +35,68 @@ static void print_tokens(t_token *head)
 		i++;
 	}
 }
-static void	set_quote_flags(t_token *token)
-{
-	int 	i;
-	bool	in_double_q;
-	bool	in_single_q;
+// static void	set_quote_flags(t_token *token)
+// {
+// 	int 	i;
+// 	bool	in_double_q;
+// 	bool	in_single_q;
 
-	in_double_q = false;
-	in_single_q = false;
+// 	in_double_q = false;
+// 	in_single_q = false;
 
-	i = 0;
-	while(token->value[i])
-	{
-		if (!in_double_q && token->value[i] =='\'' &&
-			(i == 0 || token->value[i - 1] != '\\'))
-		{
-			in_single_q = !in_single_q;
-			token->quote_single = true;
-		}
-		else if (!in_single_q && token->value[i] == '\"' &&
-				(i == 0 || token->value[i - 1] != '\\'))
-		{
-			in_double_q = !in_double_q;
-			token->quote_double = true;
-		}
-		i++;
-	}
-	// if (in_double_q || in_single_q)
-	// 	*quotes_open = true;
-}
+// 	i = 0;
+// 	while(token->value[i])
+// 	{
+// 		if (!in_double_q && token->value[i] =='\'' &&
+// 			(i == 0 || token->value[i - 1] != '\\'))
+// 		{
+// 			in_single_q = !in_single_q;
+// 			token->quote_single = true;
+// 		}
+// 		else if (!in_single_q && token->value[i] == '\"' &&
+// 				(i == 0 || token->value[i - 1] != '\\'))
+// 		{
+// 			in_double_q = !in_double_q;
+// 			token->quote_double = true;
+// 		}
+// 		i++;
+// 	}
+// 	// if (in_double_q || in_single_q)
+// 	// 	*quotes_open = true;
+// }
 
-static void strip_quotes(t_token *token)
-{
-	char *src;
-	char *dst;
-	int i;
-	int j;
+// static void strip_quotes(t_token *token)
+// {
+// 	char *src;
+// 	char *dst;
+// 	int i;
+// 	int j;
 
-	src = token->value;
-	dst = malloc(ft_strlen(src) + 1);
-	i = 0;
-	j = 0;
-	if (!dst)
-		return ;
-	while (src[i])
-	{
-		if (token->quote_single && src[i] == '\'')
-			i++;
-		else if (token->quote_double && src[i] == '\"')
-			i++;
-		else if (token->quote_double && src[i] == '\\' &&
-			(src[i + 1] == '"' || src[i + 1] == '\\' || src[i + 1] == '$'))
-		{
-			i++;
-			dst[j++] = src[i++];
-		}
-		else
-			dst[j++] = src[i++];
-	}
-	dst[j] = '\0';
-	free(token->value);
-	token->value = dst;
-}
+// 	src = token->value;
+// 	dst = malloc(ft_strlen(src) + 1);
+// 	i = 0;
+// 	j = 0;
+// 	if (!dst)
+// 		return ;
+// 	while (src[i])
+// 	{
+// 		if (token->quote_single && src[i] == '\'')
+// 			i++;
+// 		else if (token->quote_double && src[i] == '\"')
+// 			i++;
+		// else if (token->quote_double && src[i] == '\\' &&
+		// 	(src[i + 1] == '"' || src[i + 1] == '\\' || src[i + 1] == '$'))
+// 		{
+// 			i++;
+// 			dst[j++] = src[i++];
+// 		}
+// 		else
+// 			dst[j++] = src[i++];
+// 	}
+// 	dst[j] = '\0';
+// 	free(token->value);
+// 	token->value = dst;
+// }
 
 static void	expand_tokens(t_token *head)
 {
@@ -101,9 +104,10 @@ static void	expand_tokens(t_token *head)
 	{
 		if (head->type == WORD)
 		{
-			set_quote_flags(head);
-			strip_quotes(head);
-			// expand_vars(head);
+			head->value = expand_and_remove_quotes(head->value);
+			// set_quote_flags(head);
+			// strip_quotes(head);
+			// // expand_vars(head);
 		}
 		head = head->next;
 	}
@@ -198,7 +202,16 @@ int	main(void)
 	// int		quotes_open;
 	char	*input;
 	t_token *tokens;
+	int		last_exit_code;
+
+	last_exit_code = 0;
 	// t_cmd_node *cmds;
+	/// GETENV, EXPAND TO "", Dont Free
+	// printf("HOME: %s\n", getenv("HOME"));
+	// printf("USER: %s\n", getenv("USER"));
+	// printf("SHELL: %s\n", getenv("SHELL"));
+	// printf("WHAT: %s\n", getenv("WHAT")); // Should be NULL
+
 	while (1)
 	{
 		input = read_until_closed_quotes();
@@ -213,11 +226,78 @@ int	main(void)
 		if (!tokens)
 			free(input);
 		// printf("%s\n", input);
-		expand_tokens(tokens);
+		expand_tokens(tokens, last_exit_code);
 		print_tokens(tokens);
 		free_tokens(tokens);
 		free(input);
 	}
 	rl_clear_history();
 	return (0);
+}
+
+char *expand_and_remove_quotes(const char *input, int last_exit_code)
+{
+	bool	in_double_q;
+	bool	in_single_q;
+	char	*result;
+	char	*code;
+	size_t	i;
+	size_t	j;
+	int		k;
+
+	in_single_q = false;
+	in_double_q = false;
+	i = 0;
+	j = 0;
+	k = 0;
+	
+	result = malloc(NEW_BUFFER_SIZE);
+	if (!result)
+		return (NULL);
+	while (input[i])
+	{
+		if (input[i] == '\'' && !in_double_q)
+		{
+			in_single_q = !in_single_q;
+			i++;
+			continue;
+		}
+		else if (input[i] == '"' && !in_single_q)
+		{
+			in_double_q = !in_double_q;
+			i++;
+			continue;
+		}
+		else if (input[i] == '$' && !in_single_q) // EXPAND LAST_EXIT_CODE
+		{
+			if (input[i + 1] == '?')
+			{
+				code = ft_itoa(last_exit_code);
+				if (!code)
+					return(NULL);
+				k = 0;
+				while (code[k])
+					result[j++] = code[k++];
+				i += 2;
+				free(code);
+				continue ;
+			}
+			else if (is_valid_var_start(input[i + 1]))
+			{
+				//extract var name and getenv()
+			}
+			else
+			{
+				//copy literal $
+			}
+		}
+		if (in_double_q && input[i] == '\\' &&
+			(input[i + 1] == '"' || input[i + 1] == '$' || input[i + 1] == '\\'))
+		{
+			i++;
+		}
+		result[j++] = input[i++];
+	}
+	result[j] = '\0';
+	return (result);
 }
