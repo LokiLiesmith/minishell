@@ -33,23 +33,60 @@ static bool is_var_char(char c)
 			(c == '_'));
 }
 
-void out_string(char *str)
+int	ft_measure_varname(char *str)
+{
+	int	k;
+
+	k = 0;
+	while (*str && is_var_char(*str))
+	{
+		str++;
+		k++;
+	}
+	return (k);
+}
+char	*extract_varname(char *str, int *i)
+{
+	char	*varname;
+	int		len;
+	int		k;
+	int		j;
+
+	k = 0;
+	j = *i;
+	len = ft_measure_varname(str + *i);
+	varname = malloc(sizeof(char) * len + 1);
+
+	if (!varname)
+		return (NULL);
+	while (str[j] && is_var_char(str[j]))
+		varname[k++] = str[j++];
+	varname[k] = '\0';
+	*i = j;
+	// printf("%s\n", varname);
+	return(varname);
+}
+
+void out_string(char *str, int last_exit_code)
 {
 	// char	*out;
-	char	context[200];
-	char	result[200];
-	char	varname[100];
+	int		i;
+	int		count;
 	char	*code;
-	int		last_exit_code = 123; // GET IT FROM MAIN
-	int		i = 0;
-	int		j = 0;
-	int		k = 0;
+
+	int k = 0;
+	// int j = 0;
+		i = 0;
+	// char	context[200];
+	// char	result[200];
+	char	*varname;
 
 	bool in_sq;
 	bool in_dq;
 	in_sq = false;
 	in_dq = false;
 
+	count = 0;
 	while (str[i])
 	{
 		if (!in_dq && str[i] == '\'')
@@ -69,68 +106,46 @@ void out_string(char *str)
 				code = ft_itoa(last_exit_code);
 				if (!code)
 					return ;
-				k = 0;
-				while (code[k])
-				{
-					result[j] = code[k];
-					context[j++] = calc_quotes(in_sq, in_dq);
-					k++;
-				}
+				count += ft_strlen(code);
+				// printf("at error code: Count[%d]\n", count);
 				i += 2;
 				free(code);
 			}
 			else if (is_valid_var_start(str[i + 1]))//VARIABLE NAME EXXTRACTION
 			{
-				// get variable name			
 				i++;
-				k = 0;
-				while (str[i] && is_var_char(str[i]))
-					varname[k++] = str[i++];
-				varname[k] = '\0';
-				// set the temp with getenv(VARNAME)
-
+				varname = extract_varname(str, &i);
 				char *temp = getenv(varname);
 				if(!temp)
 					temp = "";
-				// printf("VARNAME:%s\n", varname);
-				// printf("VAR_VALUE:%s\n", temp);
-
 				//copy and add context, move i the len of VAR
 				k = 0;
 				while (temp[k])
 				{
-					// printf("TEMP[%d]:%c\n", l, temp[l]);
-					result[j] = temp[k++];
-					context[j++] = calc_quotes(in_sq, in_dq);
-					// i++;
+					count++;
+					k++;
 				}
 			}
 			else // REGULAR ? inside ""
 			{
-				result[j] = str[i++];
-				context[j++] = calc_quotes(in_sq, in_dq);
+				count++;
+				i++;
+				// result[j] = str[i++];
+				// context[j++] = calc_quotes(in_sq, in_dq);
 			}
 		}
 		else
 		{
-			context[j] = calc_quotes(in_sq, in_dq);
-			// printf("%d, ", context[j]);
-			// printf("%c -> i:%d, in_sq: %d, in_dq: %d\n", str[i], i, in_sq, in_dq);
-			result[j++] = str[i++];
+			// result[j++] = str[i++];
+			i++;
+			count++;
 		}
 	}
-	result[j] = '\0';
-	context[j] = '\0';
-	printf("%s\n", result);
-	i = 0;
-	while(j > 0)
-	{
-		printf("%d", context[i++]);
-		j--;
-	}
-	printf("\n");
+	// result[j] = '\0';
+	count++;
+	// printf("%s\n", result);
 	printf("strlen(input):%ld\n", ft_strlen(str));
-	printf("strlen(output):%ld\n", ft_strlen(result));
+	printf("expanded count:%d\n", count);
 }
 
 // void append_cls()
@@ -146,7 +161,7 @@ int	main(void)
 	// char *input = "\'$USER\' \"$USER\" $HOME $? \"$?\" \'$?\'";
 	
 	printf("%s\n", input);
-	out_string(input);
+	out_string(input, 144);
 	return (0);
 }
 
