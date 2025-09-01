@@ -79,7 +79,7 @@ void out_string(char *str)
 				i += 2;
 				free(code);
 			}
-			else if (is_valid_var_start(str[i + 1]))//VARIABLE NAME EXXTRACTION
+			else if (is_valid_var_start(str[i + 1]))//VARIABLE NAME EXTRACTION
 			{
 				// get variable name			
 				i++;
