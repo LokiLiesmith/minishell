@@ -19,7 +19,8 @@ SRC_MINISHELL := src/main/main_test.c
 SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize.c
 SRC_BUILT_INS := src/built_ins/built_ins_test.c
-SRC_EXPANDER  := src/expander/expander_test.c
+SRC_EXPANDER  := src/expander/expander_test.c src/expander/expansion_len.c src/expander/expansion_utils_1.c \
+				src/expander/var_utils.c
 
 
 

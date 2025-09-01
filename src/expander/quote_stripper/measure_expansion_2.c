@@ -25,7 +25,7 @@ bool	is_valid_var_start(char c)
 			(c == '_'));
 }
 
-static bool is_var_char(char c)
+bool is_var_char(char c)
 {
 	return ((c >= 'a' && c <= 'z') ||
 			(c >= 'A' && c <= 'Z') ||
@@ -33,7 +33,7 @@ static bool is_var_char(char c)
 			(c == '_'));
 }
 
-int	ft_measure_varname(char *str)
+int	varname_len(char *str)
 {
 	int	k;
 
@@ -54,7 +54,7 @@ char	*extract_varname(char *str, int *i)
 
 	k = 0;
 	j = *i;
-	len = ft_measure_varname(str + *i);
+	len = varname_len(str + *i);
 	varname = malloc(sizeof(char) * len + 1);
 
 	if (!varname)
@@ -69,12 +69,12 @@ char	*extract_varname(char *str, int *i)
 void update_quotes(char c, bool *in_sq, bool *in_dq)
 {
 	if (!*in_dq && c == '\'')
-		*in_sq = !in_sq;
+		*in_sq = !*in_sq;
 	else if (!*in_sq && c == '"')
-		*in_dq = !in_dq;
+		*in_dq = !*in_dq;
 }
 
-static void increment_counters(int *i, int *b)
+void increment_counters(int *i, int *b)
 {
 	(*i)++;
 	(*b)++;
@@ -108,40 +108,6 @@ void	init_exp_struct(t_exp *exp)
 	exp->in_dq = false;
 }
 
-// int expansion_len(char *str, int last_exit_code)
-// {
-// 	t_exp	exp;
-
-// 	init_exp_struct(&exp);
-// 	while (str[exp.i])
-// 	{
-// 		if (str[exp.i] == '\'' || str[exp.i] == '"')
-// 			update_quotes(str[exp.i++], &exp.in_sq, &exp.in_dq);
-// 		else if (!exp.in_sq && str[exp.i] == '$') //EXPANSION
-// 		{
-// 			if (str[exp.i + 1] == '?')//ERROR CODE
-// 			{
-// 				exp.count += get_error_len(last_exit_code);
-// 				exp.i += 2;
-// 			}
-// 			else if (is_valid_var_start(str[exp.i + 1]))//VARIABLE NAME EXXTRACTION
-// 			{
-// 				exp.i++;
-// 				exp.varname = extract_varname(str, &exp.i);
-// 				exp.temp = getenv(exp.varname);
-// 				if(!exp.temp)
-// 					exp.temp = "";
-// 				exp.count += ft_strlen(exp.temp);
-// 				free(exp.varname);
-// 			}
-// 			else // REGULAR ? inside ""
-// 				increment_counters(&exp.i, &exp.count);
-// 		}
-// 		else
-// 			increment_counters(&exp.i, &exp.count);
-// 	}
-// 	return (exp.count);
-// }
 static void handle_quote(const char *str, t_exp *exp)
 {
 	update_quotes(str[exp->i], &exp->in_sq, &exp->in_dq);
@@ -159,6 +125,8 @@ static int	handle_var_expansion(char *str, t_exp *exp)
 	if (!varname)
 		return (-1);
 	temp = getenv(varname);
+	if (!temp)
+		temp = "";
 	var_len = ft_strlen(temp);
 	free(varname);
 	exp->count += var_len;
@@ -171,6 +139,7 @@ static int	handle_dollar(char *str, t_exp *exp, int last_exit)
 	{
 		exp->count += get_error_len(last_exit);
 		exp->i += 2;
+		return (0);
 	}
 	else if (is_valid_var_start(str[exp->i + 1]))
 		return (handle_var_expansion(str, exp));
@@ -198,13 +167,6 @@ int	expansion_len(char *str, int last_exit_code)
 	return (exp.count);
 }
 
-// void append_cls()
-// {
-// 	int i = 0;
-// 	if []
-// 	cls_stri
-// }
-
 int	main(void)
 {
 	// char *input = "Mark \'singles\' \"doubles\" \'s_exp: $USER\' \"d_exp: $USER\" \'s_err: $?\' \"d_err: $?\" \"just a ?\"";
@@ -217,46 +179,6 @@ int	main(void)
 	// out_string(input, 144);
 	return (0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// int	main(int ac, char **av)
-// {
-// 	char *value;
-// 	int last_exit_code;
-
-// 	(void)last_exit_code;
-// 	(void)ac;
-	
-// 	value = ft_strdup(av[1]);
-// 	last_exit_code = 0;
-// 	printf("input: %s\n", value);
-// 	// value = expand_and_remove_quotes(value);
-// 	printf("Stripped: %s\n", value);
-
-	
-
-// 	free(value);
-// 	return (0);
-// }
 
 char	*ft_strdup(const char *s)
 {
