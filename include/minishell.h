@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/15 21:23:25 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/01 23:51:04 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,7 @@ typedef struct s_token
 {
 	t_token_type	type;
 	char			*value;
-	bool			quote_single;
-	bool			quote_double;
+	char			*context;
 	struct s_token	*next;
 }	t_token;
 
@@ -144,7 +143,6 @@ int			varname_len(char *str);
 char		*extract_varname(char *str, int *i);
 bool		is_valid_var_start(char c);
 bool		is_var_char(char c);
-
 
 void 		free_tokens(t_token *token);
 
