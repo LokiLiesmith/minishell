@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#define NEW_BUFFER_SIZE 4096
+// #define NEW_BUFFER_SIZE 4096
 
-char *expand_and_remove_quotes(const char *str);
+// char *expand_and_remove_quotes(const char *str);
 
-static void print_tokens(t_token *head)
+static void print_tokens(t_token *head, int last_exit_code)
 {
 	t_token *current;
 	int		i;
@@ -27,14 +27,18 @@ static void print_tokens(t_token *head)
 		printf("Token: %d\n", i);
 		printf("Type: %d\n", current->type);
 		printf("String: %s\n", current->value);
-		printf("Single_quotes: %d\n", current->quote_single);
-		printf("Double_quotes: %d\n", current->quote_double);
+		printf("Expanded input len[%d]\n", expansion_len(current->value, last_exit_code));
+
+		// printf("Single_quotes: %d\n", current->quote_single);
+		// printf("Double_quotes: %d\n", current->quote_double);
 		// printf("Open_quotes in main: %d\n", *quotes_open);
+
 		printf("______________________\n");
 		current = current->next;
 		i++;
 	}
 }
+
 // static void	set_quote_flags(t_token *token)
 // {
 // 	int 	i;
@@ -98,39 +102,26 @@ static void print_tokens(t_token *head)
 // 	token->value = dst;
 // }
 
-static void	expand_tokens(t_token *head)
-{
-	while (head)
-	{
-		if (head->type == WORD)
-		{
-			head->value = expand_and_remove_quotes(head->value);
-			// set_quote_flags(head);
-			// strip_quotes(head);
-			// // expand_vars(head);
-		}
-		head = head->next;
-	}
-}
+// static void	expand_tokens(t_token *head)
+// {
+// 	while (head)
+// 	{
+// 		if (head->type == WORD)
+// 		{
+// 			head->value = expand_and_remove_quotes(head->value);
+// 			// set_quote_flags(head);
+// 			// strip_quotes(head);
+// 			// // expand_vars(head);
+// 		}
+// 		head = head->next;
+// 	}
+// }
 // check for quotes, strip them, set token flags for quotes
 // void	strip_quotes_and_set_flags(t_token	*token)
 // {
 // 	set_quote_flags(token->value);
 // }
 
-// static bool is_var_char(char c)
-// {
-// 	return ((c >= 'a' && c <= 'z') ||
-// 			(c >= 'A' && c <= 'Z') ||
-// 			(c >= '0' && c <= '9') ||
-// 			(c == '_'));
-// }
-// static bool is_var_start(char c)
-// {
-// 	return ((c >= 'a' && c <= 'z') ||
-// 			(c >= 'A' && c <= 'Z') ||
-// 			(c == '_'));
-// }
 
 // Walk through the input string (token->value)
 // Track quote context:
@@ -195,6 +186,19 @@ static char *read_until_closed_quotes(void)
 	}
 	return (input);
 }
+// CORRECT LEN TEST
+// int	main(void)
+// {
+// 	// char *input = "Mark \'singles\' \"doubles\" \'s_exp: $USER\' \"d_exp: $USER\" \'s_err: $?\' \"d_err: $?\" \"just a ?\"";
+// 	char *input = "\'$USER\' \"$USER\" $HOME $? \"$?\" \'$?\'";
+// 	// char *input = "$HOME";
+	
+// 	printf("%s\n", input);
+// 	printf("%s\n", getenv("HOME"));
+// 	printf("expanded input len[%d]\n", expansion_len(input, 144));
+// 	// out_string(input, 144);
+// 	return (0);
+// }
 
 // READLINE
 int	main(void)
@@ -204,7 +208,7 @@ int	main(void)
 	t_token *tokens;
 	int		last_exit_code;
 
-	last_exit_code = 0;
+	last_exit_code = 0123;
 	// t_cmd_node *cmds;
 	/// GETENV, EXPAND TO "", Dont Free
 	// printf("HOME: %s\n", getenv("HOME"));
@@ -226,78 +230,11 @@ int	main(void)
 		if (!tokens)
 			free(input);
 		// printf("%s\n", input);
-		expand_tokens(tokens, last_exit_code);
-		print_tokens(tokens);
+		// expand_tokens(tokens, last_exit_code);
+		print_tokens(tokens, last_exit_code);
 		free_tokens(tokens);
 		free(input);
 	}
 	rl_clear_history();
 	return (0);
-}
-
-char *expand_and_remove_quotes(const char *input, int last_exit_code)
-{
-	bool	in_double_q;
-	bool	in_single_q;
-	char	*result;
-	char	*code;
-	size_t	i;
-	size_t	j;
-	int		k;
-
-	in_single_q = false;
-	in_double_q = false;
-	i = 0;
-	j = 0;
-	k = 0;
-	
-	result = malloc(NEW_BUFFER_SIZE);
-	if (!result)
-		return (NULL);
-	while (input[i])
-	{
-		if (input[i] == '\'' && !in_double_q)
-		{
-			in_single_q = !in_single_q;
-			i++;
-			continue;
-		}
-		else if (input[i] == '"' && !in_single_q)
-		{
-			in_double_q = !in_double_q;
-			i++;
-			continue;
-		}
-		else if (input[i] == '$' && !in_single_q) // EXPAND LAST_EXIT_CODE
-		{
-			if (input[i + 1] == '?')
-			{
-				code = ft_itoa(last_exit_code);
-				if (!code)
-					return(NULL);
-				k = 0;
-				while (code[k])
-					result[j++] = code[k++];
-				i += 2;
-				free(code);
-				continue ;
-			}
-			else if (is_valid_var_start(input[i + 1]))
-			{
-				//extract var name and getenv()
-			}
-			else
-			{
-				//copy literal $
-			}
-		}
-		if (in_double_q && input[i] == '\\' &&
-			(input[i + 1] == '"' || input[i + 1] == '$' || input[i + 1] == '\\'))
-		{
-			i++;
-		}
-		result[j++] = input[i++];
-	}
-	result[j] = '\0';
-	return (result);
 }
