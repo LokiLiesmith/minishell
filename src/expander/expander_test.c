@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_test.c                                        :+:      :+:    :+:   */
+/*   expander_test.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/08 17:54:16 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/01 23:51:04 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,20 +102,6 @@ static void print_tokens(t_token *head, int last_exit_code)
 // 	token->value = dst;
 // }
 
-// static void	expand_tokens(t_token *head)
-// {
-// 	while (head)
-// 	{
-// 		if (head->type == WORD)
-// 		{
-// 			head->value = expand_and_remove_quotes(head->value);
-// 			// set_quote_flags(head);
-// 			// strip_quotes(head);
-// 			// // expand_vars(head);
-// 		}
-// 		head = head->next;
-// 	}
-// }
 // check for quotes, strip them, set token flags for quotes
 // void	strip_quotes_and_set_flags(t_token	*token)
 // {
