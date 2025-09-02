@@ -37,7 +37,6 @@ char	*extract_varname(char *str, int *i)
 	j = *i;
 	len = varname_len(str + *i);
 	varname = malloc(sizeof(char) * len + 1);
-
 	if (!varname)
 		return (NULL);
 	while (str[j] && is_var_char(str[j]))

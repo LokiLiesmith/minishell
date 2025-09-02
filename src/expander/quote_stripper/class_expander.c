@@ -142,7 +142,7 @@ void out_string(char *str)
 
 int	main(void)
 {
-	char *input = "Mark \'singles\' \"doubles\" \'s_exp: $USER\' \"d_exp: $USER\" \'s_err: $?\' \"d_err: $?\" \"just a ?\"";
+	char *input = "$USER Mark \'singles\' \"doubles\" \'s_exp: $USER\' \"d_exp: $USER\" \'s_err: $?\' \"d_err: $?\" \"just a ?\"";
 	// char *input = "\'$USER\' \"$USER\" $HOME $? \"$?\" \'$?\'";
 	
 	printf("%s\n", input);

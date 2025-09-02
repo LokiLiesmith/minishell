@@ -19,7 +19,7 @@
 // skip whitespace
 // if operator(push_token based on operator)
 // else its a word, and push_token with len of the word and the string
-void push_token(t_token **head,t_token **tail, t_token_type type, char *start, int len)
+void push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len)
 {
 	t_token	*new;
 
@@ -27,13 +27,13 @@ void push_token(t_token **head,t_token **tail, t_token_type type, char *start, i
 	if (!new)
 		return ;
 	new->type = type;
-	new->value = malloc(sizeof(char) * len + 1);
-	if (!new->value)
+	new->raw = malloc(sizeof(char) * len + 1);
+	if (!new->raw)
 		return ;
-	ft_memcpy(new->value, start, len);
-	new->value[len] = '\0';
-	new->quote_double = false;
-	new->quote_single = false;
+	ft_memcpy(new->raw, start, len);
+	new->raw[len] = '\0';
+	new->value = NULL;
+	new->context = NULL;
 	new->next = NULL;
 	if (*head == NULL)
 	{
@@ -104,6 +104,7 @@ t_token *tokenize(char *str, bool *open_quotes)
 		if (!handle_word(&lex, str, open_quotes))
 			return (NULL);
 	}
+	// printf("TOKENIZE\n");
 	return (lex.head);
 }
 

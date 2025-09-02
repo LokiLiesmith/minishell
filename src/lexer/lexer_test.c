@@ -23,7 +23,7 @@ static void print_tokens(t_token *head)
 	{
 		printf("Token: %d\n", i);
 		printf("Type: %d\n", current->type);
-		printf("String: %s\n", current->value);
+		printf("String: %s\n", current->raw);
 		printf("______________________\n");
 		current = current->next;
 		i++;
@@ -66,7 +66,7 @@ int	main(void)
 	// tokenize("Mark");
 	// tokenize("\'Mark | >> > out\'");
 	// tokenize(str);
-	test = tokenize(str);
+	test = tokenize(str, NULL);
 	print_tokens(test);
 	// tokenize(">>");
 	// tokenize("<<");
