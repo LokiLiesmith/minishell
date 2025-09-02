@@ -19,7 +19,6 @@ static int	handle_var_expansion_len(char *str, t_exp *exp);
 int	expansion_len(char *str, int last_exit_code)
 {
 	t_exp	exp;
-
 	init_exp_struct(&exp);
 	while (str[exp.i])
 	{
@@ -38,8 +37,18 @@ int	expansion_len(char *str, int last_exit_code)
 
 static void	handle_quote_len(const char *str, t_exp *exp)
 {
-	update_quotes(str[exp->i], &exp->in_sq, &exp->in_dq);
-	exp->i++;
+	char c = str[exp->i];
+
+	if ((c == '\'' && !exp->in_dq) || (c =='"' && !exp->in_sq))
+	{
+		update_quotes(str[exp->i], &exp->in_sq, &exp->in_dq);
+		exp->i++;
+	}
+	else
+	{
+		exp->i++;
+		exp->count++;
+	}
 }
 
 static int	handle_dollar_len(char *str, t_exp *exp, int last_exit)
@@ -53,6 +62,11 @@ static int	handle_dollar_len(char *str, t_exp *exp, int last_exit)
 	else if (is_valid_var_start(str[exp->i + 1]))
 		return (handle_var_expansion_len(str, exp));
 	increment_counters(&exp->i, &exp->count);
+	if (str[exp->i]) // next char exists
+	{
+		exp->i++;
+		exp->count++;
+	}
 	return (0);
 }
 

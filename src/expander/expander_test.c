@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-// #define NEW_BUFFER_SIZE 4096
-
-// char *expand_and_remove_quotes(const char *str);
 
 static void print_tokens(t_token *head, int last_exit_code)
 {
@@ -26,8 +23,10 @@ static void print_tokens(t_token *head, int last_exit_code)
 	{
 		printf("Token: %d\n", i);
 		printf("Type: %d\n", current->type);
-		printf("String: %s\n", current->value);
-		printf("Expanded input len[%d]\n", expansion_len(current->value, last_exit_code));
+		printf("Raw: %s\n", current->raw);
+		printf("Value: %s\n", current->value);
+		printf("Context: %s\n", current->context);
+		printf("Expanded input len[%d]\n", expansion_len(current->raw, last_exit_code));
 
 		// printf("Single_quotes: %d\n", current->quote_single);
 		// printf("Double_quotes: %d\n", current->quote_double);
@@ -38,76 +37,6 @@ static void print_tokens(t_token *head, int last_exit_code)
 		i++;
 	}
 }
-
-// static void	set_quote_flags(t_token *token)
-// {
-// 	int 	i;
-// 	bool	in_double_q;
-// 	bool	in_single_q;
-
-// 	in_double_q = false;
-// 	in_single_q = false;
-
-// 	i = 0;
-// 	while(token->value[i])
-// 	{
-// 		if (!in_double_q && token->value[i] =='\'' &&
-// 			(i == 0 || token->value[i - 1] != '\\'))
-// 		{
-// 			in_single_q = !in_single_q;
-// 			token->quote_single = true;
-// 		}
-// 		else if (!in_single_q && token->value[i] == '\"' &&
-// 				(i == 0 || token->value[i - 1] != '\\'))
-// 		{
-// 			in_double_q = !in_double_q;
-// 			token->quote_double = true;
-// 		}
-// 		i++;
-// 	}
-// 	// if (in_double_q || in_single_q)
-// 	// 	*quotes_open = true;
-// }
-
-// static void strip_quotes(t_token *token)
-// {
-// 	char *src;
-// 	char *dst;
-// 	int i;
-// 	int j;
-
-// 	src = token->value;
-// 	dst = malloc(ft_strlen(src) + 1);
-// 	i = 0;
-// 	j = 0;
-// 	if (!dst)
-// 		return ;
-// 	while (src[i])
-// 	{
-// 		if (token->quote_single && src[i] == '\'')
-// 			i++;
-// 		else if (token->quote_double && src[i] == '\"')
-// 			i++;
-		// else if (token->quote_double && src[i] == '\\' &&
-		// 	(src[i + 1] == '"' || src[i + 1] == '\\' || src[i + 1] == '$'))
-// 		{
-// 			i++;
-// 			dst[j++] = src[i++];
-// 		}
-// 		else
-// 			dst[j++] = src[i++];
-// 	}
-// 	dst[j] = '\0';
-// 	free(token->value);
-// 	token->value = dst;
-// }
-
-// check for quotes, strip them, set token flags for quotes
-// void	strip_quotes_and_set_flags(t_token	*token)
-// {
-// 	set_quote_flags(token->value);
-// }
-
 
 // Walk through the input string (token->value)
 // Track quote context:
@@ -140,9 +69,13 @@ void free_tokens(t_token *token)
 		temp = token->next;
 		if (token->value)
 			free(token->value);
+		if (token->raw)
+			free(token->raw);
+		if (token->context)
+			free(token->context);
 		free(token);
 		token = temp;
-	}	
+	}
 }
 
 static char *read_until_closed_quotes(void)
@@ -214,9 +147,12 @@ int	main(void)
 			add_history(input);
 		tokens = tokenize(input, NULL);
 		if (!tokens)
+		{
 			free(input);
+			input = NULL;
+		}
 		// printf("%s\n", input);
-		// expand_tokens(tokens, last_exit_code);
+		expand_tokens(tokens, last_exit_code);
 		print_tokens(tokens, last_exit_code);
 		free_tokens(tokens);
 		free(input);

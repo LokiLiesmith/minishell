@@ -104,6 +104,7 @@ typedef enum e_token_type
 typedef struct s_token
 {
 	t_token_type	type;
+	char			*raw;
 	char			*value;
 	char			*context;
 	struct s_token	*next;
@@ -124,11 +125,14 @@ typedef struct s_lexer //had to implement to save lines
 typedef struct s_exp
 {
 	int		i;
+	int		j;
+	// int		k;
 	int		count;
 	bool	in_dq;
 	bool	in_sq;
 }	t_exp;
 
+void		expand_tokens(t_token *head, int last_exit_code);
 int			expansion_len(char *str, int last_exit_code);
 
 // expansion_utils.c
