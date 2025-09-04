@@ -1,7 +1,0 @@
-Step	Name				What happens
-1		Tokenize			Split the line into tokens (usually by spaces and operators), respecting quotes.
-2		Quote Removal		Strip quote characters (' or ") but remember their context.
-3		Variable Expansion	Expand $VAR, $?, etc. But NOT inside '...'.
-4		Word Splitting		Unquoted strings containing spaces (like $HOME) may split into multiple argv.
-5		Globbing			Expand wildcards like *.c (only for bonus).
-6		Execution			Actually run the command with the resulting
