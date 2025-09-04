@@ -137,7 +137,8 @@ int			expansion_len(char *str, int last_exit_code);
 
 // expansion_utils.c
 void		increment_counters(int *i, int *b);
-int			calc_quotes(bool in_sq, bool in_dq);
+// int			calc_quotes(bool in_sq, bool in_dq);
+char			get_context(bool in_sq, bool in_dq);
 void		update_quotes(char c, bool *in_sq, bool *in_dq);
 void		init_exp_struct(t_exp *exp);
 

@@ -16,7 +16,7 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 	if (!varname)
 		return (-1);
 	temp = getenv(varname);
-	printf("getenv result: %s\n", temp);
+	// printf("getenv result: %s\n", temp);
 	if (!temp)
 		temp = "";
 	free(varname);
@@ -33,7 +33,8 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 static void handle_char(t_token *t, char *str, t_exp *exp)
 {
 	// printf("in handle_char\n");
-	t->context[exp->j] = calc_quotes(exp->in_sq, exp->in_dq) + '0';
+	// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
+	t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
 	t->value[exp->j++] = str[exp->i++];
 }
 
@@ -47,7 +48,8 @@ static void	handle_error(t_token *t, t_exp *exp, int last_exit_code)
 	k = 0;
 	while (code[k])
 	{
-		t->context[exp->j] = calc_quotes(exp->in_sq, exp->in_dq) + '0';
+		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
+		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
 		t->value[exp->j++] = code[k++];
 	}
 	exp->i += 2;
@@ -56,7 +58,7 @@ static void	handle_error(t_token *t, t_exp *exp, int last_exit_code)
 
 static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 {
-	printf("handle_quote\n");
+	// printf("handle_quote\n");
 	char c = str[exp->i];
 
 	if ((c == '\'' && !exp->in_dq) || (c == '"' && !exp->in_sq))
@@ -66,7 +68,8 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 	}
 	else
 	{
-		t->context[exp->j] = calc_quotes(exp->in_sq, exp->in_dq);
+		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
+		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
 		t->value[exp->j++] = str[exp->i++];
 	}
 }
@@ -75,7 +78,7 @@ void	expand_tokens(t_token *head, int last_exit_code)
 {
 	int	exp_len;
 
-	printf("EXPAND_TOKENS START\n");
+	// printf("EXPAND_TOKENS START\n");
 	while (head)
 	{
 		if (head->type == WORD)
@@ -128,5 +131,5 @@ static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 	}
 	t->value[exp.j] = '\0';
 	t->context[exp.j] = '\0';
-	printf("%d\n", last_exit_code);
+	// printf("%d\n", last_exit_code);
 }
