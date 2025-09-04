@@ -30,13 +30,13 @@ void	update_quotes(char c, bool *in_sq, bool *in_dq)
 		*in_dq = !*in_dq;
 }
 
-int	calc_quotes(bool in_sq, bool in_dq)
+char	get_context(bool in_sq, bool in_dq)
 {
 	if (in_dq)
-		return (2);
+		return ('d');
 	else if (in_sq)
-		return (1);
-	return (0);
+		return ('s');
+	return ('0');
 }
 
 void	increment_counters(int *i, int *b)
