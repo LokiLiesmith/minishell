@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/04 21:21:41 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/04 21:47:09 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,17 @@ static void print_tokens(t_token *head, int last_exit_code)
 	t_token *current;
 	int		i;
 
+	(void)last_exit_code;
+
 	i = 0;
 	current = head;
 	while (current)
 	{
 		printf("Token: %d\n", i);
-		printf("Type: %d\n", current->type);
 		printf("Raw: %s\n", current->raw);
 		printf("Value: %s\n", current->value);
 		printf("Context: %s\n", current->context);
-		printf("Expanded input len[%d]\n", expansion_len(current->raw, last_exit_code));
-		printf("______________________\n");
+		printf("----------------------\n");
 		current = current->next;
 		i++;
 	}
