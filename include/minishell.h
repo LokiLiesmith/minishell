@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/01 23:51:04 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/05 22:38:26 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ typedef struct s_token
 	char			*context;
 	struct s_token	*next;
 }	t_token;
-
+	
 typedef struct s_lexer //had to implement to save lines
 {
 	t_token_type	op;
@@ -130,6 +130,7 @@ typedef struct s_exp
 	int		count;
 	bool	in_dq;
 	bool	in_sq;
+	bool	in_exp;
 }	t_exp;
 
 void		expand_tokens(t_token *head, int last_exit_code);
@@ -138,7 +139,7 @@ int			expansion_len(char *str, int last_exit_code);
 // expansion_utils.c
 void		increment_counters(int *i, int *b);
 // int			calc_quotes(bool in_sq, bool in_dq);
-char			get_context(bool in_sq, bool in_dq);
+char			get_context(bool in_sq, bool in_dq, bool in_exp);
 void		update_quotes(char c, bool *in_sq, bool *in_dq);
 void		init_exp_struct(t_exp *exp);
 

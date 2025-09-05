@@ -22,19 +22,21 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 	free(varname);
 
 	// copy var value into token_value
+	exp->in_exp = true;
 	k = 0;
 	while (temp[k])
 	{
-		t->context[exp->j] = 'e';
+		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 		t->value[exp->j++] = temp[k++];
 	}
+	exp->in_exp = false;
 	return (0);
 }
 static void handle_char(t_token *t, char *str, t_exp *exp)
 {
 	// printf("in handle_char\n");
 	// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
-	t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
+	t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 	t->value[exp->j++] = str[exp->i++];
 }
 
@@ -46,13 +48,15 @@ static void	handle_error(t_token *t, t_exp *exp, int last_exit_code)
 	if (!code)
 		return ;
 	k = 0;
+	exp->in_exp = true;
 	while (code[k])
 	{
 		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
-		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
+		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 		t->value[exp->j++] = code[k++];
 	}
 	exp->i += 2;
+	exp->in_exp = false;
 	free(code);
 }
 
@@ -69,7 +73,7 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 	else
 	{
 		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
-		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq);
+		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 		t->value[exp->j++] = str[exp->i++];
 	}
 }
@@ -88,7 +92,7 @@ void	expand_tokens(t_token *head, int last_exit_code)
 			// printf("GOT LEN\n");
 			expand_and_strip(head, last_exit_code, exp_len);
 			//split the value string based on context of the space character.
-			split_value(head);
+			// split_value(head);
 		}
 		head = head->next;
 	}
