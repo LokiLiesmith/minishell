@@ -58,32 +58,45 @@ void ctx_split(t_token *t)
 
 	i = 0;
 	len = 0;
+
 	while(t->value[i])
 	{
-		
-		if (!ft_is_delim(t->value[i]))
-			len++;
-		//measure til delimiter (' ', '\n', '\t')
-		// write(1, &t->value[i], 1);
+		// while (!ft_is_delim(t->value[len]))
+			// len++;
+		while (!ft_is_delim(t->value[len]) || t->context[len] == '0');
+		if (ft_is_delim(t->value[i]) && t->context[i] != '0')
+			printf("%c", '@');
+		else
+			printf("%c", t->value[i]);
 		i++;
-		printf("%d\n", len);
+		// if (ft_is_delim(t->value[i]))
+		// {
+		// 	// char c = len + '0';
+		// 	write(1, &t->value[i], len);
+		// 	// write(1, &c, 1);
+		// 	len = 0;
+		// }
+		///////////////////////////////////
+	
+		///////////////////////////////////
+		// append_token();
+		//measure til delimiter (' ', '\n', '\t')
 	}
-	// write(1, "\n", 1);
+	printf("\n");
+
 }
 // aaa b b b
 // aaa
-
-
-
-
 
 int	main(void)
 {
 	char	*raw = "\"$VAR\""; // VAR="aaa b b b"
 	// char	*value = "aaa b b b";
 	// char	*context = "eee0eeeee";
-	char	*value = "aaa\nb\n\nbb";
-	char	*context = "eee0e00ee";
+	
+	// Case 2: \n in value, not
+	char	*value = "aa\nbbb\n\nbb";
+	char	*context = "ee0eee022e";
     t_token	token;
 
 	init_token(&token, raw, value, context);
@@ -91,6 +104,6 @@ int	main(void)
     ctx_split(&token);
 	// print_token(&token);
 	free_token(&token);
-    
+
 	return (0);
 }
