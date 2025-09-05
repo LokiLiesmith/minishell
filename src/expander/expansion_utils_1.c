@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_utils_1.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/01 20:36:27 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/01 20:36:29 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/05 22:36:48 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	init_exp_struct(t_exp *exp)
 	exp->count = 0;
 	exp->in_sq = false;
 	exp->in_dq = false;
+	exp->in_exp = false;
 }
 
 void	update_quotes(char c, bool *in_sq, bool *in_dq)
@@ -30,12 +31,14 @@ void	update_quotes(char c, bool *in_sq, bool *in_dq)
 		*in_dq = !*in_dq;
 }
 
-char	get_context(bool in_sq, bool in_dq)
+char	get_context(bool in_sq, bool in_dq, bool in_exp)
 {
 	if (in_dq)
 		return ('d');
 	else if (in_sq)
 		return ('s');
+	else if (in_exp)
+		return ('e');
 	return ('0');
 }
 
