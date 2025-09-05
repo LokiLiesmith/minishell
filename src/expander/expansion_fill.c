@@ -87,6 +87,8 @@ void	expand_tokens(t_token *head, int last_exit_code)
 			exp_len = expansion_len(head->raw, last_exit_code);
 			// printf("GOT LEN\n");
 			expand_and_strip(head, last_exit_code, exp_len);
+			//split the value string based on context of the space character.
+			split_value(head);
 		}
 		head = head->next;
 	}
