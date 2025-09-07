@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/10 18:32:56 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/07 20:48:19 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 # include "../include/get_next_line/get_next_line.h"
 
 
+#define TRUE	1
+#define FALSE	0
+
 /// 						Main struct idea:
 ////////////////////////////////////////////////////////////////////////////////
 //								  ENUMS										  //
@@ -31,7 +34,7 @@ typedef enum e_builtin
 {
 	NONE,
 	ECHO,
-	CD,
+	CD,	
 	PWD,
 	EXPORT,
 	UNSET,
@@ -51,6 +54,26 @@ typedef enum e_redir_type
 ////////////////////////////////////////////////////////////////////////////////
 //								STRUCTS / LINKED LISTS						  //
 ////////////////////////////////////////////////////////////////////////////////
+
+typedef struct s_env
+{
+	char			*type;
+	char 			*value;
+	struct s_env	*next;
+}	t_env;
+
+typedef struct s_gc_node
+{
+	void				*garbage;
+	struct s_gc_node	*next;
+}	t_gc_node;
+
+typedef struct s_gc
+{
+	t_gc_node	*head;
+	t_gc_node	*tail;
+	// size_t		size;
+}	t_gc;
 
 typedef struct s_redir
 {
@@ -139,5 +162,12 @@ typedef	struct s_cmd_node
 ////////////////////////////////////////////////////////////////////////////////
 //								 BUILT INS 									  //
 ////////////////////////////////////////////////////////////////////////////////
+void	builtin_echo(t_cmd *cmd);
+
+////////////////////////////////////////////////////////////////////////////////
+//								      GC									  //
+////////////////////////////////////////////////////////////////////////////////
+// void	*gc_malloc(t_gc_node **head, size_t size);
+// void	gc_free_all(t_gc_node **head);
 
 #endif
