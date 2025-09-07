@@ -119,7 +119,7 @@ static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 
 	str = t->raw;
 	t->value = ft_calloc(exp_len + 1, sizeof(char));
-	t->context = malloc(exp_len + 1);
+	t->context = ft_calloc(exp_len + 1, sizeof(char));
 	if(!t->value || !t->context)
 		printf("MALLOC FAILED IN EXPAND AND STRIP\n");
 	init_exp_struct(&exp);
