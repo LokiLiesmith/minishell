@@ -156,33 +156,33 @@ void print_token(t_token *t)
     printf("val: %s\n", t->value);
     printf("ctx: %s\n", t->context);
 }
-void ctx_push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len)
-{
-	t_token	*new;
+// void ctx_push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len)
+// {
+// 	t_token	*new;
 
-	new = malloc(sizeof(t_token));
-	if (!new)
-		return ;
-	new->type = type;
-	new->raw = malloc(sizeof(char) * len + 1);
-	if (!new->raw)
-		return ;
-	ft_memcpy(new->raw, start, len);
-	new->raw[len] = '\0';
-	new->value = NULL;
-	new->context = NULL;
-	new->next = NULL;
-	if (*head == NULL)
-	{
-		*head = new;
-		*tail = new;
-	}
-	else
-	{
-		(*tail)->next = new;
-		*tail = new;
-	}
-}
+// 	new = malloc(sizeof(t_token));
+// 	if (!new)
+// 		return ;
+// 	new->type = type;
+// 	new->raw = malloc(sizeof(char) * len + 1);
+// 	if (!new->raw)
+// 		return ;
+// 	ft_memcpy(new->raw, start, len);
+// 	new->raw[len] = '\0';
+// 	new->value = NULL;
+// 	new->context = NULL;
+// 	new->next = NULL;
+// 	if (*head == NULL)
+// 	{
+// 		*head = new;
+// 		*tail = new;
+// 	}
+// 	else
+// 	{
+// 		(*tail)->next = new;
+// 		*tail = new;
+// 	}
+// }
 ////////////////////////////////////////////////////////////////////////////////////
 
 static int ft_is_delim(char c)
@@ -207,6 +207,7 @@ int	ctx_split_len(char *str, char *context, int i)
 
 void init_ctx_token(t_token *new, int len)
 {
+	printf("IN INIT\n");
 	new->type = WORD;
 	new->raw = NULL;
 	new->value = ft_calloc(len + 1, sizeof(char));
@@ -214,7 +215,7 @@ void init_ctx_token(t_token *new, int len)
 	new->next = NULL;
 }
 
-t_token *ctx_push_token(t_token *h, t_token *t, t_token *old, int i, int len)
+t_token *ctx_push_token(t_token *h, t_token *tail, t_token *old, int i, int len)
 {
 	t_token	*new;
 
@@ -223,17 +224,19 @@ t_token *ctx_push_token(t_token *h, t_token *t, t_token *old, int i, int len)
 		return NULL;
 	init_ctx_token(new, len);
 	// fill_ctx_token(new, i, len, old);
+	(void)i;
+	(void)old;
 	if (h == NULL)
 	{
 		h = new;
-		t = new;
+		tail = new;
 	}
 	else
 	{
-		t->next = new;
-		t = new;
+		tail->next = new;
+		tail = new;
 	}
-	return (new);
+	return (h);
 }
 
 void ctx_split(t_token *t)
@@ -255,9 +258,10 @@ void ctx_split(t_token *t)
 			// printf("Create Token(), i:%d, len: %d\n", i, len);
 			// printf("Chunk:%s | ctx:%s\n", val_chunk, ctx_chunk);
 			// printf("ctxch: %s\n", ctx_chunk);
-			ctx_push_token(&new_head, &new_tail, t, i, len);
+			ctx_push_token(new_head, new_tail, t, i, len);
 			printf("Appended: %s\n", new_head->value);
 			printf("Appended: %s\n", new_head->context);
+			printf("Appended: %d\n", new_head->type);
 			// free(val_chunk);
 			// free(ctx_chunk);
 			i += len;

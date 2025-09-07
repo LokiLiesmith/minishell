@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/05 02:20:38 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/05 23:53:50 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ static void print_tokens(t_token *head, int last_exit_code)
 		printf("Raw: %s\n", current->raw);
 		printf("Value: %s\n", current->value);
 		printf("Context: %s\n", current->context);
+		printf("Type: %d\n", current->type);
 		printf("----------------------\n");
 		current = current->next;
 		i++;
