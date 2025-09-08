@@ -174,9 +174,12 @@ void	init_token(t_token *t, char *raw, char *value, char *context)
 }
 void 	free_token(t_token *t)
 {
-	free(t->raw);
-	free(t->value);
-	free(t->context);
+	if(t->raw)
+		free(t->raw);
+	if(t->value)
+		free(t->value);
+	if(t->context)
+		free(t->context);
 }
 
 void print_token(t_token *t)
@@ -288,7 +291,7 @@ void free_list(t_token *head)
 {
 	t_token *curr;
 	t_token *next;
-	// int		i;
+
 	curr = head;
 	while (curr)
 	{	
@@ -304,9 +307,6 @@ void splice_token_list(t_token **link_to_old, t_token *new_head, t_token* new_ta
 	t_token *old = *link_to_old;
 	t_token *next = old->next;
 
-	// free_token(old);
-	// free(old);
-
 	if (new_head == NULL)
 	{
 		*link_to_old = next;
@@ -320,22 +320,24 @@ void splice_token_list(t_token **link_to_old, t_token *new_head, t_token* new_ta
 
 
 
-void	ctx_split_to_list(t_token *t)
+void	ctx_split_to_list(t_token **t)
 {
 	int		i;
 	int 	len;
+
+	t_token *old = *t;
 	t_token *new_head = NULL;
 	t_token *new_tail = NULL;
 
-	print_tokens(t, 0);
+	print_tokens(old, 0);
 	i = 0;
 	len = 0;
-	while(t->value[i])
+	while(old->value[i])
 	{
-		len = ctx_split_len(t->value, t->context, i);
+		len = ctx_split_len(old->value, old->context, i);
 		if (len > 0)
 		{
-			if (ctx_push_token(&new_head, &new_tail, t, i, len) < 0)
+			if (ctx_push_token(&new_head, &new_tail, old, i, len) < 0)
 			{
 				free_list(new_head);
 				return ;
@@ -347,32 +349,30 @@ void	ctx_split_to_list(t_token *t)
 	}
 	printf("Done splitting.\n");
 	printf("Splicing.\n");
-	// print_tokens(new_head, 0);
-	// print_tokens(t, 0);
-	splice_token_list(&t, new_head, new_tail);
-	print_tokens(t, 0);
-	// splice_token_list(t, new_head);
-	// free_list(new_head);
+	splice_token_list(t, new_head, new_tail);
 }
 // aaa b b b
 // aaa
 
-int	main(void)
-{
-	char	*raw = "\"$VAR\""; // VAR="aaa b b b"
-	char	*value = "aaa b b b";
-	char	*context = "eee0eeeee";
+// int	main(void)
+// {
+// 	char	*raw = "\"$VAR\""; // VAR="aaa b b b"
+// 	char	*value = "aaa b b b";
+// 	char	*context = "eee0eeeee";
 	
-	// Case 2: \n in value, not
-	// char	*value = "aa\nbbb\n\nbb";
-	// char	*context = "ee0e1e022e";
-    t_token	token;
+// 	// Case 2: \n in value, not
+// 	// char	*value = "aa\nbbb\n\nbb";
+// 	// char	*context = "ee0e1e022e";
+//     t_token	*token;
+// 	token = malloc(sizeof(t_token));
 
-	init_token(&token, raw, value, context);
-	print_token(&token);
-    ctx_split_to_list(&token);
-	// print_token(&token);
-	free_token(&token);
+// 	init_token(token, raw, value, context);
+// 	print_tokens(token, 0);
+//     ctx_split_to_list(&token);
+// 	print_tokens(token, 0);
+// 	// print_token(&token);
+// 	free_list(token);
 
-	return (0);
-}
+// 	return (0);
+// }
+

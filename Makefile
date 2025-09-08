@@ -21,7 +21,7 @@ SRC_LEXER	 	:= src/lexer/lexer_test.c src/lexer/scan_operator.c src/lexer/scan_w
 SRC_BUILT_INS	:= src/built_ins/built_ins_test.c
 # SRC_EXPANDER 	:= src/expander/expander_test.c src/expander/expansion_len.c src/expander/expansion_utils_1.c \
 				src/expander/var_utils.c src/expander/expansion_fill.c
-SRC_SPLIT		:= src/split_field/split_field_test.c
+SRC_SPLIT		:= src/split_field/split_field_test.c src/split_field/split_and_splice.c src/split_field/split_utils.c
 
 
 # common sources (if any) go here, e.g. tokenizer, utils, …

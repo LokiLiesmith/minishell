@@ -78,23 +78,31 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 	}
 }
 
-void	expand_tokens(t_token *head, int last_exit_code)
+void	expand_tokens(t_token **head, int last_exit_code)
 {
 	int	exp_len;
+	t_token **link;
+	t_token *curr;
 
+	link = head;
 	// printf("EXPAND_TOKENS START\n");
-	while (head)
+	while (*link)
 	{
-		if (head->type == WORD)
+		curr = *link;
+		if (curr->type == WORD)
 		{
 			// printf("EXP LEN START\n");
-			exp_len = expansion_len(head->raw, last_exit_code);
+			exp_len = expansion_len(curr->raw, last_exit_code);
 			// printf("GOT LEN\n");
-			expand_and_strip(head, last_exit_code, exp_len);
+			expand_and_strip(curr, last_exit_code, exp_len);
 			//split the value string based on context of the space character.
-			// split_value(head);
+			ctx_split_to_list(link);
 		}
-		head = head->next;
+		while (*link && (*link)->type != WORD)
+			link = &(*link)->next;
+		if (*link)
+			link = &(*link)->next;
+		// head = head->next;
 	}
 }
 static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit_code)
