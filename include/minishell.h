@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/05 22:38:26 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/08 19:12:00 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ typedef struct s_exp
 	bool	in_exp;
 }	t_exp;
 
-void		expand_tokens(t_token *head, int last_exit_code);
+void		expand_tokens(t_token **head, int last_exit_code);
 int			expansion_len(char *str, int last_exit_code);
 
 // expansion_utils.c
@@ -166,5 +166,18 @@ int			ft_is_operator(int c);
 ////////////////////////////////////////////////////////////////////////////////
 //								 BUILT INS 									  //
 ////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+//								  FIELD SPLIT										  //
+////////////////////////////////////////////////////////////////////////////////
+
+void	ctx_split_to_list(t_token **t);
+void	splice_token_list(t_token **link_to_old, t_token *new_head, t_token* new_tail);
+int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
+int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
+int		ctx_split_len(char *str, char *context, int i);
+void 	free_list(t_token *head);
+void 	free_token(t_token *t);
+
 
 #endif

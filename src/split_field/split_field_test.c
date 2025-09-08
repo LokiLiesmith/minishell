@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/05 23:53:50 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/08 15:52:10 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,35 +91,15 @@ static char *read_until_closed_quotes(void)
 	}
 	return (input);
 }
-// CORRECT LEN TEST
-// int	main(void)
-// {
-// 	// char *input = "Mark \'singles\' \"doubles\" \'s_exp: $USER\' \"d_exp: $USER\" \'s_err: $?\' \"d_err: $?\" \"just a ?\"";
-// 	char *input = "\'$USER\' \"$USER\" $HOME $? \"$?\" \'$?\'";
-// 	// char *input = "$HOME";
-	
-// 	printf("%s\n", input);
-// 	printf("%s\n", getenv("HOME"));
-// 	printf("expanded input len[%d]\n", expansion_len(input, 144));
-// 	// out_string(input, 144);
-// 	return (0);
-// }
 
 // READLINE
 int	main(void)
 {
-	// int		quotes_open;
 	char	*input;
 	t_token *tokens;
 	int		last_exit_code;
 
 	last_exit_code = 0123;
-	// t_cmd_node *cmds;
-	/// GETENV, EXPAND TO "", Dont Free
-	// printf("HOME: %s\n", getenv("HOME"));
-	// printf("USER: %s\n", getenv("USER"));
-	// printf("SHELL: %s\n", getenv("SHELL"));
-	// printf("WHAT: %s\n", getenv("WHAT")); // Should be NULL
 
 	while (1)
 	{
@@ -137,7 +117,6 @@ int	main(void)
 			free(input);
 			input = NULL;
 		}
-		// printf("%s\n", input);
 		expand_tokens(tokens, last_exit_code);
 		print_tokens(tokens, last_exit_code);
 		free_tokens(tokens);

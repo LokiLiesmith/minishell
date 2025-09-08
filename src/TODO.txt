@@ -1,0 +1,10 @@
+FILL WITH ENV VARIABLES INSIDE MAIN
+env_arguments for the execution
+
+typedef struct s_env
+{
+	char			*type;
+	char 			*value;
+	struct s_env	*next;
+}	t_env;
+
