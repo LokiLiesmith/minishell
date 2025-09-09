@@ -6,13 +6,13 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/08 15:52:10 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/09 02:46:24 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void print_tokens(t_token *head, int last_exit_code)
+void print_tokens(t_token *head, int last_exit_code)
 {
 	t_token *current;
 	int		i;
@@ -97,8 +97,9 @@ int	main(void)
 {
 	char	*input;
 	t_token *tokens;
+	// t_token	**tokens_ref;
 	int		last_exit_code;
-
+	
 	last_exit_code = 0123;
 
 	while (1)
@@ -117,8 +118,10 @@ int	main(void)
 			free(input);
 			input = NULL;
 		}
-		expand_tokens(tokens, last_exit_code);
+		expand_tokens(&tokens, last_exit_code);
 		print_tokens(tokens, last_exit_code);
+		printf("====main tokens end=====\n\n");
+
 		free_tokens(tokens);
 		free(input);
 	}

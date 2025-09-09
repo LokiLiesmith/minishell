@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/08 19:12:00 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/09 01:55:37 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ typedef struct s_token
 	char			*value;
 	char			*context;
 	struct s_token	*next;
+	bool			was_expanded;
 }	t_token;
 	
 typedef struct s_lexer //had to implement to save lines
@@ -172,12 +173,14 @@ int			ft_is_operator(int c);
 ////////////////////////////////////////////////////////////////////////////////
 
 void	ctx_split_to_list(t_token **t);
-void	splice_token_list(t_token **link_to_old, t_token *new_head, t_token* new_tail);
+void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
 int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
 int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
 int		ctx_split_len(char *str, char *context, int i);
 void 	free_list(t_token *head);
 void 	free_token(t_token *t);
+void	print_tokens(t_token *head, int last_exit_code);
+
 
 
 #endif

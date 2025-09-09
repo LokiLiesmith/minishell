@@ -96,13 +96,15 @@ void	expand_tokens(t_token **head, int last_exit_code)
 			// printf("GOT LEN\n");
 			expand_and_strip(curr, last_exit_code, exp_len);
 			//split the value string based on context of the space character.
+			// printf("CTX_SPLIT_TO_LIST: BEFORE\n");
 			ctx_split_to_list(link);
+			// printf("CTX_SPLIT_TO_LIST: AFTER\n");
+			while (*link && (*link)->type == WORD && (*link)->was_expanded)
+				link = &(*link)->next;
+			// printf("SKIP: \"%s\" (was_expanded: %d)\n", (*link)->value, (*link)->was_expanded);
 		}
-		while (*link && (*link)->type != WORD)
+		else
 			link = &(*link)->next;
-		if (*link)
-			link = &(*link)->next;
-		// head = head->next;
 	}
 }
 static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit_code)
@@ -145,5 +147,4 @@ static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 	}
 	t->value[exp.j] = '\0';
 	t->context[exp.j] = '\0';
-	// printf("%d\n", last_exit_code);
 }
