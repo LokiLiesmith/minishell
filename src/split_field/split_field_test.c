@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/09 02:46:24 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/09 15:46:56 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static char	*append_line(char *input, char *line)
 	free(line);
 	return (joined);
 }
+
 void free_tokens(t_token *token)
 {
 	t_token *temp;
@@ -97,7 +98,6 @@ int	main(void)
 {
 	char	*input;
 	t_token *tokens;
-	// t_token	**tokens_ref;
 	int		last_exit_code;
 	
 	last_exit_code = 0123;
@@ -120,8 +120,6 @@ int	main(void)
 		}
 		expand_tokens(&tokens, last_exit_code);
 		print_tokens(tokens, last_exit_code);
-		printf("====main tokens end=====\n\n");
-
 		free_tokens(tokens);
 		free(input);
 	}

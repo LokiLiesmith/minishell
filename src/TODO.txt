@@ -8,3 +8,18 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+PARSING:
+
+	WORD TYPE
+	-first token is a command
+	-if WORD token then set command, check against builtins. 
+	-else add to argv
+
+	REDIRECTION TYPE
+	-next token has to be target
+
+	PIPE
+	-finish command
+	-start new one
+
+	go until node.next->null
