@@ -89,18 +89,8 @@ void	ctx_split_to_list(t_token **t)
 		else
 			i++;
 	}
-	// printf("\n\n\n");
-	// printf("NEW TAIL\n");
-	// print_tokens(new_tail, 010);
-	// printf("HEAD OF NEW LIST\n");
-	// print_tokens(new_head, 010);
-	// printf("OLD HEAD\n");
-	// print_tokens(*t, 010);
-	// printf("\n\n\n");
+
 	splice_token_list(t, &new_head, &new_tail);
-	// printf("Spliced in list, starting at: %s\n", old->value);
 	free_token(old);
 	free(old);
-	// after splice_token_list
-	// print_tokens(*t, 01);
 }
