@@ -16,13 +16,10 @@ int fill_ctx_token(t_token *new, int i, int len, t_token *old)
 	new->value[len] = '\0';
 	new->context[len] = '\0';
 	new->type = WORD;
-	new->raw = ft_strdup("expanded");
-	if (!new->raw)
-	{
-		free(new->value);
-		free(new->context);
+	new->raw = ft_strdup(old->raw);
+	if(!new->raw)
 		return(-1);
-	}
+	new->was_expanded = true;
 	new->next = NULL;
 	return (0);
 }
@@ -39,6 +36,7 @@ int	ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len)
 		free(new);
 		return (-1);
 	}
+	// printf("Pushed token: \"%s\", was_expanded: %d\n", new->value, new->was_expanded);
 	if (*h == NULL)
 	{
 		*h = new;
@@ -52,30 +50,16 @@ int	ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len)
 	return (0);
 }
 
-void splice_token_list(t_token **link_to_old, t_token *new_head, t_token* new_tail)
+void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail)
 {
-	t_token *old = *link_to_old;
-	t_token *next = old->next;
-    printf("splice_token_list start\n");
-        
-	if (new_head == NULL)
-	{
-    	free_token(old);
-    	free(old);
-    	printf("splice_token_list after free\n");
-        printf("in if\n");
-		*link_to_old = next;
-        printf("next\n");
-		return ;
-	}
-    printf("link_to_old%p\n", link_to_old);
-    printf("new_head%p\n", new_head);
-    *link_to_old = new_head;
-    printf("new_head\n");
-
-    new_tail->next = next;
-    printf("splice_token_list finished\n");
-
+	t_token **link;
+	t_token *next;
+	
+	link = splice_node;
+	
+	next = (*link)->next;
+	*link = *new_head;
+	(*new_tail)->next = next;
 }
 
 void	ctx_split_to_list(t_token **t)
@@ -105,5 +89,18 @@ void	ctx_split_to_list(t_token **t)
 		else
 			i++;
 	}
-	splice_token_list(&old, new_head, new_tail);
+	// printf("\n\n\n");
+	// printf("NEW TAIL\n");
+	// print_tokens(new_tail, 010);
+	// printf("HEAD OF NEW LIST\n");
+	// print_tokens(new_head, 010);
+	// printf("OLD HEAD\n");
+	// print_tokens(*t, 010);
+	// printf("\n\n\n");
+	splice_token_list(t, &new_head, &new_tail);
+	// printf("Spliced in list, starting at: %s\n", old->value);
+	free_token(old);
+	free(old);
+	// after splice_token_list
+	// print_tokens(*t, 01);
 }

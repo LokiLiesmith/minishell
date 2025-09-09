@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 21:04:13 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/06 02:20:43 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/09 02:04:09 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void push_token(t_token **head, t_token **tail, t_token_type type, char *start, 
 	new->value = NULL;
 	new->context = NULL;
 	new->next = NULL;
+	new->was_expanded = false;
 	if (*head == NULL)
 	{
 		*head = new;
@@ -107,37 +108,3 @@ t_token *tokenize(char *str, bool *open_quotes)
 	// printf("TOKENIZE\n");
 	return (lex.head);
 }
-
-
-
-
-// t_token	*tokenize(char *str, bool *open_quotes)
-// {
-// 	t_lexer	lex;
-
-// 	init_lexer(&lex);
-// 	while (str[lex.i])
-// 	{
-// 		while (ft_is_space(str[lex.i])) //skip whitespace
-// 			lex.i++;
-// 		lex.len = scan_operator(str, lex.i, &lex.op);
-// 		if (lex.len > 0) //is operator
-// 		{
-// 			push_token(&lex.head, &lex.tail, lex.op, str + lex.i, lex.len);
-// 			lex.i += lex.len;
-// 			continue ;
-// 		}
-// 		lex.word_len = scan_word(str, lex.i);
-// 		if (lex.word_len >= 0)
-// 		{
-// 			push_token(&lex.head, &lex.tail, WORD, str + lex.i, lex.word_len);
-// 			lex.i += lex.word_len;
-// 		}
-// 		if (lex.word_len < 0)
-// 		{	
-// 			*open_quotes = true;
-// 			return NULL;
-// 		}//NEGATIVE from scan word == open quotes
-// 	}
-// 	return (lex.head);
-// }
