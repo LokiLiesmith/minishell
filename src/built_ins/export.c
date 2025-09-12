@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/07 20:04:30 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/13 01:23:15 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@
 // export		- print declare -x w env variables in ascending ascii order
 // export x=1	- add env var
 	
-void	export_print(t_env **env)
+void	export_print(t_env *env)
 {
 	t_env	*current;
 
-	current = *env;
+	current = env;
 	while (current != NULL)
 	{
 		ft_putstr_fd("declare -x ", 1);
@@ -46,15 +46,15 @@ void	export_print(t_env **env)
 	}
 }
 
-int	builtin_export(t_cmd *cmd, t_env **env)
+int	builtin_export(t_cmd *cmd, t_env *env)
 {
 	t_env	*current;
 	t_env	*temp;
 	char	*value;
 	char	*type;
 
-	current = *env;
-	if (cmd->argv[1][0] = NULL)
+	current = env;
+	if (cmd->argv[1] == NULL)
 	{
 		export_print(env);
 	}
@@ -80,4 +80,5 @@ int	builtin_export(t_cmd *cmd, t_env **env)
 		current->next->value = value;
 		current->next->next = temp;
 	}
+	return (0);
 }

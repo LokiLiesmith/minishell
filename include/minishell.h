@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/07 20:48:19 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/13 01:08:59 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include <signal.h>
 # include <string.h>
-# include "../include/libft/libft.h"
-# include "../include/get_next_line/get_next_line.h"
-
+# include "libft/libft.h"
+# include "get_next_line/get_next_line.h"
 
 #define TRUE	1
 #define FALSE	0
@@ -100,7 +100,7 @@ typedef struct s_cmd
 // Command LinkedList (cmd node pointing to the next one, ends with NULL, thats also when we are done?)
 typedef	struct s_cmd_node
 {
-	t_cmd				cmd;
+	t_cmd				*cmd;
 	struct s_cmd_node	*next;
 }	t_cmd_node;
 
@@ -160,12 +160,18 @@ typedef	struct s_cmd_node
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-//								 BUILT INS 									  //
+//								 EXECUTION 									  //
 ////////////////////////////////////////////////////////////////////////////////
-void	builtin_echo(t_cmd *cmd);
+int		execute_start(t_cmd_node *node, t_env *env);
+int		is_builtin(t_cmd *cmd);
+int		execute_single_builtin(t_cmd *cmd, t_env *env);
+void	execute_child(char *path, t_cmd *cmd, char **env_array);
+
+char	*find_path(t_cmd *cmd, t_env *env);
+// void	save_redirs(t_cmd *cmd);
 
 ////////////////////////////////////////////////////////////////////////////////
-//								      GC									  //
+//										GC									  //
 ////////////////////////////////////////////////////////////////////////////////
 // void	*gc_malloc(t_gc_node **head, size_t size);
 // void	gc_free_all(t_gc_node **head);

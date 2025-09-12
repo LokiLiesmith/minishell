@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 23:46:42 by mel               #+#    #+#             */
-/*   Updated: 2025/09/07 00:52:43 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/13 01:24:12 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	update_pwd(t_env **env)
+int	update_pwd(t_env *env)
 {
 	t_env	*current;
 	char	*current_dir;
 	
-	current = *env;
+	current = env;
 	current_dir = getcwd(NULL, 0);
 	// error check
 	while (ft_strncmp(current->type, "PWD", 3) && current != NULL)
@@ -26,18 +26,18 @@ int	update_pwd(t_env **env)
 	return (0);
 }
 
-int	update_oldpwd(t_env **env, char *old_dir)
+int	update_oldpwd(t_env *env, char *old_dir)
 {
 	t_env	*current;
 
-	current = *env;
+	current = env;
 	while (ft_strncmp(current->type, "OLDPWD", 6) && current != NULL)
 		current = current->next;
 	current->value = old_dir;
 	return (0);
 }
 
-int	builtin_cd(t_cmd *cmd, t_env **env)
+int	builtin_cd(t_cmd *cmd, t_env *env)
 {
 	char	*old_dir;
 	char	*current_dir;
