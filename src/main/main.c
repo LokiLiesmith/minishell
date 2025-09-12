@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:17:18 by mel               #+#    #+#             */
-/*   Updated: 2025/09/06 17:17:44 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/13 00:29:33 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-int	main(int ac, char **av, char **env)
-{
+// int	main(int ac, char **av, char **env)
+// {
+	// SHELL LEVEL UPDATE
+	
 	// process env, put it into table
 	// while (1)
 	// display promt
@@ -22,4 +24,4 @@ int	main(int ac, char **av, char **env)
 	// execute
 	// cleanup
 	// gc_free_all()
-}
+// }

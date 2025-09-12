@@ -3,21 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 22:09:41 by mel               #+#    #+#             */
-/*   Updated: 2025/09/07 00:03:22 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/13 01:22:54 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+// #include "../../include/libft/ft_putstr_fd.c"
+// #include "../../include/libft/ft_putchar_fd.c"
+// #include "../../include/libft/ft_strlen.c"
 
-int	pwd(t_cmd *cmd, t_env **env)
+int	builtin_pwd(void)
 {
 	char	*pwd;
-	t_env	*current;
 
-	pwd = getcwd;
+	pwd = getcwd(NULL, 0);
 	if (pwd == NULL)
 	{
 		perror("getcwd() failed");
@@ -28,3 +30,15 @@ int	pwd(t_cmd *cmd, t_env **env)
 	free(pwd);
 	return (0);
 }
+
+// int main(void)
+// {
+// 	int result = builtin_pwd();
+
+// 	if (result == 0)
+// 		printf("builtin_pwd executed successfully\n");
+// 	else
+// 		printf("builtin_pwd encountered an error\n");
+
+// 	return result;
+// }

@@ -18,8 +18,10 @@ UC_T := $(shell echo $(T) | tr '[:lower:]' '[:upper:]')
 SRC_MINISHELL := src/main/main_test.c src/main/main.c
 SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c
-SRC_BUILT_INS := src/built_ins/built_ins_test.c
-
+SRC_BUILT_INS := src/built_ins/built_ins_test.c src/built_ins/cd.c src/built_ins/echo.c \
+		src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c
+SRC_EXECUTION := src/execution/execution_test.c src/execution/exec_builtins.c src/execution/exec_children.c src/execution/exec_redirection.c \
+		src/execution/execution.c src/execution/utils_path.c src/execution/utils.c
 
 
 # common sources (if any) go here, e.g. tokenizer, utils, …
@@ -30,7 +32,7 @@ SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
 
 #error if T doesn't match any SRC_*
 ifeq ($(strip $(SELECTED_SRC)),)
-$(error Unknown T='$(T)'. Valid options: minishell parser input built_ins)
+$(error Unknown T='$(T)'. Valid options: minishell parser input built_ins execution)
 endif
 
 # ========= Output/layout =========
@@ -93,6 +95,6 @@ san: clean all
 # ***********			2.	UPDATE PHONY 		 ********************
 # *******************************************************************
 
-.PHONY: all minishell parser built_ins lexer run valgrind debug clean fclean re san
+.PHONY: all minishell parser built_ins lexer execution run valgrind debug clean fclean re san
 minishell parser built_ins lexer:
 	@$(MAKE) T=$@ $(BINDIR)/$@

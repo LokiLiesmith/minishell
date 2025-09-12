@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   built_ins_test.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 17:51:42 by mrazem            #+#    #+#             */
-/*   Updated: 2025/08/08 17:53:27 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/13 00:55:34 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+// #include "minishell.h"
 
-int	main(void)
-{
-	printf("Test: built_ins_test.c");
-	return (0);
-}
+// int	main(void)
+// {
+// 	printf("Test: built_ins_test.c");
+// 	return (0);
+// }
