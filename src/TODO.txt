@@ -1,25 +1,12 @@
-FILL WITH ENV VARIABLES INSIDE MAIN
-env_arguments for the execution
-
-typedef struct s_env
-{
-	char			*type;
-	char 			*value;
-	struct s_env	*next;
-}	t_env;
-
-DONE
-
-
 ////////////////////////////////////////////////////////////////////////////////////////
+SIGNALS - SUBSHELL - ENV VARIABLE UPDATE?
 
-SUBSHELL - ENV VARIABLE UPDATE?
-when you run shell inside shell, it should keep track of the level its in so the signals allow to kill subshells
+-when you run shell inside shell, it should keep track of the level its in so the signals allow to kill subshells
 but not the main shell.
 
+-do we use export?
+
 ////////////////////////////////////////////////////////////////////////////////////////
-
-
 PARSING:
 
 	WORD TYPE
@@ -35,3 +22,14 @@ PARSING:
 	-start new one
 
 	go until node.next->null
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+ADD SHELL STRUCT IN MAIN
+
+ -env list
+ -int last_exit_code
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////
