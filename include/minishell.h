@@ -28,6 +28,8 @@
 # include "../include/libft/libft.h"
 # include "../include/get_next_line/get_next_line.h"
 
+extern int g_signal;
+
 ////////////////////////////////////////////////////////////////////////////////
 //								  MAIN STRUCT / ENUMS						  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +120,7 @@ typedef struct s_token
 	bool			was_expanded;
 }	t_token;
 	
-typedef struct s_lexer //had to implement to save lines
+typedef struct s_lexer
 {
 	t_token_type	op;
 	int				i;
@@ -158,7 +160,6 @@ char		*extract_varname(char *str, int *i);
 bool		is_valid_var_start(char c);
 bool		is_var_char(char c);
 
-void 		free_tokens(t_token *token);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  LEXER										  //
@@ -172,8 +173,11 @@ int			ft_is_space(int c);
 int			ft_is_operator(int c);
 
 ////////////////////////////////////////////////////////////////////////////////
-//								 BUILT INS 									  //
+//								 MAIN 									  //
 ////////////////////////////////////////////////////////////////////////////////
+
+void shell_loop(void);
+void signal_setup(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  FIELD SPLIT										  //
@@ -186,6 +190,8 @@ int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
 int		ctx_split_len(char *str, char *context, int i);
 void 	free_list(t_token *head);
 void 	free_token(t_token *t);
+void	free_tokens(t_token *head);
+
 void	print_tokens(t_token *head, int last_exit_code);
 
 

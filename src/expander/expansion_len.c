@@ -80,7 +80,7 @@ static int	handle_var_expansion_len(char *str, t_exp *exp)
 	varname = extract_varname(str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = getenv(varname);
+	temp = getenv(varname); // TODO: needs to read from env LList not from actual env
 	if (!temp)
 		temp = "";
 	var_len = ft_strlen(temp);

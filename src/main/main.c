@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+int g_signal;
+
+/////////////////////////TESTING STUFF///////////////////////////////
 static void print_env(t_env *env)
 {
 	while(env)
@@ -9,6 +12,14 @@ static void print_env(t_env *env)
 		env = env->next;
 	}
 }
+
+///////////////////////////////////////////////////////
+
+
+
+
+
+
 static void free_env(t_env *env)
 {
 	t_env	*temp;
@@ -53,14 +64,14 @@ static t_env *dup_env(char **envp)
 int main(int ac, char **av, char **envp)
 {
 
-	t_env *env;
+	t_env *env; //TODO: add shell struct, include err_code
 	(void)ac;
 	(void)av;
 
 	env = dup_env(envp);
 	print_env(env);
-	// signal_setup();
-	// shell_loop();
+	signal_setup();	//TODO:
+	shell_loop();	//TODO:
 	free_env(env);
 	return (0);
 }

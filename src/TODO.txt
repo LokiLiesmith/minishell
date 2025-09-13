@@ -8,6 +8,18 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+DONE
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+SUBSHELL - ENV VARIABLE UPDATE?
+when you run shell inside shell, it should keep track of the level its in so the signals allow to kill subshells
+but not the main shell.
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+
 PARSING:
 
 	WORD TYPE
