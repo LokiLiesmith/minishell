@@ -56,15 +56,6 @@ static void init_lexer(t_lexer *lex)
 	lex->head = NULL;
 	lex->tail = NULL;
 }
-// static void	print_lexer(t_lexer *lex)
-// {
-// 	printf("token value %s\n", lex->tail->value);
-// 	printf("lex->len: %zd\n", lex->len);
-// 	printf("lex->op: %d\n", lex->op);
-// 	printf("lex->i: %d\n", lex->i);
-// 	printf("lex->head: %p\n", lex->head);
-// 	printf("lex->tail: %p\n", lex->tail);
-// }
 
 static int	handle_operator(t_lexer *lex, char *str)
 {
@@ -75,6 +66,7 @@ static int	handle_operator(t_lexer *lex, char *str)
 	lex->i += lex->len;
 	return (1);
 }
+
 //word handler (if scan_word < 0; => open quotes)
 static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
 {
@@ -89,6 +81,25 @@ static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
 	lex->i += lex->len;
 	return (1);
 }
+
+void free_tokens(t_token *token)
+{
+	t_token *temp;
+	
+	while (token)
+	{
+		temp = token->next;
+		if (token->value)
+			free(token->value);
+		if (token->raw)
+			free(token->raw);
+		if (token->context)
+			free(token->context);
+		free(token);
+		token = temp;
+	}
+}
+
 t_token *tokenize(char *str, bool *open_quotes)
 {
 	t_lexer	lex;
@@ -105,6 +116,6 @@ t_token *tokenize(char *str, bool *open_quotes)
 		if (!handle_word(&lex, str, open_quotes))
 			return (NULL);
 	}
-	// printf("TOKENIZE\n");
 	return (lex.head);
 }
+
