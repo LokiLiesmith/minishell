@@ -149,7 +149,7 @@ int			expansion_len(char *str, int last_exit_code);
 // expansion_utils.c
 void		increment_counters(int *i, int *b);
 // int			calc_quotes(bool in_sq, bool in_dq);
-char			get_context(bool in_sq, bool in_dq, bool in_exp);
+char		get_context(bool in_sq, bool in_dq, bool in_exp);
 void		update_quotes(char c, bool *in_sq, bool *in_dq);
 void		init_exp_struct(t_exp *exp);
 
@@ -191,9 +191,6 @@ int		ctx_split_len(char *str, char *context, int i);
 void 	free_list(t_token *head);
 void 	free_token(t_token *t);
 void	free_tokens(t_token *head);
-
 void	print_tokens(t_token *head, int last_exit_code);
-
-
 
 #endif
