@@ -2,7 +2,7 @@
 
 void	print_tokens(t_token *head, int last_exit_code)
 {
-	t_token *current;
+	t_token	*current;
 	int		i;
 
 	(void)last_exit_code;
@@ -24,8 +24,8 @@ void	print_tokens(t_token *head, int last_exit_code)
 
 static char	*append_line(char *input, char *line)
 {
-	char *tmp;
-	char *joined;
+	char	*tmp;
+	char	*joined;
 
 	tmp = ft_strjoin(input, "\n");
 	free(input);
@@ -35,7 +35,7 @@ static char	*append_line(char *input, char *line)
 	return (joined);
 }
 
-static char *read_until_closed_quotes(void)
+static char	*read_until_closed_quotes(void)
 {
 	char	*input;
 	char	*line;
@@ -45,7 +45,7 @@ static char *read_until_closed_quotes(void)
 	open_quotes = false;
 	input = readline("whiskersh$ ");
 	if (!input)
-		return(NULL);
+		return (NULL);
 	while (1)
 	{
 		tokens = tokenize(input, &open_quotes);
@@ -73,22 +73,27 @@ static char *read_until_closed_quotes(void)
 
 // }
 
-int build_pipeline(char *line, t_shell *sh)
+int	build_pipeline(char *line, t_shell *sh)
 {
 	t_token	*tokens;
-	bool open_quotes;
+	bool	open_quotes;
 
 	open_quotes = false;
 	tokens = tokenize(line, &open_quotes);
 	if (!tokens)
-		return(-1);
+		return (-1);
 	if (expand_tokens(&tokens, sh->last_exit_code) < 0)
 	{
 		free_tokens(tokens);
 		return (-1);
 	}
-	print_tokens(tokens, sh->last_exit_code);
-	// sh->pipeline = parse(tokens, sh->last_exit_code);
+	sh->pipeline = parse(tokens, sh->last_exit_code);
+	if (!sh->pipeline)
+	{
+		free_tokens(tokens);
+		return (-1);
+	}
+	free_tokens(tokens);
 	return (0);
 }
 
@@ -99,10 +104,11 @@ static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
 	printf("in t_shell:%d\n", sh->last_exit_code);
 	return (0);
 }
-void shell_loop(t_shell *sh)
+
+void	shell_loop(t_shell *sh)
 {
+	char	*line;
 	// (void)sh;
-	char *line;
 
 	while (420)
 	{
@@ -118,7 +124,7 @@ void shell_loop(t_shell *sh)
 			if (build_pipeline(line, sh) < 0)
 			{
 				sh->last_exit_code = 2;//syntax error TODO: figure out the error handling
-				continue;
+				continue ;
 			}
 			sh->last_exit_code = execute_pipeline(sh->pipeline, sh); //HANDOFF
 			// sh->last_exit_code = execute_pipeline(sh); // deref in function?
@@ -127,12 +133,12 @@ void shell_loop(t_shell *sh)
 	}
 }
 
-// void	print_syntax_error(const char *unexpected)
-// {
-// 	if	(!unexpected || *unexpected == '\0')
-// 		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
-// 	else
-// 		fprintf(stderr, "syntax error: near unexpected token '%s'\n", unexpected);
-// }
+void	print_syntax_error(const char *unexpected)
+{
+	if	(!unexpected || *unexpected == '\0')
+		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
+	else
+		fprintf(stderr, "syntax error: near unexpected token '%s'\n", unexpected);
+}
 
 

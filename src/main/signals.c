@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void handle_sigint(int signum)
+static void	handle_sigint(int signum)
 {
 	g_signal = signum;
 	write(1, "\n", 1);
@@ -9,7 +9,7 @@ static void handle_sigint(int signum)
 	rl_redisplay();
 }
 
-void signal_setup(void)
+void	signal_setup(void)
 {
 	struct sigaction	sa;
 
