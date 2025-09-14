@@ -36,7 +36,6 @@ int	ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len)
 		free(new);
 		return (-1);
 	}
-	// printf("Pushed token: \"%s\", was_expanded: %d\n", new->value, new->was_expanded);
 	if (*h == NULL)
 	{
 		*h = new;
@@ -62,7 +61,7 @@ void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_
 	(*new_tail)->next = next;
 }
 
-void	ctx_split_to_list(t_token **t)
+int	ctx_split_to_list(t_token **t)
 {
 	int		i;
 	int 	len;
@@ -70,27 +69,21 @@ void	ctx_split_to_list(t_token **t)
 	t_token *old = *t;
 	t_token *new_head = NULL;
 	t_token *new_tail = NULL;
-
-	// print_tokens(old, 0);
 	i = 0;
-	len = 0;
 	while(old->value[i])
 	{
 		len = ctx_split_len(old->value, old->context, i);
 		if (len > 0)
 		{
 			if (ctx_push_token(&new_head, &new_tail, old, i, len) < 0)
-			{
-				free_list(new_head);
-				return ;
-			}
+				return (free_list(new_head), -1);
 			i += len;
 		}
 		else
 			i++;
 	}
-
 	splice_token_list(t, &new_head, &new_tail);
 	free_token(old);
 	free(old);
+	return (0);
 }

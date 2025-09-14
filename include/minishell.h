@@ -96,6 +96,13 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+typedef struct s_shell
+{
+	t_env			*env;
+	int				last_exit_code;
+	t_cmd_node		*pipeline;
+}	t_shell;
+
 ////////////////////////////////////////////////////////////////////////////////
 //							TOKENIZER STRUCTS / ENUM						  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +150,7 @@ typedef struct s_exp
 	bool	in_exp;
 }	t_exp;
 
-void		expand_tokens(t_token **head, int last_exit_code);
+int		expand_tokens(t_token **head, int last_exit_code);
 int			expansion_len(char *str, int last_exit_code);
 
 // expansion_utils.c
@@ -176,21 +183,23 @@ int			ft_is_operator(int c);
 //								 MAIN 									  //
 ////////////////////////////////////////////////////////////////////////////////
 
-void shell_loop(void);
-void signal_setup(void);
+void		shell_loop(t_shell *sh);
+void		signal_setup(void);
+int			build_pipeline(char *line, t_shell *sh);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  FIELD SPLIT										  //
 ////////////////////////////////////////////////////////////////////////////////
 
-void	ctx_split_to_list(t_token **t);
-void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
-int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
-int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
-int		ctx_split_len(char *str, char *context, int i);
-void 	free_list(t_token *head);
-void 	free_token(t_token *t);
-void	free_tokens(t_token *head);
-void	print_tokens(t_token *head, int last_exit_code);
+int		ctx_split_to_list(t_token **t);
+void		splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
+int			ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
+int			fill_ctx_token(t_token *new, int i, int len, t_token *old);
+int			ctx_split_len(char *str, char *context, int i);
+void 		free_list(t_token *head);
+void 		free_token(t_token *t);
+void		free_tokens(t_token *head);
+void		print_tokens(t_token *head, int last_exit_code);
 
 #endif

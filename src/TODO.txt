@@ -1,8 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 SIGNALS - SUBSHELL - ENV VARIABLE UPDATE?
-
 -when you run shell inside shell, it should keep track of the level its in so the signals allow to kill subshells
 but not the main shell.
+var_name: SHLVL
+value: 1
+
+env->var_name: SHLVL
+env->value++;
 
 -do we use export?
 
@@ -23,11 +27,27 @@ PARSING:
 
 	go until node.next->null
 
+////////////////////////////////////////////////////////////////////////////////////////
+ERROR handling
+	-syntaxx ERROR (unmatched operator, nothing after a |)
+	-allocation error
+	-parsing stuff??
+
+	on syntax error:
+		-print msg
+		-set $? to 2; convention for syntax
+		-return to prompt
+	
+	If malloc fails  print: fatal error and exit(1).
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ADD SHELL STRUCT IN MAIN
 
- -env list
+ -t_env *env
  -int last_exit_code
 
 ////////////////////////////////////////////////////////////////////////////////////////
