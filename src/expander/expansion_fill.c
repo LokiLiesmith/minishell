@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len);
+static int	expand_and_strip(t_token *t, int last_exit_code, int exp_len);
 static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit);
 static int	handle_var_expansion(t_token *t, char *str, t_exp *exp);
 
@@ -9,13 +9,12 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 	char	*varname;
 	char	*temp;
 	int		k;
-			
+		
 	exp->i++;
-	// fetch var value
 	varname = extract_varname(str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = getenv(varname);
+	temp = getenv(varname); //TODO: swap with own get_env_value(char *varname);
 	// printf("getenv result: %s\n", temp);
 	if (!temp)
 		temp = "";
@@ -34,8 +33,6 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 }
 static void handle_char(t_token *t, char *str, t_exp *exp)
 {
-	// printf("in handle_char\n");
-	// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
 	t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 	t->value[exp->j++] = str[exp->i++];
 }
@@ -62,7 +59,6 @@ static void	handle_error(t_token *t, t_exp *exp, int last_exit_code)
 
 static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 {
-	// printf("handle_quote\n");
 	char c = str[exp->i];
 
 	if ((c == '\'' && !exp->in_dq) || (c == '"' && !exp->in_sq))
@@ -72,40 +68,37 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 	}
 	else
 	{
-		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
 		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 		t->value[exp->j++] = str[exp->i++];
 	}
 }
 
-void	expand_tokens(t_token **head, int last_exit_code)
+int expand_tokens(t_token **head, int last_exit_code)
 {
-	int	exp_len;
-	t_token **link;
-	t_token *curr;
+    int      exp_len;
+    t_token **link;
+    t_token  *curr;
 
-	link = head;
-	// printf("EXPAND_TOKENS START\n");
-	while (*link)
-	{
-		curr = *link;
-		if (curr->type == WORD)
-		{
-			// printf("EXP LEN START\n");
-			exp_len = expansion_len(curr->raw, last_exit_code);
-			// printf("GOT LEN\n");
-			expand_and_strip(curr, last_exit_code, exp_len);
-			//split the value string based on context of the space character.
-			// printf("CTX_SPLIT_TO_LIST: BEFORE\n");
-			ctx_split_to_list(link);
-			// printf("CTX_SPLIT_TO_LIST: AFTER\n");
-			while (*link && (*link)->type == WORD && (*link)->was_expanded)
-				link = &(*link)->next;
-			// printf("SKIP: \"%s\" (was_expanded: %d)\n", (*link)->value, (*link)->was_expanded);
-		}
-		else
-			link = &(*link)->next;
-	}
+    link = head;
+    while (*link)
+    {
+        curr = *link;
+        if (curr->type == WORD)
+        {
+            exp_len = expansion_len(curr->raw, last_exit_code);
+            if (exp_len < 0)
+                return (-1); // error in expansion length
+            if (expand_and_strip(curr, last_exit_code, exp_len) < 0)
+                return (-1);
+            if (ctx_split_to_list(link) < 0)
+                return (-1);
+            while (*link && (*link)->type == WORD && (*link)->was_expanded)
+                link = &(*link)->next;
+        }
+        else
+            link = &(*link)->next;
+    }
+    return (0);
 }
 static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit_code)
 {
@@ -122,16 +115,16 @@ static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit_code)
 	return 0;
 }
 
-static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
+static int	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 {
 	t_exp	exp;
 	char	*str;
 
-	str = t->raw;
 	t->value = ft_calloc(exp_len + 1, sizeof(char));
 	t->context = ft_calloc(exp_len + 1, sizeof(char));
-	if(!t->value || !t->context)
-		printf("MALLOC FAILED IN EXPAND AND STRIP\n");
+	if (!t->value || !t->context)
+		return (free(t->value), free(t->context), -1);//TODO: HANDLE ERROR - GC?
+	str = t->raw;
 	init_exp_struct(&exp);
 	while (str[exp.i])
 	{
@@ -140,11 +133,12 @@ static void	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 		else if (!exp.in_sq && str[exp.i] == '$')
 		{
 			if (handle_dollar(t, str, &exp, last_exit_code) < 0)
-				return ;
+				return (-1);
 		}
 		else
 			handle_char(t, str, &exp);
 	}
 	t->value[exp.j] = '\0';
 	t->context[exp.j] = '\0';
+	return (0);
 }

@@ -2,7 +2,7 @@
 
 int g_signal;
 
-/////////////////////////TESTING STUFF///////////////////////////////
+/////////////////////////TESTING STUFF//////////////////
 static void print_env(t_env *env)
 {
 	while(env)
@@ -64,14 +64,17 @@ static t_env *dup_env(char **envp)
 int main(int ac, char **av, char **envp)
 {
 
-	t_env *env; //TODO: add shell struct, include err_code
+	t_shell	sh;
+
 	(void)ac;
 	(void)av;
 
-	env = dup_env(envp);
-	print_env(env);
-	signal_setup();	//TODO:
-	shell_loop();	//TODO:
-	free_env(env);
+	sh.env = dup_env(envp);
+	sh.last_exit_code = 0;
+
+	print_env(sh.env);
+	signal_setup();
+	shell_loop(&sh);	//TODO:
+	free_env(sh.env);
 	return (0);
 }
