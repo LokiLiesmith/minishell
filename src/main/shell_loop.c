@@ -62,16 +62,6 @@ static char	*read_until_closed_quotes(void)
 	}
 	return (input);
 }
-// int build_token_list(char *line, t_shell *sh)
-// {
-// 	t_token	*tokens;
-// 	bool	open_quotes;
-
-// 	open_quotes = false;
-// 	tokens = tokenize(line, &open_quotes);
-// 	expand_tokens(&tokens, sh->last_exit_code);
-
-// }
 
 int	build_pipeline(char *line, t_shell *sh)
 {
@@ -133,12 +123,6 @@ void	shell_loop(t_shell *sh)
 	}
 }
 
-void	print_syntax_error(const char *unexpected)
-{
-	if	(!unexpected || *unexpected == '\0')
-		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
-	else
-		fprintf(stderr, "syntax error: near unexpected token '%s'\n", unexpected);
-}
+
 
 

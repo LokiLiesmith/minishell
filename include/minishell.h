@@ -83,7 +83,7 @@ typedef struct s_cmd
 }	t_cmd;
 
 // Command LinkedList (cmd node pointing to the next one, ends with NULL, thats also when we are done?)
-typedef	struct s_cmd_node
+typedef struct s_cmd_node
 {
 	t_cmd				cmd;
 	struct s_cmd_node	*next;
@@ -92,7 +92,7 @@ typedef	struct s_cmd_node
 typedef struct s_env
 {
 	char			*var_name;
-	char 			*value;
+	char			*value;
 	struct s_env	*next;
 }	t_env;
 
@@ -205,6 +205,13 @@ void		free_tokens(t_token *head);
 ////////////////////////////////////////////////////////////////////////////////
 //								  PARSING									  //
 ////////////////////////////////////////////////////////////////////////////////
+typedef struct s_pars
+{
+	t_cmd_node	*head;
+	t_cmd_node	*tail;
+	int			err;
+}	t_pars;
+
 t_cmd_node	*parse(t_token *tokens, t_shell *sh);
 
 
