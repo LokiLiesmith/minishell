@@ -6,20 +6,11 @@
 /*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:23 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/13 01:12:10 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/14 23:53:07 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-#include "../built_ins/built_ins.h"
-#include "../built_ins/cd.c"
-#include "../built_ins/env.c"
-#include "../built_ins/export.c"
-#include "../built_ins/pwd.c"
-#include "../built_ins/echo.c"
-#include "../built_ins/unset.c"
-
-
 
 int	is_builtin(t_cmd *cmd)
 {
@@ -56,7 +47,7 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
 {
 	// save in out
 	if (cmd->redirs)
-		// save_redirs(cmd);
+		// handle_fds(cmd);
 	find_builtin(cmd, env);
 	// reset redirections
 	return (0);
