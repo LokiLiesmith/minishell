@@ -6,22 +6,19 @@
 /*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/13 01:11:20 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/15 03:45:57 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 // #include "../built_ins/built_ins.h"
 
-// - execution single builtin
-// - execution single builtin with redirections
+// - execution single builtin +
+// - execution single builtin with redirections -
 
-// - execution single external
-// - execution with pipes
-// - execution with redirections
-
-// "HOME" = 4; [0][1][2][3][4]
-// HOME=~/abcabc/abc
+// - execution single external +
+// - execution with pipes -
+// - execution with redirections -
 
 
 // EXECUTION_START (exec loop, runs till every command is executed) ->
@@ -30,109 +27,64 @@
 //	-----------------------------------------------------	----------------------------------------------------
 //	|						SINGLE BUILTIN				|	|				EXTERNAL CMD						|
 //	|			execute_single_builtin(cmd, env)		|	|		execute_child(path, cmd, env_array)			|
-//	|							||						|	|													|
-//	|		NO REDIR			||		REDIR			|	|													|
-//	|  find_builin(cmd, env);	||	handle_fds(TODO)	|	|													|
+//	|							||						|	|		redirect()									|
+//	|		NO REDIR			||		REDIR			|	|		handle_pipes()								|
+//	|  find_builin(cmd, env);	||	redirect(TODO)		|	|													|
 //	|							||						|	|													|
 //	|							||						|	|													|
 //	|													|	|													|
 //	-----------------------------------------------------	-----------------------------------------------------
 
 
-char	**env_to_array(t_env *env)
-{
-	char	**env_array;
-	char	*temp;
-	t_env	*current;
-	int		i;
-	size_t	env_len;
 
-	i = 0;
-	current = env;
-	env_len = 0;
-	while (current != NULL)
-	{
-		current = current->next;
-		env_len++;
-	}
-	env_array = malloc(sizeof(char *) * env_len);
-	// convert env table to a char* array to pass to execve
-	current = env;
-	while (current != NULL)
-	{
-		temp = ft_strjoin(env->type, "=");
-		env_array[i] = ft_strjoin(temp, env->value);
-		free(temp);
-		i++;
-		current = current->next;
-	}
-	env_array[i][0] = '\0';
-	return (env_array);
-}
+// ls | grep s	> test.txt	= "src" in test.txt
+// ls -> ... into pipe (pipe should be stdout for that child process)
+// pipe -> grep s -> stdout (after returning to the parent process, we restore stdout)
 
-// TODO
-void	handle_fds(t_cmd *cmd)
-{
-	int				in;
-	int				out;
-	t_redir_node	*redir_node;
-	
-	// CHECK RETURN OF OPEN()
-	redir_node = cmd->redirs;
-	if (redir_node->r.type == R_IN)
-	{
-		in = open("", O_RDONLY);
-		dup2(in, STDIN_FILENO);
-		// save in
-	}
-	if (redir_node->r.type == R_OUT)
-	{
-		out = open("", O_WRONLY | O_CREAT, 0777);
-		dup2(out, STDOUT_FILENO);
-		// save out
-	}
-	
-}
+
 
 // return on error
 static int	execute_cmd(t_cmd_node *node, t_cmd *cmd, t_env *env, pid_t *pid)
 {
+	int		pipe_fd[2];		// fd[0] - read; fd[1] - write
 	char	*path;
 	char	**env_array;
 	int		status;
 	pid_t	wpid;
 
-	// are there redirections ? save fds
-	*pid = fork();
-	path = find_path(cmd, env);
-	if (!path)
-	{
-		ft_putstr_fd("Command not found", 2);
-		return (1); // return value idk
-	}
+	// are there redirections ?
+	if (cmd->redirs)
+		redirect(cmd);
+
+	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
 	if (is_builtin(cmd) && node->next == NULL)
 		execute_single_builtin(cmd, env);
+
+	path = find_path(cmd, env);
+	if (!path)
+		return (ft_putstr_fd("Command not found", 2), 1);
 	env_array = env_to_array(env);
-	if (pid == 0) // return 0 = child process
+	if (!env)
+		return (ft_putstr_fd("env_array() error", 2), 1);
+
+	// PIPE before fork
+	if (pipe(pipe_fd) == -1)
+		return (perror("pipe() error"), 1);
+	// if (node->next)
+		// handle_pipe();
+
+	*pid = fork(); // fork returns twice; when fork, fds copy over
+	if (*pid < 0)
+		return (perror("fork() error"), 1);
+	else if (*pid == 0) // return 0 = child process
 	{
-		// if (cmd->redirs)
-			// handle_fds(cmd);
-		// set up pipes here
 		execute_child(path, cmd, env_array); // check return value
 	}
-	else if (pid > 0) // parent process
+	else if (*pid > 0) // parent process
 	{
 		wpid = waitpid(*pid, &status, 0); // wait for the child process
 		if (wpid == -1)
-		{
-			perror("waitpid() error");
-			return (1);
-		}
-	}
-	else
-	{
-		perror("fork() error");
-		return (1);
+			return (perror("waitpid() error"), 1);
 	}
 	return (0);
 }
@@ -143,16 +95,11 @@ int	execute_start(t_cmd_node *node, t_env *env)
 	t_cmd_node	*cmd;
 
 	cmd = node;
-	// check if theres more than one cmd
-	// check if builtin
-	// check if builtin with redirections
-	// fork, child process calls execve, parent wait for the child to finish
+	// chek pid for return values ?
+	while (cmd)
 	{
-		while (cmd)
-		{
-			if (execute_cmd(node, cmd->cmd, env, &pid))
-				return (1);
-		}
+		if (execute_cmd(node, cmd->cmd, env, &pid))
+			return (1);
 		cmd = cmd->next;
 	}
 	return (0);
