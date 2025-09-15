@@ -167,9 +167,8 @@ char		*extract_varname(char *str, int *i);
 bool		is_valid_var_start(char c);
 bool		is_var_char(char c);
 
-
 ////////////////////////////////////////////////////////////////////////////////
-//								  LEXER										  //
+// //								  LEXER										  //
 ////////////////////////////////////////////////////////////////////////////////
 
 ssize_t		scan_operator(const char *str, int i, t_token_type *type);
@@ -211,6 +210,12 @@ typedef struct s_pars
 	t_cmd_node	*tail;
 	int			err;
 }	t_pars;
+
+typedef struct s_strlist
+{
+	char				*str;
+	struct s_strlist	*next;
+}	t_strlist;
 
 t_cmd_node	*parse(t_token *tokens, t_shell *sh);
 
