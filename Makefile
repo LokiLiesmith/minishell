@@ -30,7 +30,7 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/expander/var_utils.c src/expander/expansion_fill.c \
 			src/split_field/split_and_splice.c src/split_field/split_utils.c \
 			src/main/shell_loop.c src/main/signals.c \
-			src/parser/parse.c
+			src/parser/parse.c src/parse_redirections.c
 
 # ========= Resolve chosen set =========
 SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
