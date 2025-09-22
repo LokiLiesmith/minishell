@@ -90,7 +90,8 @@ int	build_pipeline(char *line, t_shell *sh)
 
 static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
 {
-	(void)pipeline;//TODO build the damn thing;
+	// (void)pipeline;//TODO build the damn thing;
+	print_pipeline(pipeline);
 	printf("in t_shell:%d\n", sh->last_exit_code);
 	return (0);
 }
@@ -119,7 +120,7 @@ void	shell_loop(t_shell *sh)
 			}
 			sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
 			// free_pipeline(sh->pipeline);
-			sh->pipeline = NULL; //HANDOFF
+			sh->pipeline = NULL;
 			// sh->last_exit_code = execute_pipeline(sh); // deref in function?
 		}
 		free(line);

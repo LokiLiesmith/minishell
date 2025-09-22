@@ -87,6 +87,8 @@ void	free_arglist(t_strlist **list)
 // 	return (tokens);
 // }
 
+static void free_pipeline(t_cmd_node *head);
+
 
 static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 {
@@ -98,7 +100,7 @@ static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 	{
 		if (tokens->type == WORD)
 		{
-			handle_word_token(tokens, cmd, err, &arglist);
+			handle_word_token(tokens, err, &arglist);
 			if (*err)
 				return (NULL);
 			tokens = tokens->next; // advance after WORD
@@ -122,9 +124,6 @@ static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 	return (tokens);
 }
 
-
-
-
 t_builtin get_builtin_type(char *s)
 {
 	if (!s)
@@ -147,7 +146,7 @@ t_builtin get_builtin_type(char *s)
 }
 
 // gather all WORD tokens into a LL
-int	handle_word_token(t_token *token, t_cmd *cmd, int *err, t_strlist **arglist)
+int	handle_word_token(t_token *token, int *err, t_strlist **arglist)
 {
 	t_strlist	*new;
 	t_strlist	*current;
@@ -194,6 +193,7 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 		if (tokens && tokens->type == PIPE)
 			tokens = tokens->next;
 	}
+	printf("error code:%d\n", sh->last_exit_code);
 	return (p.head);
 }
 
@@ -205,4 +205,8 @@ void	print_syntax_error(const char *unexpected)
 		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
 }
 
-int 
+void	free_pipeline(t_cmd_node *head)
+{
+	(void)head;
+	printf("In free pipeline\n");
+}
