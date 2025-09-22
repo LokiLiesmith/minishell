@@ -24,6 +24,10 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+// forward declare missing readline prototype
+void rl_replace_line(const char *text, int clear_undo);
+
+
 //OUR LIBRARIES
 # include "../include/libft/libft.h"
 # include "../include/get_next_line/get_next_line.h"
@@ -95,6 +99,8 @@ typedef struct s_env
 	char			*value;
 	struct s_env	*next;
 }	t_env;
+
+typedef struct s_gc t_gc;
 
 typedef struct s_shell
 {
@@ -219,10 +225,14 @@ typedef struct s_strlist
 }	t_strlist;
 
 t_cmd_node	*parse(t_token *tokens, t_shell *sh);
-int			handle_word_token(t_token *token, t_cmd *cmd, int *err, t_strlist **arglist);
+int			handle_word_token(t_token *token, int *err, t_strlist **arglist);
 int			handle_redir_token(t_token **t, t_cmd *cmd, int *err);
 void		print_syntax_error(const char *unexpected);
 t_builtin	get_builtin_type(char *s);
+
+t_redir_type	map_token_to_redir(t_token_type t);
+void	append_redir(t_redir_node **head, t_redir_node *new);
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -242,18 +252,17 @@ typedef struct s_gc
 	struct s_gc	*next;
 }	t_gc;
 
-void	*gc_malloc(size_t size, t_scope scope);
+void	*gc_malloc(t_shell *sh, size_t size, t_scope scope);
 char	*gc_strdup(const char *s, t_scope scope);
 void	gc_add(void *ptr, t_scope scope);
 void	gc_free_scope(t_scope scope);
 void	gc_free_all();
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  TESTING									  //
 ////////////////////////////////////////////////////////////////////////////////
 void		print_tokens(t_token *head, int last_exit_code);
 void		print_env(t_env *env);
-
+void    	print_pipeline(const t_cmd_node *pipeline);
 
 #endif

@@ -1,3 +1,16 @@
+# ========= Detect OS and set Readline flags =========
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Darwin)     # macOS
+	READLINE_PATH := /usr/local/opt/readline
+	CFLAGS       += -I$(READLINE_PATH)/include
+	LDFLAGS      += -L$(READLINE_PATH)/lib -lreadline -lncurses
+else                         # assume Linux
+	CFLAGS       += $(shell pkg-config --cflags readline 2>/dev/null || echo "")
+	LDFLAGS      += $(shell pkg-config --libs readline 2>/dev/null || echo "-lreadline -lncurses")
+endif
+
+
 # ========= Config =========
 LIBFT_PATH := include/libft
 CC         := cc
@@ -30,7 +43,8 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/expander/var_utils.c src/expander/expansion_fill.c \
 			src/split_field/split_and_splice.c src/split_field/split_utils.c \
 			src/main/shell_loop.c src/main/signals.c \
-			src/parser/parse.c src/parse_redirections.c
+			src/parser/parse.c src/parser/parse_redirections.c \
+			src/main/print_pipeline.c
 
 # ========= Resolve chosen set =========
 SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
@@ -49,9 +63,14 @@ OBJ    := $(SELECTED_SRC:src/%.c=$(OBJDIR)/%.o)
 # ========= Main targets =========
 all: $(BINDIR)/$(NAME)
 
+# $(BINDIR)/$(NAME): $(OBJ) $(LIBFT_LIB) | $(BINDIR)
+# 	@$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_PATH) -lft -lreadline -o $@
+# 	@echo "Built $@"
+
 $(BINDIR)/$(NAME): $(OBJ) $(LIBFT_LIB) | $(BINDIR)
-	@$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_PATH) -lft -lreadline -o $@
+	@$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_PATH) -lft $(LDFLAGS) -o $@
 	@echo "Built $@"
+
 
 # ========= Libft =========
 $(LIBFT_LIB):

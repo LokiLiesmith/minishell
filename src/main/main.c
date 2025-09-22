@@ -67,7 +67,7 @@ int	main(int ac, char **av, char **envp)
 	sh.env = dup_env(envp);
 	sh.last_exit_code = 0;
 
-	// print_env(sh.env);
+	print_env(sh.env);
 	signal_setup();
 	shell_loop(&sh);	//TODO:
 	free_env(sh.env);
