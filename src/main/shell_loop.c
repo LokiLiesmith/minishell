@@ -118,7 +118,7 @@ void	shell_loop(t_shell *sh)
 				continue ;
 			}
 			sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
-			free_pipeline(sh->pipeline);
+			// free_pipeline(sh->pipeline);
 			sh->pipeline = NULL; //HANDOFF
 			// sh->last_exit_code = execute_pipeline(sh); // deref in function?
 		}

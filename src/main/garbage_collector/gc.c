@@ -20,3 +20,22 @@ void	gc_free_scope(t_scope scope);
 void	gc_free_all();
 
 
+void *gc_malloc(t_shell *sh, size_t size, t_scope scope)
+{
+	void	*ptr;
+	t_gc	*node;
+
+	ptr = malloc(size);
+	if (!ptr)
+		return(NULL);
+	node = malloc(sizeof(t_gc));
+	if(!node)
+	{
+		free (ptr);
+		return (NULL);
+	}
+	node->ptr = ptr;
+	node->scope = scope;
+	node->next = g_gc
+
+}

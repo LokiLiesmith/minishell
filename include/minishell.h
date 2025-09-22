@@ -101,6 +101,7 @@ typedef struct s_shell
 	t_env			*env;
 	int				last_exit_code;
 	t_cmd_node		*pipeline;
+	t_gc			*gc;
 }	t_shell;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +219,34 @@ typedef struct s_strlist
 }	t_strlist;
 
 t_cmd_node	*parse(t_token *tokens, t_shell *sh);
+int			handle_word_token(t_token *token, t_cmd *cmd, int *err, t_strlist **arglist);
+int			handle_redir_token(t_token **t, t_cmd *cmd, int *err);
+void		print_syntax_error(const char *unexpected);
+t_builtin	get_builtin_type(char *s);
 
+
+////////////////////////////////////////////////////////////////////////////////
+//								  GC_THINGS									  //
+////////////////////////////////////////////////////////////////////////////////
+// gc.c
+typedef enum e_scope
+{
+	GC_TEMP,
+	GC_GLOBAL
+}	t_scope;
+
+typedef struct s_gc
+{
+	void		*ptr;
+	t_scope		scope;
+	struct s_gc	*next;
+}	t_gc;
+
+void	*gc_malloc(size_t size, t_scope scope);
+char	*gc_strdup(const char *s, t_scope scope);
+void	gc_add(void *ptr, t_scope scope);
+void	gc_free_scope(t_scope scope);
+void	gc_free_all();
 
 
 ////////////////////////////////////////////////////////////////////////////////
