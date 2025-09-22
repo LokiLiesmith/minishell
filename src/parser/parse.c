@@ -58,6 +58,36 @@ void	free_arglist(t_strlist **list)
 // push WORDs into argv
 // handle redirs
 // set err = 1 and return NULL on syntax error
+// static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
+// {
+// 	t_strlist	*arglist;
+
+// 	arglist = NULL;
+// 	*err = 0;
+// 	while (tokens && tokens->type != PIPE)
+// 	{
+// 		if (tokens->type == WORD)
+// 			handle_word_token(tokens, cmd, err, &arglist);
+// 		else if (tokens->type == T_IN || tokens->type == T_OUT
+// 			|| tokens->type == T_APPEND || tokens->type == T_HEREDOC)
+// 			handle_redir_token(tokens, cmd, err);
+// 		else
+// 		{
+// 			print_syntax_error(tokens->raw);
+// 			*err = 1;
+// 			return (NULL);
+// 		}
+// 		if (*err)
+// 			return (NULL);
+// 		tokens = tokens->next;
+// 	}
+// 	cmd->argv = convert_arglist(&arglist);
+// 	free_arglist(&arglist);
+// 	cmd->builtin = get_builtin_type(cmd->argv[0]);
+// 	return (tokens);
+// }
+
+
 static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 {
 	t_strlist	*arglist;
@@ -67,25 +97,31 @@ static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 	while (tokens && tokens->type != PIPE)
 	{
 		if (tokens->type == WORD)
+		{
 			handle_word_token(tokens, cmd, err, &arglist);
+			if (*err)
+				return (NULL);
+			tokens = tokens->next; // advance after WORD
+			continue;
+		}
 		else if (tokens->type == T_IN || tokens->type == T_OUT
 			|| tokens->type == T_APPEND || tokens->type == T_HEREDOC)
-			handle_redir_token(tokens, cmd, err);
-		else
 		{
-			print_syntax_error(tokens->raw);
-			*err = 1;
-			return (NULL);
+			if (handle_redir_token(&tokens, cmd, err) < 0)
+				return (NULL);
+			// DO NOT advance here; handler already moved tokens by 2
+			continue;
 		}
-		if (*err)
-			return (NULL);
-		tokens = tokens->next;
+		print_syntax_error(tokens->raw);
+		*err = 1;
+		return (NULL);
 	}
-	cmd->argv = convert_arglist(&arglist);
+	cmd->argv = convert_arglist(arglist);  // arglist (not &arglist)
 	free_arglist(&arglist);
-	cmd->builtin = get_builtin_type(cmd->argv[0]);
+	cmd->builtin = get_builtin_type(cmd->argv ? cmd->argv[0] : NULL);
 	return (tokens);
 }
+
 
 
 

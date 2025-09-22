@@ -77,7 +77,7 @@ int	build_pipeline(char *line, t_shell *sh)
 		free_tokens(tokens);
 		return (-1);
 	}
-	sh->pipeline = parse(tokens, sh->last_exit_code);
+	sh->pipeline = parse(tokens, sh);
 	if (!sh->pipeline)
 	{
 		free_tokens(tokens);
@@ -114,9 +114,12 @@ void	shell_loop(t_shell *sh)
 			if (build_pipeline(line, sh) < 0)
 			{
 				sh->last_exit_code = 2;//syntax error TODO: figure out the error handling
+				free(line);
 				continue ;
 			}
-			sh->last_exit_code = execute_pipeline(sh->pipeline, sh); //HANDOFF
+			sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
+			free_pipeline(sh->pipeline);
+			sh->pipeline = NULL; //HANDOFF
 			// sh->last_exit_code = execute_pipeline(sh); // deref in function?
 		}
 		free(line);

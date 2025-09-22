@@ -26,11 +26,11 @@ int	handle_redir_token(t_token **t, t_cmd *cmd, int *err)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
 	new->r.target = ft_strdup((*t)->next->value);
-	// if (!new->r.target)
-	// {
-	// 	free(new);
-	// 	return (*err = 1, -1);
-	// }
+	if (!new->r.target)
+	{
+		free(new);
+		return (*err = 1, -1);
+	}
 	new->r.fd = set_fd(new->r.type);
 	new->next = NULL;
 	append_redir(&cmd->redirs, new);
