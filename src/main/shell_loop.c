@@ -96,34 +96,41 @@ static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
 	return (0);
 }
 
+static void	handle_exit(t_shell *sh)
+{
+	write(1, "Exit\n", 5);
+	gc_free_all(sh);
+	exit(sh->last_exit_code);
+}
+
+static void handle_command(char *line, t_shell *sh)
+{
+	add_history(line);
+	if (build_pipeline(line, sh) < 0)
+	{
+		sh->last_exit_code = 2;
+		gc_free_scope(sh, GC_TEMP);
+	}
+	else
+	{
+		sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
+		sh->pipeline = NULL;
+	}
+}
+
 void	shell_loop(t_shell *sh)
 {
 	char	*line;
-	// (void)sh;
 
 	while (420)
 	{
 		line = read_until_closed_quotes();
 		if (!line)
-		{
-			write(1, "Exit\n", 5);
-			exit(sh->last_exit_code);
-		}
+			handle_exit(sh);
 		if (*line)
-		{
-			add_history(line);
-			if (build_pipeline(line, sh) < 0)
-			{
-				sh->last_exit_code = 2;//syntax error TODO: figure out the error handling
-				free(line);
-				continue ;
-			}
-			sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
-			// free_pipeline(sh->pipeline);
-			sh->pipeline = NULL;
-			// sh->last_exit_code = execute_pipeline(sh); // deref in function?
-		}
+			handle_command(line, sh);
 		free(line);
+		gc_free_scope(sh, GC_TEMP);
 	}
 }
 
