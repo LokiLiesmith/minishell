@@ -14,10 +14,10 @@ typedef	struct s_gc
 }	t_gc;
 
 void	*gc_malloc(t_shell *sh, size_t size, t_scope scope);
-char	*gc_strdup(const char *s, t_scope scope);
-void	gc_add(void *ptr, t_scope scope);
-void	gc_free_scope(t_scope scope);
-void	gc_free_all();
+char	*gc_strdup(t_shell *sh, const char *s, t_scope scope);
+void	gc_add(t_shell *sh, void *ptr, t_scope scope);
+void	gc_free_scope(t_shell *sh, t_scope scope);
+void	gc_free_all(t_shell *sh);
 
 
 void *gc_malloc(t_shell *sh, size_t size, t_scope scope)
