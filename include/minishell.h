@@ -159,56 +159,54 @@ typedef struct s_exp
 	bool	in_exp;
 }	t_exp;
 
-int			expand_tokens(t_token **head, int last_exit_code);
-int			expansion_len(char *str, int last_exit_code);
+int		expand_tokens(t_token **head, int last_exit_code);
+int		expansion_len(char *str, int last_exit_code);
 
 // expansion_utils.c
-void		increment_counters(int *i, int *b);
-// int			calc_quotes(bool in_sq, bool in_dq);
-char		get_context(bool in_sq, bool in_dq, bool in_exp);
-void		update_quotes(char c, bool *in_sq, bool *in_dq);
-void		init_exp_struct(t_exp *exp);
+void	increment_counters(int *i, int *b);
+// int				calc_quotes(bool in_sq, bool in_dq);
+char	get_context(bool in_sq, bool in_dq, bool in_exp);
+void	update_quotes(char c, bool *in_sq, bool *in_dq);
+void	init_exp_struct(t_exp *exp);
 
 // var_utils.c
-int			get_error_len(int last_exit_code);
-int			varname_len(char *str);
-char		*extract_varname(char *str, int *i);
-bool		is_valid_var_start(char c);
-bool		is_var_char(char c);
+int		get_error_len(int last_exit_code);
+int		varname_len(char *str);
+char	*extract_varname(char *str, int *i);
+bool	is_valid_var_start(char c);
+bool	is_var_char(char c);
 
 ////////////////////////////////////////////////////////////////////////////////
-// //								  LEXER										  //
+// //							  LEXER										  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ssize_t		scan_operator(const char *str, int i, t_token_type *type);
-ssize_t		scan_word(const char *str, size_t i);
-t_token		*tokenize(char *str, bool *open_quotes);
-void		push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len);
-int			ft_is_space(int c);
-int			ft_is_operator(int c);
+ssize_t	scan_operator(const char *str, int i, t_token_type *type);
+ssize_t	scan_word(const char *str, size_t i);
+t_token	*tokenize(char *str, bool *open_quotes);
+void	push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len); //TODO NEED TO REFACTOR THIS CRAP 5 PARAMS
+int		ft_is_space(int c);
+int		ft_is_operator(int c);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								 MAIN 									  //
 ////////////////////////////////////////////////////////////////////////////////
 
-void		shell_loop(t_shell *sh);
-void		signal_setup(void);
-int			build_pipeline(char *line, t_shell *sh);
-
+void	shell_loop(t_shell *sh);
+void	signal_setup(void);
+int		build_pipeline(char *line, t_shell *sh);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  FIELD SPLIT								  //
 ////////////////////////////////////////////////////////////////////////////////
 
-int				ctx_split_to_list(t_token **t);
-void			splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
-int				ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
-int				fill_ctx_token(t_token *new, int i, int len, t_token *old);
-int				ctx_split_len(char *str, char *context, int i);
-void 			free_list(t_token *head);
-void 			free_token(t_token *t);
-void			free_tokens(t_token *head);
-
+int		ctx_split_to_list(t_token **t);
+void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
+int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
+int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
+int		ctx_split_len(char *str, char *context, int i);
+void	free_list(t_token *head);
+void	free_token(t_token *t);
+void	free_tokens(t_token *head);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  PARSING									  //
@@ -227,14 +225,12 @@ typedef struct s_strlist
 }	t_strlist;
 
 t_cmd_node		*parse(t_token *tokens, t_shell *sh);
-int				handle_word_token(t_token *token, int *err, t_strlist **arglist);
-int				handle_redir_token(t_token **t, t_cmd *cmd, int *err);
-void			print_syntax_error(const char *unexpected);
-t_builtin		get_builtin_type(char *s);
+int		handle_word_token(t_token *token, int *err, t_strlist **arglist);
+int		handle_redir_token(t_token **t, t_cmd *cmd, int *err);
+void	print_syntax_error(const char *unexpected);
+t_builtin	get_builtin_type(char *s);
 t_redir_type	map_token_to_redir(t_token_type t);
-void			append_redir(t_redir_node **head, t_redir_node *new);
-
-
+void	append_redir(t_redir_node **head, t_redir_node *new);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  GARBAGE COLLECTOR							  //
@@ -253,22 +249,24 @@ typedef struct s_gc
 	struct s_gc	*next;
 }	t_gc;
 
-void			*gc_malloc(t_shell *sh, size_t size, t_scope scope);
-char			*gc_strdup(t_shell *sh, const char *s, t_scope scope);
-t_gc			*gc_newnode(void *ptr, t_scope scope)
-void			gc_remove_node(t_shell *sh, t_gc *prev, t_gc *curr, t_gc *next);
-void			gc_add(t_shell *sh, void *ptr, t_scope scope);
+void	*gc_malloc(t_shell *sh, size_t size, t_scope scope);
+char	*gc_strdup(t_shell *sh, const char *s, t_scope scope);
+t_gc	*gc_newnode(void *ptr, t_scope scope);
+void	gc_remove_node(t_shell *sh, t_gc *prev, t_gc *curr, t_gc *next);
+void	gc_add(t_shell *sh, void *ptr, t_scope scope);
 
-void			gc_free_scope(t_shell *sh, t_scope scope);
-void			gc_free_all(t_shell *sh);
-void			gc_fatal(void);
+char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len);
+char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len);
 
+void	gc_free_scope(t_shell *sh, t_scope scope);
+void	gc_free_all(t_shell *sh);
+void	gc_fatal(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  TESTING									  //
 ////////////////////////////////////////////////////////////////////////////////
-void		print_tokens(t_token *head, int last_exit_code);
-void		print_env(t_env *env);
-void		print_pipeline(const t_cmd_node *pipeline);
+void	print_tokens(t_token *head, int last_exit_code);
+void	print_env(t_env *env);
+void	print_pipeline(const t_cmd_node *pipeline);
 
 #endif

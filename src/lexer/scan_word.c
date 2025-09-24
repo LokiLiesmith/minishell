@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int ft_is_operator(int c)
+int	ft_is_operator(int c)
 {
 	return (c == '<' || c == '>' || c == '|');
 }
@@ -36,7 +36,8 @@ ssize_t	scan_word(const char *str, size_t i)
 	{
 		if (!in_double_q && str[i] == '\'' && (i == 0 || str[i - 1] != '\\'))
 			in_single_q = !in_single_q;
-		else if (!in_single_q && str[i] == '"' && (i == 0 || str[i - 1] != '\\'))
+		else if (!in_single_q && str[i] == '"' && (i == 0 ||
+				str[i - 1] != '\\'))
 			in_double_q = !in_double_q;
 		else if (!in_single_q && !in_double_q)
 		{
@@ -47,5 +48,5 @@ ssize_t	scan_word(const char *str, size_t i)
 	}
 	if (in_single_q || in_double_q)
 		return (-1);
-	return (ssize_t)(i - start);
+	return ((ssize_t)(i - start));
 }
