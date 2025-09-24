@@ -48,6 +48,61 @@ char	*gc_strdup(t_shell *sh, const char *s, t_scope scope)
 	return (dup);
 }
 
+char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len)
+{
+	size_t	s_len;
+	char	*p;
+	t_scope	scope;
+
+	scope = GC_TEMP;
+	if (!s)
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+	{
+		p = gc_malloc(sh, 1, scope);
+		if (!p)
+			return (NULL);
+		p[0] = '\0';
+		return (p);
+	}
+	if (len > s_len - start)
+		len = s_len - start;
+	p = gc_malloc(sh, len + 1, scope);
+	if (!p)
+		return (NULL);
+	ft_memcpy(p, s + start, len);
+	p[len] = '\0';
+	return (p);
+}
+
+char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len)
+{
+	size_t	s_len;
+	char	*p;
+	t_scope	scope;
+
+	scope = GC_GLOBAL;
+	if (!s)
+		return (NULL);
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+	{
+		p = gc_malloc(sh, 1, scope);
+		if (!p)
+			return (NULL);
+		p[0] = '\0';
+		return (p);
+	}
+	if (len > s_len - start)
+		len = s_len - start;
+	p = gc_malloc(sh, len + 1, scope);
+	if (!p)
+		return (NULL);
+	ft_memcpy(p, s + start, len);
+	p[len] = '\0';
+	return (p);
+}
 
 int	main(int ac, char **av, char **envp)
 {

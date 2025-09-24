@@ -47,8 +47,8 @@ static t_env	*dup_env(char **envp)
 			new = malloc(sizeof(t_env));
 			if (!new)
 				return (NULL);
-			new->var_name = ft_substr(envp[i], 0, eq_position - envp[i]);
-			new->value = ft_strdup(eq_position + 1);
+			new->var_name = gc_substr_global(envp[i], 0, eq_position - envp[i]);
+			new->value = gc_strdup(eq_position + 1, GC_GLOBAL);
 			new->next = head;
 			head = new;
 		}

@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+//Add a pointer to the GC list
 void	gc_add(t_shell *sh, void *ptr, t_scope scope)
 {
 	t_gc	*node;
@@ -23,6 +24,7 @@ void	gc_remove_node(t_shell *sh, t_gc *prev, t_gc *curr, t_gc *next)
 	free(curr);
 }
 
+//Free based on scope - GC_GLOBAL, GC_TEMP
 void	gc_free_scope(t_shell *sh, t_scope scope)
 {
 	t_gc	*curr;
@@ -44,6 +46,7 @@ void	gc_free_scope(t_shell *sh, t_scope scope)
 	}
 }
 
+//GC free both scopes
 void	gc_free_all(t_shell *sh)
 {
 	t_gc	*curr;

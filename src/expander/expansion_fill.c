@@ -1,26 +1,46 @@
 #include "minishell.h"
 
-static int	expand_and_strip(t_token *t, int last_exit_code, int exp_len);
-static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit);
-static int	handle_var_expansion(t_token *t, char *str, t_exp *exp);
+static size_t	write_exit_code(char *dst, int last_exit_code)
+{
+	char	buffer[12];
+	long	num;
+	size_t	len;
+	size_t	i;
+	bool	neg;
 
-static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
+	num = last_exit_code;
+	neg = num < 0;
+	if (neg)
+		num = -num;
+	len = 0;
+	if (num == 0)
+		buffer[len++] = '0';
+	while (num > 0)
+	{
+		buffer[len++] = '0' + (num % 10);
+		num /= 10;
+	}
+	i = 0;
+	if (neg)
+		dst[i++] = '-';
+	while (len > 0)
+		dst[i++] = buffer[--len];
+	return (i);
+}
+
+static int	handle_var_expansion(t_shell *sh, t_token *t, char *str, t_exp *exp)
 {
 	char	*varname;
 	char	*temp;
-	int		k;
-		
+	size_t	k;
+
 	exp->i++;
-	varname = extract_varname(str, &exp->i);
+	varname = extract_varname(sh, str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = getenv(varname); //TODO: swap with own get_env_value(char *varname);
-	// printf("getenv result: %s\n", temp);
+	temp = getenv(varname); //TODO: swap with own get_env_value
 	if (!temp)
 		temp = "";
-	free(varname);
-
-	// copy var value into token_value
 	exp->in_exp = true;
 	k = 0;
 	while (temp[k])
@@ -31,36 +51,33 @@ static int	handle_var_expansion(t_token *t, char *str, t_exp *exp)
 	exp->in_exp = false;
 	return (0);
 }
-static void handle_char(t_token *t, char *str, t_exp *exp)
+
+static void	handle_char(t_token *t, char *str, t_exp *exp)
 {
 	t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
 	t->value[exp->j++] = str[exp->i++];
 }
 
-static void	handle_error(t_token *t, t_exp *exp, int last_exit_code)
+static void	handle_error(t_token *t, t_exp *exp, t_shell *sh)
 {
-	int		k;
-	char	*code;
-	code = ft_itoa(last_exit_code);
-	if (!code)
-		return ;
-	k = 0;
+	size_t	written;
+
 	exp->in_exp = true;
-	while (code[k])
+	written = write_exit_code(t->value + exp->j, sh->last_exit_code);
+	while (written--)
 	{
-		// t->context[exp->j] = get_context(exp->in_sq, exp->in_dq) + '0';
 		t->context[exp->j] = get_context(exp->in_sq, exp->in_dq, exp->in_exp);
-		t->value[exp->j++] = code[k++];
+		exp->j++;
 	}
 	exp->i += 2;
 	exp->in_exp = false;
-	free(code);
 }
 
 static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 {
-	char c = str[exp->i];
+	char	c;
 
+	c = str[exp->i];
 	if ((c == '\'' && !exp->in_dq) || (c == '"' && !exp->in_sq))
 	{
 		update_quotes(str[exp->i], &exp->in_sq, &exp->in_dq);
@@ -73,57 +90,59 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 	}
 }
 
-int expand_tokens(t_token **head, int last_exit_code)
+int	expand_tokens(t_shell *sh, t_token **head)
 {
-    int      exp_len;
-    t_token **link;
-    t_token  *curr;
+	int		exp_len;
+	t_token	**link;
+	t_token	*curr;
 
-    link = head;
-    while (*link)
-    {
-        curr = *link;
-        if (curr->type == WORD)
-        {
-            exp_len = expansion_len(curr->raw, last_exit_code);
-            if (exp_len < 0)
-                return (-1); // error in expansion length
-            if (expand_and_strip(curr, last_exit_code, exp_len) < 0)
-                return (-1);
-            if (ctx_split_to_list(link) < 0)
-                return (-1);
-            while (*link && (*link)->type == WORD && (*link)->was_expanded)
-                link = &(*link)->next;
-        }
-        else
-            link = &(*link)->next;
-    }
-    return (0);
+	link = head;
+	while (*link)
+	{
+		curr = *link;
+		if (curr->type == WORD)
+		{
+			exp_len = expansion_len(sh, curr->raw);
+			if (exp_len < 0)
+				return (-1);
+			if (expand_and_strip(sh, curr, exp_len) < 0)
+				return (-1);
+			if (ctx_split_to_list(sh, link) < 0)
+				return (-1);
+			while (*link && (*link)->type == WORD && (*link)->was_expanded)
+				link = &(*link)->next;
+		}
+		else
+			link = &(*link)->next;
+	}
+	return (0);
 }
-static int	handle_dollar(t_token *t, char *str, t_exp *exp, int last_exit_code)
+
+static int	handle_dollar(t_shell *sh, t_token *t, char *str, t_exp *exp)
 {
 	if (str[exp->i + 1] == '?')
 	{
-		handle_error(t, exp, last_exit_code);
+		handle_error(t, exp, sh);
 	}
 	else if (is_valid_var_start(str[exp->i + 1]))
 	{
-		handle_var_expansion(t, str, exp);
+		if (handle_var_expansion(sh, t, str, exp) < 0)
+			return (-1);
 	}
 	else
 		handle_char(t, str, exp);
-	return 0;
+	return (0);
 }
 
-static int	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
+static int	expand_and_strip(t_shell *sh, t_token *t, int exp_len)
 {
 	t_exp	exp;
 	char	*str;
 
-	t->value = ft_calloc(exp_len + 1, sizeof(char));
-	t->context = ft_calloc(exp_len + 1, sizeof(char));
+	t->value = gc_calloc(sh, exp_len + 1, sizeof(char), GC_TEMP);
+	t->context = gc_calloc(sh, exp_len + 1, sizeof(char), GC_TEMP);
 	if (!t->value || !t->context)
-		return (free(t->value), free(t->context), -1);//TODO: HANDLE ERROR - GC?
+		return (-1);
 	str = t->raw;
 	init_exp_struct(&exp);
 	while (str[exp.i])
@@ -132,7 +151,7 @@ static int	expand_and_strip(t_token *t, int last_exit_code, int exp_len)
 			handle_quote(t, str, &exp);
 		else if (!exp.in_sq && str[exp.i] == '$')
 		{
-			if (handle_dollar(t, str, &exp, last_exit_code) < 0)
+			if (handle_dollar(sh, t, str, &exp) < 0)
 				return (-1);
 		}
 		else
