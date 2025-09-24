@@ -15,40 +15,25 @@ void	print_env(t_env *env)
 
 ///////////////////////////////////////////////////////
 
-
-static void	free_env(t_env *env)
-{
-	t_env	*temp;
-
-	while (env)
-	{
-		temp = env->next;
-		free(env->var_name);
-		free(env->value);
-		free(env);
-		env = temp;
-	}
-}
-
-static t_env	*dup_env(char **envp)
+static t_env	*dup_env(t_shell *sh, char **envp)
 {
 	int		i;
 	t_env	*head;
 	t_env	*new;
-	char	*eq_position;
+	char	*eq_pos;
 
 	head = NULL;
 	i = 0;
 	while (envp[i])
 	{
-		eq_position = ft_strchr(envp[i], '=');
-		if (eq_position)
+		eq_pos = ft_strchr(envp[i], '=');
+		if (eq_pos)
 		{
 			new = malloc(sizeof(t_env));
 			if (!new)
 				return (NULL);
-			new->var_name = gc_substr_global(envp[i], 0, eq_position - envp[i]);
-			new->value = gc_strdup(eq_position + 1, GC_GLOBAL);
+			new->var_name = gc_substr_global(sh, envp[i], 0, eq_pos - envp[i]);
+			new->value = gc_strdup(sh, eq_pos + 1, GC_GLOBAL);
 			new->next = head;
 			head = new;
 		}
@@ -64,12 +49,13 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 
-	sh.env = dup_env(envp);
+	sh.env = dup_env(&sh, envp);
 	sh.last_exit_code = 0;
 
 	print_env(sh.env);
 	signal_setup();
 	shell_loop(&sh);	//TODO:
-	free_env(sh.env);
+	// free_env(sh.env);
+	gc_free_all(&sh);
 	return (0);
 }

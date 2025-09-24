@@ -12,9 +12,9 @@
 
 #include "minishell.h"
 
-// static void     handle_quote_len(const char *str, t_exp *exp);
-// static int      handle_dollar_len(t_shell *sh, char *str, t_exp *exp);
-// static int      handle_var_expansion_len(t_shell *sh, char *str, t_exp *exp);
+static void	handle_quote_len(const char *str, t_exp *exp);
+static int	handle_dollar_len(t_shell *sh, char *str, t_exp *exp);
+static int	handle_var_expansion_len(t_shell *sh, char *str, t_exp *exp);
 
 int	expansion_len(t_shell *sh, char *str)
 {

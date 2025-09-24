@@ -160,7 +160,7 @@ typedef struct s_exp
 }	t_exp;
 
 int		expand_tokens(t_token **head, int last_exit_code);
-int		expansion_len(char *str, int last_exit_code);
+int		expansion_len(t_shell *sh, char *str);
 
 // expansion_utils.c
 void	increment_counters(int *i, int *b);
