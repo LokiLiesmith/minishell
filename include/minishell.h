@@ -159,7 +159,7 @@ typedef struct s_exp
 	bool	in_exp;
 }	t_exp;
 
-int		expand_tokens(t_token **head, int last_exit_code);
+int		expand_tokens(t_shell *sh, t_token **head);
 int		expansion_len(t_shell *sh, char *str);
 
 // expansion_utils.c
@@ -172,7 +172,7 @@ void	init_exp_struct(t_exp *exp);
 // var_utils.c
 int		get_error_len(int last_exit_code);
 int		varname_len(char *str);
-char	*extract_varname(char *str, int *i);
+char	*extract_varname(t_shell *sh, char *str, int *i);
 bool	is_valid_var_start(char c);
 bool	is_var_char(char c);
 
@@ -199,7 +199,8 @@ int		build_pipeline(char *line, t_shell *sh);
 //								  FIELD SPLIT								  //
 ////////////////////////////////////////////////////////////////////////////////
 
-int		ctx_split_to_list(t_token **t);
+int		ctx_split_to_list(t_shell *sh, t_token **t);
+// int		ctx_split_to_list(t_token **t);
 void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
 int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
 int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
@@ -255,6 +256,7 @@ t_gc	*gc_newnode(void *ptr, t_scope scope);
 void	gc_remove_node(t_shell *sh, t_gc *prev, t_gc *curr, t_gc *next);
 void	gc_add(t_shell *sh, void *ptr, t_scope scope);
 
+void	*gc_calloc(t_shell *sh, size_t count, size_t size, t_scope scope);
 char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len);
 char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len);
 
