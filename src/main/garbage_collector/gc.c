@@ -104,6 +104,21 @@ char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len)
 	return (p);
 }
 
+void	*gc_calloc(t_shell *sh, size_t count, size_t size, t_scope scope)
+{
+	size_t	total;
+	void	*ptr;
+
+	if (size != 0 && count > SIZE_MAX / size)
+		return (NULL);
+	total = count * size;
+	ptr = gc_malloc(sh, total, scope);
+	if (!ptr)
+		return (NULL);
+	ft_bzero(ptr, total);
+	return (ptr);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	t_shell	sh;

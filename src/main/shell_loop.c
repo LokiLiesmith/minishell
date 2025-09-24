@@ -74,16 +74,17 @@ int	build_pipeline(char *line, t_shell *sh)
 		return (-1);
 	if (expand_tokens(&tokens, sh->last_exit_code) < 0)
 	{
-		free_tokens(tokens);
+		// free_tokens(tokens);
+		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
 	sh->pipeline = parse(tokens, sh);
 	if (!sh->pipeline)
 	{
-		free_tokens(tokens);
+		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
-	free_tokens(tokens);
+	// free_tokens(tokens);
 	return (0);
 }
 

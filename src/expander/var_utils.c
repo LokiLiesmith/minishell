@@ -26,7 +26,7 @@ int	varname_len(char *str)
 	return (k);
 }
 
-char	*extract_varname(char *str, int *i)
+char	*extract_varname(t_shell *sh, char *str, int *i)
 {
 	char	*varname;
 	int		len;
@@ -36,7 +36,7 @@ char	*extract_varname(char *str, int *i)
 	k = 0;
 	j = *i;
 	len = varname_len(str + *i);
-	varname = malloc(sizeof(char) * len + 1);
+	varname = gc_malloc(sh, (sizeof(char) * len + 1), GC_TEMP);
 	if (!varname)
 		return (NULL);
 	while (str[j] && is_var_char(str[j]))
