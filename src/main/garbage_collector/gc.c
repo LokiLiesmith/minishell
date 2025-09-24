@@ -1,67 +1,64 @@
 #include "minishell.h"
 
-typedef enum e_scope
+//exit on fatal error, allocation failed --> no sh struct
+void	gc_fatal(void)
 {
-	GC_TEMP,
-	GC_GLOBAL
-}	t_scope;
+	write(STDERR_FILENO, "fatal error\n", 12);
+	exit(EXIT_FAILURE);
+}
 
-typedef	struct s_gc
-{
-	void		*ptr;
-	t_scope		scope;
-	struct s_gc	*next;
-}	t_gc;
-
-void	*gc_malloc(t_shell *sh, size_t size, t_scope scope);
-char	*gc_strdup(t_shell *sh, const char *s, t_scope scope);
-void	gc_add(t_shell *sh, void *ptr, t_scope scope);
-void	gc_free_scope(t_shell *sh, t_scope scope);
-void	gc_free_all(t_shell *sh);
-
-
-static t_gc *gc_newnode(void *ptr, t_scope scope)
+t_gc	*gc_newnode(void *ptr, t_scope scope)
 {
 	t_gc	*node;
 
 	node = malloc(sizeof(t_gc));
 	if (!node)
-		return (NULL);
+		gc_fatal();
 	node->ptr = ptr;
 	node->scope = scope;
 	node->next = NULL;
 	return (node);
 }
 
-void *gc_malloc(t_shell *sh, size_t size, t_scope scope)
+void	*gc_malloc(t_shell *sh, size_t size, t_scope scope)
 {
 	void	*ptr;
-	t_gc	*node;
 
+	if (!sh)
+		gc_fatal();
+	if (size == 0)
+		size = 1;
 	ptr = malloc(size);
 	if (!ptr)
-		return (NULL);
-	node = gc_newnode(ptr, scope);
-	if(!node)
-	{
-		free (ptr);
-		return (NULL);
-	}
-	node->next = sh->gc;
+		gc_fatal();
+	gc_add(sh, ptr, scope);
+	return (ptr);
+}
 
+char	*gc_strdup(t_shell *sh, const char *s, t_scope scope)
+{
+	size_t	len;
+	char	*dup;
+
+	if (!s)
+		return (NULL);
+	len = ft_strlen(s) + 1;
+	dup = gc_malloc(sh, len, scope);
+	ft_memcpy(dup, s, len);
+	return (dup);
 }
 
 
-
-
-int	main (int ac, char **av, char **envp)
+int	main(int ac, char **av, char **envp)
 {
-	t_shell sh;
+	t_shell	sh;
+
 	sh.env = dup_env(envp);
 	sh.last_exit_code = 0;
-	
+
 	signal_setup();
 	shell_loop(&sh);
 
 	return (0);
 }
+
