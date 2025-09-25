@@ -36,10 +36,7 @@
 // forward declare missing readline prototype
 void	rl_replace_line(const char *text, int clear_undo);
 
-
-
-
-extern int	g_signal;
+volatile sig_atomic_t g_exit_status;
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  MAIN STRUCT / ENUMS						  //

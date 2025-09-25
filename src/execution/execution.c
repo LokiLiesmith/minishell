@@ -52,8 +52,8 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 	char		**env_array;
 
 	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
-	// if (is_builtin(cmd->cmd) && cmd->next == NULL)
-		// return (execute_single_builtin(cmd->cmd, env));
+	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
+		return (execute_single_builtin(cmd_node->cmd, env));
 
 	path = find_path(cmd_node->cmd, env);
 	if (!path)

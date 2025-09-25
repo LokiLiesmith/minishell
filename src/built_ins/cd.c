@@ -44,6 +44,7 @@ int	builtin_cd(t_cmd *cmd, t_env *env)
 	
 	old_dir = getcwd(NULL, 0);
 	current_dir = cmd->argv[1]; // argv[0] = "cd"
+	// TILDA HANDLING AAAAAAAAAAA
 	if (chdir(current_dir) != 0)
 	{
 		perror("chdir() failed");

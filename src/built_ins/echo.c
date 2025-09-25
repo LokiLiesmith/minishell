@@ -28,7 +28,7 @@ int	builtin_echo(t_cmd *cmd)
 	}
 	// if no -n, write newline
 	if (ft_strncmp("-n", cmd->argv[1], 3) != 0)
-		write(cmd->redirs->r.fd, "\n", 1);
+		ft_putstr_fd("\n", 1);
 	return (0);
 }
 
