@@ -36,8 +36,8 @@ void print_tokens(t_token *head, int last_exit_code)
 
 static char	*append_line(char *input, char *line)
 {
-	char *tmp;
-	char *joined;
+	char	*tmp;
+	char	*joined;
 
 	tmp = ft_strjoin(input, "\n");
 	free(input);

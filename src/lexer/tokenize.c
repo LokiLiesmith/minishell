@@ -39,7 +39,7 @@ void	token_append(t_token **head, t_token **tail, t_token *new)
 {
 	if (!new)
 		return ;
-	if (*head == NULL)
+	if (!*head)
 	{
 		*head = new;
 		*tail = new;

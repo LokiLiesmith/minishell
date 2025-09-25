@@ -1,16 +1,16 @@
 #include "minishell.h"
 
-static int ft_is_delim(char c)
+static int	ft_is_delim(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
 int	ctx_split_len(char *str, char *context, int i)
 {
-	int len;
-	
+	int	len;
+
 	len = 0;
-	while(str[i])
+	while (str[i])
 	{
 		if ((context[i] == '0' || context[i] == 'e') && (ft_is_delim(str[i])))
 			return (len);
