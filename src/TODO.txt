@@ -5,55 +5,33 @@ but not the main shell.
 var_name: SHLVL
 value: 1
 
-env->var_name: SHLVL
-env->value++;
-
 -do we use export?
 
+[ ] handle signals for subshells
+[ ]	update SHLVL variable from the env
+				 	env->var_name: SHLVL
+					env->value++;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
 HEREDOC PREP after the pipeline is built, then check for heredoc node and handle
-////////////////////////////////////////////////////////////////////////////////////////
-PARSING:
 
-	WORD TYPE
-	-first token is a command
-	-if WORD token then set command, check against builtins. 
-	-else add to argv
 
-	REDIRECTION TYPE
-	-next token has to be target
 
-	PIPE
-	-finish command
-	-start new one
 
-	go until node.next->null
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ERROR handling
-	-syntaxx ERROR (unmatched operator, nothing after a |)
-	-allocation error
-	-parsing stuff??
+	[x] syntaxx ERROR (unmatched operator, nothing after a |)
+	[x] allocation error
+	[ ] RECHECK
 
-	on syntax error:
-		-print msg
-		-set $? to 2; convention for syntax
-		-return to prompt
-	
-	If malloc fails  print: fatal error and exit(1).
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-ADD SHELL STRUCT IN MAIN
-
- -t_env *env
- -int last_exit_code
-
-////////////////////////////////////////////////////////////////////////////////////////
+				on syntax error:
+					-print msg
+					-set $? to 2; convention for syntax
+					-return to prompt
+				
+				If malloc fails  print: fatal error and exit(1).
 
 ////////////////////////////////////////////////////////////////////////////////////////
