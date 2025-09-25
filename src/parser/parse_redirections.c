@@ -21,7 +21,7 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 		*err = 1;
 		return (-1);
 	}
-	new = gc_malloc(sh, sizeof(t_redir_node, GC_TEMP));
+	new = gc_malloc(sh, sizeof(t_redir_node), GC_TEMP);
 	if (!new)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
