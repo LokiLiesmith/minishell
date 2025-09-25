@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/25 18:58:53 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/25 21:55:09 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 // #include "../built_ins/built_ins.h"
 
 // - execution single builtin +
-// - execution single builtin with redirections -
+// - execution single builtin with redirections +
 
 // - execution single external +
 // - execution with pipes -
@@ -51,9 +51,9 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 	char		*path;
 	char		**env_array;
 
-	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
-	// if (is_builtin(cmd->cmd) && cmd->next == NULL)
-		// return (execute_single_builtin(cmd->cmd, env));
+	// SINGLE BUILTIN - NO PIPES.
+	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
+		return (execute_single_builtin(cmd_node->cmd, env));
 
 	path = find_path(cmd_node->cmd, env);
 	if (!path)
@@ -65,14 +65,12 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 	// PIPE before fork
 	if (cmd_node->next && pipe(pipe_fd) == -1)
 		return (perror("pipe() error"), 1);
-
-	*pid = fork(); // fork returns twice; when fork, fds copy over
+	*pid = fork();
 	if (*pid < 0)
 		return (perror("fork() error"), 1);
-	else if (*pid == 0) // return 0 = child process
+	else if (*pid == 0)
 	{
-		if (cmd_node->next)
-			handle_pipe_child(cmd_node, pipe_fd, prev_fd);
+		handle_pipe_child(cmd_node, pipe_fd, prev_fd);
 		execute_child(path, cmd_node->cmd, env_array);
 	}
 	else
