@@ -264,8 +264,8 @@ void	gc_remove_node(t_shell *sh, t_gc *prev, t_gc *curr, t_gc *next);
 void	gc_add(t_shell *sh, void *ptr, t_scope scope);
 
 void	*gc_calloc(t_shell *sh, size_t count, size_t size, t_scope scope);
-char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len);
-char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len);
+char	*gc_substr_temp(t_shell *sh, const char *s, int start, int len);
+char	*gc_substr_global(t_shell *sh, const char *s, int start, int len);
 
 void	gc_free_scope(t_shell *sh, t_scope scope);
 void	gc_free_all(t_shell *sh);
