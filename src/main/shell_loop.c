@@ -95,6 +95,7 @@ static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
 	// (void)pipeline;//TODO build the damn thing;
 	print_pipeline(pipeline);
 	printf("in t_shell:%d\n", sh->last_exit_code);
+	printf("HANDOFF SUCCESSFUL!\n");
 	return (0);
 }
 
