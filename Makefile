@@ -14,7 +14,7 @@ endif
 # ========= Config =========
 LIBFT_PATH := include/libft
 CC         := cc
-CFLAGS     := -Wall -Wextra -Werror -I include
+CFLAGS     := -Wall -Wextra -Werror -I include -g -fsanitize=address
 LIBFT_LIB  := $(LIBFT_PATH)/libft.a
 
 # pick which test to build: make T=parser (defaults ot minishell)
@@ -28,13 +28,11 @@ UC_T := $(shell echo $(T) | tr '[:lower:]' '[:upper:]')
 
 # ========= Sources per target =========
 # add more SRC DIRECTORIES etc.)
-SRC_MINISHELL 	:= src/main/main.c
-SRC_PARSER    	:= src/parser/parser_test.c
-SRC_LEXER	 	:= src/lexer/lexer_test.c src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize.c
-SRC_BUILT_INS	:= src/built_ins/built_ins_test.c
-# SRC_EXPANDER 	:= src/expander/expander_test.c src/expander/expansion_len.c src/expander/expansion_utils_1.c \
-				src/expander/var_utils.c src/expander/expansion_fill.c
-# SRC_SPLIT		:= src/split_field/split_field_test.c src/split_field/split_and_splice.c src/split_field/split_utils.c
+SRC_MINISHELL := src/main/main_test.c
+SRC_PARSER    := src/parser/parser_test.c
+SRC_LEXER	  := src/lexer/lexer_test.c
+SRC_BUILT_INS := src/built_ins/built_ins_test.c
+
 
 
 # common sources (if any) go here, e.g. tokenizer, utils, …
@@ -60,7 +58,7 @@ SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
 
 #error if T doesn't match any SRC_*
 ifeq ($(strip $(SELECTED_SRC)),)
-$(error Unknown T='$(T)'. Valid options: minishell parser input built_ins)
+$(error Unknown T='$(T)'. Valid options: minishell parser input built_ins execution)
 endif
 
 # ========= Output/layout =========
@@ -128,6 +126,6 @@ san: clean all
 # ***********			2.	UPDATE PHONY 		 ********************
 # *******************************************************************
 
-.PHONY: all minishell parser built_ins lexer run valgrind debug clean expander split fclean re san
-minishell parser built_ins lexer expander split:
+.PHONY: all minishell parser built_ins lexer run valgrind debug clean fclean re san
+minishell parser built_ins lexer:
 	@$(MAKE) T=$@ $(BINDIR)/$@

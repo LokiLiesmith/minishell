@@ -4,15 +4,18 @@
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
 /*   Updated: 2025/09/09 01:55:37 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/25 18:53:29 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdbool.h>
@@ -25,9 +28,11 @@
 # include <readline/history.h>
 
 //OUR LIBRARIES
-# include "../include/libft/libft.h"
-# include "../include/get_next_line/get_next_line.h"
+# include "libft/libft.h"
+# include "get_next_line/get_next_line.h"
 
+#define TRUE	1
+#define FALSE	0
 // forward declare missing readline prototype
 void	rl_replace_line(const char *text, int clear_undo);
 
@@ -45,7 +50,7 @@ typedef enum e_builtin
 {
 	NONE,
 	ECHO,
-	CD,
+	CD,	
 	PWD,
 	EXPORT,
 	UNSET,
@@ -65,6 +70,26 @@ typedef enum e_redir_type
 ////////////////////////////////////////////////////////////////////////////////
 //								STRUCTS / LINKED LISTS						  //
 ////////////////////////////////////////////////////////////////////////////////
+
+typedef struct s_env
+{
+	char			*type;
+	char 			*value;
+	struct s_env	*next;
+}	t_env;
+
+typedef struct s_gc_node
+{
+	void				*garbage;
+	struct s_gc_node	*next;
+}	t_gc_node;
+
+typedef struct s_gc
+{
+	t_gc_node	*head;
+	t_gc_node	*tail;
+	// size_t		size;
+}	t_gc;
 
 typedef struct s_redir
 {
@@ -91,7 +116,7 @@ typedef struct s_cmd
 // Command LinkedList (cmd node pointing to the next one, ends with NULL, thats also when we are done?)
 typedef struct s_cmd_node
 {
-	t_cmd				cmd;
+	t_cmd				*cmd;
 	struct s_cmd_node	*next;
 }	t_cmd_node;
 
@@ -190,6 +215,23 @@ int		ft_is_space(int c);
 int		ft_is_operator(int c);
 
 ////////////////////////////////////////////////////////////////////////////////
+//								 EXECUTION 									  //
+////////////////////////////////////////////////////////////////////////////////
+int		execute_start(t_cmd_node *node, t_env *env);
+int		is_builtin(t_cmd *cmd);
+int		execute_single_builtin(t_cmd *cmd, t_env *env);
+void	execute_child(char *path, t_cmd *cmd, char **env_array);
+
+char	*find_path(t_cmd *cmd, t_env *env);
+char	**env_to_array(t_env *env);
+int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
+int		handle_redirections(t_cmd *cmd);
+int		wait_for_children(pid_t last_child);
+
+
+// void	save_redirs(t_cmd *cmd);
+
+////////////////////////////////////////////////////////////////////////////////
 //								 MAIN 									  //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -278,5 +320,19 @@ void	gc_fatal(void);
 void	print_tokens(t_token *head, int last_exit_code);
 void	print_env(t_env *env);
 void	print_pipeline(const t_cmd_node *pipeline);
+
+int		builtin_cd(t_cmd *cmd, t_env *env);
+int		builtin_echo(t_cmd *cmd);
+int		builtin_env(t_cmd *cmd, t_env *env);
+int		builtin_export(t_cmd *cmd, t_env *env);
+int		builtin_pwd(void);
+int		builtin_unset(t_cmd *cmd, t_env *env);
+
+
+////////////////////////////////////////////////////////////////////////////////
+//										GC									  //
+////////////////////////////////////////////////////////////////////////////////
+// void	*gc_malloc(t_gc_node **head, size_t size);
+// void	gc_free_all(t_gc_node **head);
 
 #endif
