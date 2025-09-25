@@ -72,6 +72,10 @@ t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err)
 
 	arglst = NULL;
 	*err = 0;
+	if (!tokens)
+		return (report_parse_error(NULL, err));
+	if (tokens->type == PIPE)
+		return (report_parse_error(tokens, err));
 	while (tokens && tokens->type != PIPE)
 	{
 		if (tokens->type == WORD)
@@ -159,7 +163,14 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 			p.tail->next = new;
 		p.tail = new;
 		if (tokens && tokens->type == PIPE)
+		{
+			if (!tokens->next)
+			{
+				report_parse_error(NULL, &p.err);
+				return (NULL);
+			}
 			tokens = tokens->next;
+		}
 	}
 	return (p.head);
 }
