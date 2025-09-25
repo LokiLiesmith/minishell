@@ -183,7 +183,9 @@ bool	is_var_char(char c);
 ssize_t	scan_operator(const char *str, int i, t_token_type *type);
 ssize_t	scan_word(const char *str, size_t i);
 t_token	*tokenize(char *str, bool *open_quotes);
-void	push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len); //TODO NEED TO REFACTOR THIS CRAP 5 PARAMS
+// void	push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len); //TODO NEED TO REFACTOR THIS CRAP 5 PARAMS
+t_token	*token_create(t_shell *sh, t_token_type type, char *start, int len);
+void	token_append(t_token **head, t_token **tail, t_token *new);
 int		ft_is_space(int c);
 int		ft_is_operator(int c);
 
