@@ -25,7 +25,7 @@ t_token	*token_create(t_shell *sh, t_token_type type, char *start, int len)
 
 	new = gc_malloc(sh, sizeof(t_token), GC_TEMP);
 	new->type = type;
-	new->raw = malloc(sh, (sizeof(char) * len + 1), GC_TEMP);
+	new->raw = gc_malloc(sh, (sizeof(char) * len + 1), GC_TEMP);
 	ft_memcpy(new->raw, start, len);
 	new->raw[len] = '\0';
 	new->value = NULL;
@@ -39,7 +39,7 @@ void	token_append(t_token **head, t_token **tail, t_token *new)
 {
 	if (!new)
 		return ;
-	if (head == NULL)
+	if (*head == NULL)
 	{
 		*head = new;
 		*tail = new;
@@ -60,7 +60,7 @@ static void	init_lexer(t_lexer *lex)
 	lex->tail = NULL;
 }
 
-static int	handle_operator(t_lexer *lex, char *str)
+static int	handle_operator(t_shell *sh, t_lexer *lex, char *str)
 {
 	t_token	*new;
 
@@ -74,7 +74,7 @@ static int	handle_operator(t_lexer *lex, char *str)
 }
 
 //word handler (if scan_word < 0; => open quotes)
-static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
+static int	handle_word(t_shell *sh, t_lexer *lex, char *str, bool *open_quotes)
 {
 	t_token	*new;
 
@@ -91,25 +91,7 @@ static int	handle_word(t_lexer *lex, char *str, bool *open_quotes)
 	return (1);
 }
 
-// void free_tokens(t_token *token)
-// {
-// 	t_token *temp;
-	
-// 	while (token)
-// 	{
-// 		temp = token->next;
-// 		if (token->value)
-// 			free(token->value);
-// 		if (token->raw)
-// 			free(token->raw);
-// 		if (token->context)
-// 			free(token->context);
-// 		free(token);
-// 		token = temp;
-// 	}
-// }
-
-t_token *tokenize(char *str, bool *open_quotes)
+t_token *tokenize(t_shell *sh, char *str, bool *open_quotes)
 {
 	t_lexer	lex;
 
@@ -120,9 +102,9 @@ t_token *tokenize(char *str, bool *open_quotes)
 	{
 		while (ft_is_space(str[lex.i]))
 			lex.i++;
-		if (handle_operator(&lex, str))
+		if (handle_operator(sh, &lex, str))
 			continue ;
-		if (!handle_word(&lex, str, open_quotes))
+		if (!handle_word(sh, &lex, str, open_quotes))
 			return (NULL);
 	}
 	return (lex.head);
