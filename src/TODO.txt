@@ -2,14 +2,14 @@
 SIGNALS - SUBSHELL - ENV VARIABLE UPDATE?
 -when you run shell inside shell, it should keep track of the level its in so the signals allow to kill subshells
 but not the main shell.
-var_name: SHLVL
+type: SHLVL
 value: 1
 
 -do we use export?
 
 [ ] handle signals for subshells
 [ ]	update SHLVL variable from the env
-				 	env->var_name: SHLVL
+				 	env->type: SHLVL
 					env->value++;
 
 

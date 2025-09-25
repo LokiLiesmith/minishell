@@ -78,19 +78,6 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-typedef struct s_gc_node
-{
-	void				*garbage;
-	struct s_gc_node	*next;
-}	t_gc_node;
-
-typedef struct s_gc
-{
-	t_gc_node	*head;
-	t_gc_node	*tail;
-	// size_t		size;
-}	t_gc;
-
 typedef struct s_redir
 {
 	t_redir_type		type;		//IN, OUT, APPEND, HEREDOC
@@ -120,12 +107,12 @@ typedef struct s_cmd_node
 	struct s_cmd_node	*next;
 }	t_cmd_node;
 
-typedef struct s_env
-{
-	char			*var_name;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
+// typedef struct s_env
+// {
+// 	char			*type;
+// 	char			*value;
+// 	struct s_env	*next;
+// }	t_env;
 
 typedef struct	s_gc t_gc;
 
@@ -217,7 +204,7 @@ int		ft_is_operator(int c);
 ////////////////////////////////////////////////////////////////////////////////
 //								 EXECUTION 									  //
 ////////////////////////////////////////////////////////////////////////////////
-int		execute_start(t_cmd_node *node, t_env *env);
+int		execute_start(t_cmd_node *node, t_shell *sh);
 int		is_builtin(t_cmd *cmd);
 int		execute_single_builtin(t_cmd *cmd, t_env *env);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
@@ -327,12 +314,5 @@ int		builtin_env(t_cmd *cmd, t_env *env);
 int		builtin_export(t_cmd *cmd, t_env *env);
 int		builtin_pwd(void);
 int		builtin_unset(t_cmd *cmd, t_env *env);
-
-
-////////////////////////////////////////////////////////////////////////////////
-//										GC									  //
-////////////////////////////////////////////////////////////////////////////////
-// void	*gc_malloc(t_gc_node **head, size_t size);
-// void	gc_free_all(t_gc_node **head);
 
 #endif

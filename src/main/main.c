@@ -7,7 +7,7 @@ void	print_env(t_env *env)
 {
 	while (env)
 	{
-		printf("var_name: %s\n", env->var_name);
+		printf("type: %s\n", env->type);
 		printf("value: %s\n", env->value);
 		env = env->next;
 	}
@@ -30,7 +30,7 @@ static t_env	*dup_env(t_shell *sh, char **envp)
 		if (eq_pos)
 		{
 			new = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);
-			new->var_name = gc_substr_global(sh, envp[i], 0, eq_pos - envp[i]);
+			new->type = gc_substr_global(sh, envp[i], 0, eq_pos - envp[i]);
 			new->value = gc_strdup(sh, eq_pos + 1, GC_GLOBAL);
 			new->next = head;
 			head = new;
