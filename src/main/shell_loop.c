@@ -1,27 +1,5 @@
 #include "minishell.h"
 
-// void	print_tokens(t_token *head, int last_exit_code)
-// {
-// 	t_token	*current;
-// 	int		i;
-
-// 	(void)last_exit_code;
-
-// 	i = 0;
-// 	current = head;
-// 	while (current)
-// 	{
-// 		printf("Token: %d\n", i);
-// 		printf("Raw: %s\n", current->raw);
-// 		printf("Value: %s\n", current->value);
-// 		printf("Context: %s\n", current->context);
-// 		printf("Type: %d\n", current->type);
-// 		printf("----------------------\n");
-// 		current = current->next;
-// 		i++;
-// 	}
-// }
-
 static char	*append_line(char *input, char *line)
 {
 	char	*tmp;
