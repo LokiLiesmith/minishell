@@ -14,7 +14,7 @@ void	init_parser(t_pars *p)
 	p->err = 0;
 }
 
-static char	**convert_arglist(t_strlist *list)
+static char	**convert_arglist(t_shell *sh, t_strlist *list)
 {
 	int			count;
 	t_strlist	*tmp;
@@ -28,69 +28,21 @@ static char	**convert_arglist(t_strlist *list)
 		count ++;
 		tmp = tmp->next;
 	}
-	argv = malloc(sizeof(char *) * (count + 1));
+	argv = gc_malloc(sh, (sizeof(char *) * (count + 1), GC_TEMP));
 	if (!argv)
 		return (NULL);
 	tmp = list;
 	i = 0;
 	while (i < count)
 	{
-		argv[i++] = tmp->str;
+		argv[i++] = tmp->str;//reusing string
 		tmp = tmp->next;
 	}
 	argv[count] = NULL;
 	return (argv);
 }
 
-void	free_arglist(t_strlist **list)
-{
-	t_strlist	*tmp;
-
-	while (*list)
-	{
-		tmp = *list;
-		*list = (*list)->next;
-		free(tmp);
-	}
-}
-
-// loop tru, stop at pipe or NULL
-// push WORDs into argv
-// handle redirs
-// set err = 1 and return NULL on syntax error
-// static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
-// {
-// 	t_strlist	*arglist;
-
-// 	arglist = NULL;
-// 	*err = 0;
-// 	while (tokens && tokens->type != PIPE)
-// 	{
-// 		if (tokens->type == WORD)
-// 			handle_word_token(tokens, cmd, err, &arglist);
-// 		else if (tokens->type == T_IN || tokens->type == T_OUT
-// 			|| tokens->type == T_APPEND || tokens->type == T_HEREDOC)
-// 			handle_redir_token(tokens, cmd, err);
-// 		else
-// 		{
-// 			print_syntax_error(tokens->raw);
-// 			*err = 1;
-// 			return (NULL);
-// 		}
-// 		if (*err)
-// 			return (NULL);
-// 		tokens = tokens->next;
-// 	}
-// 	cmd->argv = convert_arglist(&arglist);
-// 	free_arglist(&arglist);
-// 	cmd->builtin = get_builtin_type(cmd->argv[0]);
-// 	return (tokens);
-// }
-
-static void free_pipeline(t_cmd_node *head);
-
-
-static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
+t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err)
 {
 	t_strlist	*arglist;
 
@@ -100,29 +52,27 @@ static t_token	*parse_command(t_token *tokens, t_cmd *cmd, int *err)
 	{
 		if (tokens->type == WORD)
 		{
-			handle_word_token(tokens, err, &arglist);
-			if (*err)
+			if (handle_word_tkn(sh, tokens, err, &arglist) < 0)
 				return (NULL);
 			tokens = tokens->next; // advance after WORD
-			continue;
+			continue ;
 		}
 		else if (tokens->type == T_IN || tokens->type == T_OUT
 			|| tokens->type == T_APPEND || tokens->type == T_HEREDOC)
 		{
 			if (handle_redir_token(&tokens, cmd, err) < 0)
 				return (NULL);
-			// DO NOT advance here; handler already moved tokens by 2
-			continue;
+			continue ;
 		}
 		print_syntax_error(tokens->raw);
 		*err = 1;
 		return (NULL);
 	}
-	cmd->argv = convert_arglist(arglist);  // arglist (not &arglist)
-	free_arglist(&arglist);
+	cmd->argv = convert_arglist(sh, arglist);  // arglist (not &arglist)
 	cmd->builtin = get_builtin_type(cmd->argv ? cmd->argv[0] : NULL);
 	return (tokens);
 }
+
 
 t_builtin get_builtin_type(char *s)
 {
@@ -146,17 +96,15 @@ t_builtin get_builtin_type(char *s)
 }
 
 // gather all WORD tokens into a LL
-int	handle_word_token(t_token *token, int *err, t_strlist **arglist)
+int	handle_word_tkn(t_shell *sh, t_token *t, int *err, t_strlist **arglist)
 {
 	t_strlist	*new;
 	t_strlist	*current;
 
-	new = malloc(sizeof(t_strlist));
-	if (!new)
+	new = gc_malloc(sh, sizeof(t_strlist), GC_TEMP);
+	if (!new || !t->value)
 		return (*err = 1, -1);
-	new->str = ft_strdup(token->value);
-	if (!new->str)
-		return (free(new), *err = 1, -1);
+	new->str = t->value;
 	new->next = NULL;
 	if (!*arglist)
 		*arglist = new;
@@ -178,13 +126,13 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 	init_parser(&p);
 	while (tokens)
 	{
-		new = malloc(sizeof(t_cmd_node));
-		if (!new)
-			return (free_pipeline(p.head), NULL);
+		new = gc_malloc(sh, sizeof(t_cmd_node), GC_TEMP);
+		// if (!new)
+		// 	return (free_pipeline(p.head), NULL);
 		init_cmd_node(new);
 		tokens = parse_command(tokens, &new->cmd, &p.err);
 		if (p.err)
-			return (free_pipeline(p.head), NULL);
+			return (NULL);
 		if (!p.head)
 			p.head = new;
 		else
@@ -193,9 +141,10 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 		if (tokens && tokens->type == PIPE)
 			tokens = tokens->next;
 	}
-	printf("error code:%d\n", sh->last_exit_code);
+	fprintf(stderr, "error code:%d\n", sh->last_exit_code);
 	return (p.head);
 }
+
 
 void	print_syntax_error(const char *unexpected)
 {
@@ -203,10 +152,4 @@ void	print_syntax_error(const char *unexpected)
 		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
 	else
 		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
-}
-
-void	free_pipeline(t_cmd_node *head)
-{
-	(void)head;
-	printf("In free pipeline\n");
 }

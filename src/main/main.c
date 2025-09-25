@@ -29,9 +29,7 @@ static t_env	*dup_env(t_shell *sh, char **envp)
 		eq_pos = ft_strchr(envp[i], '=');
 		if (eq_pos)
 		{
-			new = malloc(sizeof(t_env));
-			if (!new)
-				return (NULL);
+			new = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);
 			new->var_name = gc_substr_global(sh, envp[i], 0, eq_pos - envp[i]);
 			new->value = gc_strdup(sh, eq_pos + 1, GC_GLOBAL);
 			new->next = head;
@@ -48,6 +46,8 @@ int	main(int ac, char **av, char **envp)
 
 	(void)ac;
 	(void)av;
+
+	ft_bzero(&sh, sizeof(t_shell));
 
 	sh.env = dup_env(&sh, envp);
 	sh.last_exit_code = 0;
