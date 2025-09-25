@@ -18,6 +18,9 @@ HEREDOC PREP after the pipeline is built, then check for heredoc node and handle
 
 
 
+[ ] OWN GET ENV in
+[ ] HEREDOC
+
 
 
 
