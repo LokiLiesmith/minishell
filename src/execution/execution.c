@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/15 03:45:57 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:58:53 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,63 +44,63 @@
 
 
 // return on error
-static int	execute_cmd(t_cmd_node *node, t_cmd *cmd, t_env *env, pid_t *pid)
+static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 {
-	int		pipe_fd[2];		// fd[0] - read; fd[1] - write
-	char	*path;
-	char	**env_array;
-	int		status;
-	pid_t	wpid;
-
-	// are there redirections ?
-	if (cmd->redirs)
-		redirect(cmd);
+	int			pipe_fd[2];		// fd[0] - read; fd[1] - write
+	static int	prev_fd = -1;	
+	char		*path;
+	char		**env_array;
 
 	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
-	if (is_builtin(cmd) && node->next == NULL)
-		execute_single_builtin(cmd, env);
+	// if (is_builtin(cmd->cmd) && cmd->next == NULL)
+		// return (execute_single_builtin(cmd->cmd, env));
 
-	path = find_path(cmd, env);
+	path = find_path(cmd_node->cmd, env);
 	if (!path)
 		return (ft_putstr_fd("Command not found", 2), 1);
 	env_array = env_to_array(env);
-	if (!env)
+	if (!env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);
 
 	// PIPE before fork
-	if (pipe(pipe_fd) == -1)
+	if (cmd_node->next && pipe(pipe_fd) == -1)
 		return (perror("pipe() error"), 1);
-	// if (node->next)
-		// handle_pipe();
 
 	*pid = fork(); // fork returns twice; when fork, fds copy over
 	if (*pid < 0)
 		return (perror("fork() error"), 1);
 	else if (*pid == 0) // return 0 = child process
 	{
-		execute_child(path, cmd, env_array); // check return value
+		if (cmd_node->next)
+			handle_pipe_child(cmd_node, pipe_fd, prev_fd);
+		execute_child(path, cmd_node->cmd, env_array);
 	}
-	else if (*pid > 0) // parent process
+	else
 	{
-		wpid = waitpid(*pid, &status, 0); // wait for the child process
-		if (wpid == -1)
-			return (perror("waitpid() error"), 1);
+		if (prev_fd != -1)
+			close(prev_fd);
+		if (cmd_node->next)
+		{
+			close(pipe_fd[1]);		// close write end in parent
+			prev_fd = pipe_fd[0];	// save read end for next cmd
+		}
 	}
 	return (0);
 }
 
-int	execute_start(t_cmd_node *node, t_env *env)
+int	execute_start(t_cmd_node *cmd_node, t_env *env)
 {
 	pid_t		pid;
-	t_cmd_node	*cmd;
+	int 		last_status;
+	t_cmd_node	*curr;
 
-	cmd = node;
-	// chek pid for return values ?
-	while (cmd)
+	curr = cmd_node;
+	while (curr)
 	{
-		if (execute_cmd(node, cmd->cmd, env, &pid))
+		if (execute_cmd(curr, env, &pid))
 			return (1);
-		cmd = cmd->next;
+		curr = curr->next;
 	}
-	return (0);
+	last_status = wait_for_children(pid);
+	return (WEXITSTATUS(last_status)); // returns exit code of the last command
 }

@@ -1,7 +1,7 @@
 # ========= Config =========
 LIBFT_PATH := include/libft
 CC         := cc
-CFLAGS     := -Wall -Wextra -Werror -I include
+CFLAGS     := -Wall -Wextra -Werror -I include -g -fsanitize=address
 LIBFT_LIB  := $(LIBFT_PATH)/libft.a
 
 # pick which test to build: make T=parser (defaults ot minishell)
@@ -20,9 +20,11 @@ SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c
 SRC_BUILT_INS := src/built_ins/built_ins_test.c src/built_ins/cd.c src/built_ins/echo.c \
 		src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c
-SRC_EXECUTION := src/execution/execution_test.c src/execution/exec_builtins.c src/execution/exec_children.c src/execution/exec_redirection.c \
-		src/execution/execution.c src/execution/utils_path.c src/execution/utils.c
-
+SRC_EXECUTION := src/execution/execution_test.c \
+		src/execution/exec_children.c src/execution/exec_redirection.c src/execution/exec_pipe.c \
+		src/execution/execution.c \
+		src/execution/utils_path.c src/execution/utils.c
+# src/execution/exec_builtins.c
 
 # common sources (if any) go here, e.g. tokenizer, utils, …
 SRC_COMMON :=

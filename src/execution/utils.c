@@ -3,14 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/15 00:54:06 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:53:05 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+int	wait_for_children(pid_t last_child)
+{
+	int wpid;
+	int	status;
+	int	last_status;
+
+	status = 0;
+	last_status = 0;
+	while (1)
+	{
+		wpid = waitpid(-1, &status, 0);
+		if (wpid <= 0)
+			break ;
+		if (wpid == last_child)
+			last_status = status;
+	}
+	return (last_status);
+}
 
 char	**env_to_array(t_env *env)
 {
@@ -28,18 +47,21 @@ char	**env_to_array(t_env *env)
 		current = current->next;
 		env_len++;
 	}
-	env_array = malloc(sizeof(char *) * env_len);
+	env_array = malloc(sizeof(char *) * (env_len + 1));
+	if (!env_array)
+		return (NULL);
+	env_array[env_len] = NULL;
+	
 	// convert env table to a char* array to pass to execve
 	current = env;
 	while (current != NULL)
 	{
-		temp = ft_strjoin(env->type, "=");
-		env_array[i] = ft_strjoin(temp, env->value);
+		temp = ft_strjoin(current->type, "=");
+		env_array[i] = ft_strjoin(temp, current->value);
 		free(temp);
 		i++;
 		current = current->next;
 	}
-	env_array[i][0] = '\0';
 	return (env_array);
 }
 
