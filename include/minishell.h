@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/15 03:32:53 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:53:29 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,10 @@ void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env);
-int		redirect(t_cmd *cmd);
+int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
+int		handle_redirections(t_cmd *cmd);
+int		wait_for_children(pid_t last_child);
+
 
 // void	save_redirs(t_cmd *cmd);
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_test.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/13 01:06:43 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/13 01:07:19 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 17:46:43 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,12 @@ int main(void) {
 	t_cmd *cmd = malloc(sizeof(t_cmd));
 	cmd->argv = malloc(sizeof(char *) * 3);
 	cmd->argv[0] = strdup("ls");
-	cmd->argv[1] = NULL;
+	cmd->argv[1] = strdup("-l");
+	cmd->argv[2] = NULL;
+	cmd->redirs = malloc(sizeof(t_redir_node));
+	cmd->redirs->next = NULL;
+	cmd->redirs->r.type = R_OUT;
+	cmd->redirs->r.target = strdup("test.txt");
 	cmd_node->cmd = cmd;
 
 	// ---- Execute ----

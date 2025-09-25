@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_path.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/13 00:42:14 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 16:39:46 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,10 @@ char	*find_path(t_cmd *cmd, t_env *env)
 		return (NULL);
 	}
 	// find path to the command from env list
-	while (current && ft_strncmp(current->type, "PATH", 4))
+	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
+	if (!current)
+		return (NULL);
 	if (ft_strncmp(current->type, "PATH", 4) == 0)
 	{
 		directories = ft_split(current->value, ':');

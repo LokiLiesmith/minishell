@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_children.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:44 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/12 19:14:17 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:32:43 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 
 void	execute_child(char *path, t_cmd *cmd, char **env_array)
 {
+	if (!path || !cmd->argv || !env_array)
+		exit(1);
+	if (cmd->redirs && handle_redirections(cmd))
+    	exit(1);
 	if (execve(path, cmd->argv, env_array))
 	{
 		perror("execve() error");
