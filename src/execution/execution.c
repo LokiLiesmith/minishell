@@ -88,12 +88,14 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 	return (0);
 }
 
-int	execute_start(t_cmd_node *cmd_node, t_env *env)
+int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 {
+	t_env		*env;
 	pid_t		pid;
 	int 		last_status;
 	t_cmd_node	*curr;
 
+	env = sh->env;
 	curr = cmd_node;
 	while (curr)
 	{

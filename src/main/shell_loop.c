@@ -68,14 +68,14 @@ int	build_pipeline(char *line, t_shell *sh)
 }
 
 
-static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
-{
-	// (void)pipeline;//TODO build the damn thing;
-	print_pipeline(pipeline);
-	printf("in t_shell:%d\n", sh->last_exit_code);
-	printf("HANDOFF SUCCESSFUL!\n");
-	return (0);
-}
+// static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
+// {
+// 	// (void)pipeline;//TODO build the damn thing;
+// 	print_pipeline(pipeline);
+// 	printf("in t_shell:%d\n", sh->last_exit_code);
+// 	printf("HANDOFF SUCCESSFUL!\n");
+// 	return (0);
+// }
 
 static void	handle_exit(t_shell *sh)
 {
@@ -94,7 +94,7 @@ static void handle_command(char *line, t_shell *sh)
 	}
 	else
 	{
-		sh->last_exit_code = execute_pipeline(sh->pipeline, sh);
+		sh->last_exit_code = execute_start(sh->pipeline, sh);
 		sh->pipeline = NULL;
 	}
 }

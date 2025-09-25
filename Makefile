@@ -31,8 +31,12 @@ UC_T := $(shell echo $(T) | tr '[:lower:]' '[:upper:]')
 SRC_MINISHELL := src/main/main_test.c
 SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c
-SRC_BUILT_INS := src/built_ins/built_ins_test.c
-
+# SRC_BUILT_INS := src/built_ins/built_ins_test.c src/built_ins/cd.c src/built_ins/echo.c \
+# 		src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c
+# SRC_EXECUTION := src/execution/execution_test.c \
+# 		src/execution/exec_children.c src/execution/exec_redirection.c src/execution/exec_pipe.c \
+# 		src/execution/execution.c \
+# 		src/execution/utils_path.c src/execution/utils.c
 
 
 # common sources (if any) go here, e.g. tokenizer, utils, …
@@ -51,7 +55,12 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/main/shell_loop.c src/main/signals.c \
 			src/main/garbage_collector/gc.c src/main/garbage_collector/gc_utils.c\
 			src/parser/parse.c src/parser/parse_redirections.c \
-			src/main/print_pipeline.c
+			src/main/print_pipeline.c \
+			src/execution/exec_children.c src/execution/exec_redirection.c src/execution/exec_pipe.c \
+			src/execution/execution.c \
+			src/execution/utils_path.c src/execution/utils.c \
+			src/built_ins/cd.c src/built_ins/echo.c \
+			src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c
 
 # ========= Resolve chosen set =========
 SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
