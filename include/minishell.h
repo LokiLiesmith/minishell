@@ -182,7 +182,7 @@ bool	is_var_char(char c);
 
 ssize_t	scan_operator(const char *str, int i, t_token_type *type);
 ssize_t	scan_word(const char *str, size_t i);
-t_token	*tokenize(char *str, bool *open_quotes);
+t_token	*tokenize(t_shell *sh, char *str, bool *open_quotes);
 // void	push_token(t_token **head, t_token **tail, t_token_type type, char *start, int len); //TODO NEED TO REFACTOR THIS CRAP 5 PARAMS
 t_token	*token_create(t_shell *sh, t_token_type type, char *start, int len);
 void	token_append(t_token **head, t_token **tail, t_token *new);
@@ -200,16 +200,21 @@ int		build_pipeline(char *line, t_shell *sh);
 ////////////////////////////////////////////////////////////////////////////////
 //								  FIELD SPLIT								  //
 ////////////////////////////////////////////////////////////////////////////////
+//initialized in ctx_split_to_list
+typedef struct s_splice
+{
+	int		i;
+	int		len;
+	t_token	*old;
+	t_token	*new_head;
+	t_token	*new_tail;
+}	t_splice;
 
+t_token	*ctx_new_token(t_shell *sh, const t_token *old, int start, int len);
 int		ctx_split_to_list(t_shell *sh, t_token **t);
-// int		ctx_split_to_list(t_token **t);
-void	splice_token_list(t_token **splice_node, t_token **new_head, t_token **new_tail);
-int		ctx_push_token(t_token **h, t_token **tail, t_token *old, int i, int len);
+void	splice_list(t_token **splice_node, t_token **new_h, t_token **new_t);
 int		fill_ctx_token(t_token *new, int i, int len, t_token *old);
 int		ctx_split_len(char *str, char *context, int i);
-void	free_list(t_token *head);
-void	free_token(t_token *t);
-void	free_tokens(t_token *head);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  PARSING									  //
