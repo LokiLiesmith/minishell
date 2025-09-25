@@ -48,9 +48,9 @@ char	*gc_strdup(t_shell *sh, const char *s, t_scope scope)
 	return (dup);
 }
 
-char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len)
+char	*gc_substr_temp(t_shell *sh, const char *s, int start, int len)
 {
-	size_t	s_len;
+	int		s_len;
 	char	*p;
 	t_scope	scope;
 
@@ -76,9 +76,9 @@ char	*gc_substr_temp(t_shell *sh, const char *s, int start, size_t len)
 	return (p);
 }
 
-char	*gc_substr_global(t_shell *sh, const char *s, int start, size_t len)
+char	*gc_substr_global(t_shell *sh, const char *s, int start, int len)
 {
-	size_t	s_len;
+	int		s_len;
 	char	*p;
 	t_scope	scope;
 
@@ -119,16 +119,16 @@ void	*gc_calloc(t_shell *sh, size_t count, size_t size, t_scope scope)
 	return (ptr);
 }
 
-int	main(int ac, char **av, char **envp)
-{
-	t_shell	sh;
+// int	main(int ac, char **av, char **envp)
+// {
+// 	t_shell	sh;
 
-	sh.env = dup_env(envp);
-	sh.last_exit_code = 0;
+// 	sh.env = dup_env(envp);
+// 	sh.last_exit_code = 0;
 
-	signal_setup();
-	shell_loop(&sh);
+// 	signal_setup();
+// 	shell_loop(&sh);
 
-	return (0);
-}
+// 	return (0);
+// }
 
