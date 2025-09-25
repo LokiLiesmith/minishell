@@ -1,6 +1,8 @@
 #include "minishell.h"
 
-int g_signal;
+// int signal;
+
+volatile sig_atomic_t g_exit_status = 0;
 
 /////////////////////////TESTING STUFF//////////////////
 void	print_env(t_env *env)

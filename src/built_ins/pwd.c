@@ -27,7 +27,6 @@ int	builtin_pwd(void)
 	}
 	ft_putstr_fd(pwd, 1);
 	ft_putchar_fd('\n', 1);
-	free(pwd);
 	return (0);
 }
 

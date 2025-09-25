@@ -49,12 +49,12 @@ void    print_pipeline(const t_cmd_node *pipeline)
     while (node)
     {
         printf("=== Command ===\n");
-        if (node->cmd.argv && node->cmd.argv[0])
+        if (node->cmd->argv && node->cmd->argv[0])
         {
             i = 0;
-            while (node->cmd.argv[i])
+            while (node->cmd->argv[i])
             {
-                printf("argv[%d]: %s\n", i, node->cmd.argv[i]);
+                printf("argv[%d]: %s\n", i, node->cmd->argv[i]);
                 i++;
             }
             
@@ -62,8 +62,8 @@ void    print_pipeline(const t_cmd_node *pipeline)
         else
             printf("None\n");
 
-        print_redirs(node->cmd.redirs);
-        printf("builtin: %s (%d)\n", builtin_str(node->cmd.builtin), node->cmd.builtin);
+        print_redirs(node->cmd->redirs);
+        printf("builtin: %s (%d)\n", builtin_str(node->cmd->builtin), node->cmd->builtin);
         printf("===============\n");
         node = node->next;
     }
