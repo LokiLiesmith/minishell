@@ -22,6 +22,7 @@
 # include <signal.h>
 # include <string.h>
 # include <stdio.h>
+# include <sys/wait.h>
 
 //READLINE STUFF
 # include <readline/readline.h>
@@ -31,12 +32,12 @@
 # include "libft/libft.h"
 # include "get_next_line/get_next_line.h"
 
-#define TRUE	1
-#define FALSE	0
+# define TRUE	1
+# define FALSE	0
 // forward declare missing readline prototype
 void	rl_replace_line(const char *text, int clear_undo);
 
-volatile sig_atomic_t g_exit_status;
+extern volatile sig_atomic_t	g_exit_status;
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  MAIN STRUCT / ENUMS						  //
@@ -70,8 +71,8 @@ typedef enum e_redir_type
 
 typedef struct s_env
 {
-	char			*type;
-	char 			*value;
+	char			*type;//var_name
+	char			*value;
 	struct s_env	*next;
 }	t_env;
 
