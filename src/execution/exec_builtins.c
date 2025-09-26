@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:23 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 21:03:24 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/25 22:30:12 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
 	int	ret;
 
 	ret = 1;
-	
+	saved_stdin = -1;
+	saved_stdout = -1;
 	if (cmd->redirs != NULL)
 	{
 		saved_stdin = dup(STDIN_FILENO);
@@ -65,7 +66,6 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
 
    		if (saved_stdin < 0 || saved_stdout < 0)
         	perror("dup() error in save_fds");
-		// save_fds(saved_stdin, saved_stdout);
 		if (handle_redirections(cmd))
 		{
 			// restore_fds();
@@ -81,7 +81,6 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
        		close(saved_stdin);              // close copy
         	saved_stdin = -1;
     	}
-
 	    if (saved_stdout >= 0)
     	{
         	dup2(saved_stdout, STDOUT_FILENO); // restore stdout
@@ -89,6 +88,5 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
         	saved_stdout = -1;
  	   	}
 	}
-	// restore_fds();
 	return (ret);
 }
