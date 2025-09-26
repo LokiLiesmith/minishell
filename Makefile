@@ -28,7 +28,7 @@ UC_T := $(shell echo $(T) | tr '[:lower:]' '[:upper:]')
 
 # ========= Sources per target =========
 # add more SRC DIRECTORIES etc.)
-SRC_MINISHELL := src/main/main_test.c
+SRC_MINISHELL := src/main/main.c
 SRC_PARSER    := src/parser/parser_test.c
 SRC_LEXER	  := src/lexer/lexer_test.c
 # SRC_BUILT_INS := src/built_ins/built_ins_test.c src/built_ins/cd.c src/built_ins/echo.c \
@@ -57,7 +57,7 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/parser/parse.c src/parser/parse_redirections.c \
 			src/main/print_pipeline.c \
 			src/execution/exec_children.c src/execution/exec_redirection.c src/execution/exec_pipe.c \
-			src/execution/execution.c \
+			src/execution/execution.c src/execution/exec_builtins.c \
 			src/execution/utils_path.c src/execution/utils.c \
 			src/built_ins/cd.c src/built_ins/echo.c \
 			src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c

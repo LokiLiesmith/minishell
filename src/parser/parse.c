@@ -1,10 +1,20 @@
 #include "minishell.h"
 
-void	init_cmd_node(t_cmd_node *node)
+// void	init_cmd_node(t_cmd_node *node)
+// {
+
+// 	node->cmd->argv = NULL;
+// 	node->cmd->redirs = NULL;
+// 	node->next = NULL;
+// }
+
+void init_cmd_node(t_shell *sh, t_cmd_node *node)
 {
-	node->cmd.argv = NULL;
-	node->cmd.redirs = NULL;
-	node->next = NULL;
+    node->cmd = gc_malloc(sh, sizeof(t_cmd), GC_TEMP);
+    node->cmd->argv    = NULL;
+    node->cmd->redirs  = NULL;
+    node->cmd->builtin = NONE;
+    node->next = NULL;
 }
 
 void	init_parser(t_pars *p)
@@ -153,8 +163,8 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 	while (tokens)
 	{
 		new = gc_malloc(sh, sizeof(t_cmd_node), GC_TEMP);
-		init_cmd_node(new);
-		tokens = parse_command(sh, tokens, &new->cmd, &p.err);
+		init_cmd_node(sh, new);
+		tokens = parse_command(sh, tokens, new->cmd, &p.err);
 		if (p.err)
 			return (NULL);
 		if (!p.head)

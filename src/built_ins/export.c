@@ -76,6 +76,7 @@ int	builtin_export(t_cmd *cmd, t_env *env)
 		}
 		temp = current->next;
 		current->next = malloc(sizeof(t_env));
+		// ALLOCATE AAAAAAAAAA
 		current->next->type = type;
 		current->next->value = value;
 		current->next->next = temp;
