@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/25 18:58:53 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/26 00:13:02 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,16 @@
 // ls -> ... into pipe (pipe should be stdout for that child process)
 // pipe -> grep s -> stdout (after returning to the parent process, we restore stdout)
 
-
-
 // return on error
-static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
+static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int prev_fd)
 {
-	int			pipe_fd[2];		// fd[0] - read; fd[1] - write
-	static int	prev_fd = -1;	
+	int			pipe_fd[2];		// fd[0] - read; fd[1] - write	
 	char		*path;
 	char		**env_array;
 
 	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
-	// if (is_builtin(cmd->cmd) && cmd->next == NULL)
-		// return (execute_single_builtin(cmd->cmd, env));
+	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
+		return (execute_single_builtin(cmd_node->cmd, env));
 
 	path = find_path(cmd_node->cmd, env);
 	if (!path)
@@ -66,13 +63,12 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 	if (cmd_node->next && pipe(pipe_fd) == -1)
 		return (perror("pipe() error"), 1);
 
-	*pid = fork(); // fork returns twice; when fork, fds copy over
+	*pid = fork();
 	if (*pid < 0)
 		return (perror("fork() error"), 1);
-	else if (*pid == 0) // return 0 = child process
+	else if (*pid == 0)
 	{
-		if (cmd_node->next)
-			handle_pipe_child(cmd_node, pipe_fd, prev_fd);
+		handle_pipe_child(cmd_node, pipe_fd, prev_fd);
 		execute_child(path, cmd_node->cmd, env_array);
 	}
 	else
@@ -84,6 +80,8 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
 			close(pipe_fd[1]);		// close write end in parent
 			prev_fd = pipe_fd[0];	// save read end for next cmd
 		}
+		else
+			close(prev_fd);
 	}
 	return (0);
 }
@@ -94,12 +92,15 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 	pid_t		pid;
 	int 		last_status;
 	t_cmd_node	*curr;
+	static int	prev_fd;
 
 	env = sh->env;
 	curr = cmd_node;
+	prev_fd = -1;
+
 	while (curr)
 	{
-		if (execute_cmd(curr, env, &pid))
+		if (execute_cmd(curr, env, &pid, prev_fd))
 			return (1);
 		curr = curr->next;
 	}
