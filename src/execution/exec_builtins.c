@@ -19,7 +19,7 @@ int	is_builtin(t_cmd *cmd)
 	return (1);
 }
 
-static int	find_builtin(t_cmd *cmd, t_env *env)
+int	find_builtin(t_cmd *cmd, t_env *env)
 {
 	if (cmd->builtin == ECHO)
 		return (builtin_echo(cmd));
