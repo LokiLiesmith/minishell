@@ -89,7 +89,7 @@ static void	set_builtin(t_cmd *cmd)
 		first = cmd->argv[0];
 	cmd->builtin = get_builtin_type(first);
 }
-
+//TODO REFACTOR <25
 t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err)
 {
 	t_strlist	*arglst;
