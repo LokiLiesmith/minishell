@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/26 21:32:13 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 19:42:44 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static	int change_export_value(t_shell *sh, t_env *current, char *value)
 	ft_strlcpy(current->value, value, ft_strlen(value) + 1);
 	return (0);
 }
+
 static int	export_allocate(t_shell *sh, t_env *current, t_env *temp, char *type, char *value)
 {
 	current->next = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);

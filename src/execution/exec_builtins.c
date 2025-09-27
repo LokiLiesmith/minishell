@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:23 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/26 20:16:53 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 20:32:50 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 {
 	static int	saved_stdin;
 	static int	saved_stdout;
-	int	ret;
+	int			ret;
 
 	ret = 1;
 	saved_stdin = -1;

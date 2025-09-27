@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/27 10:30:08 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 19:46:56 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,12 @@ int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array) //cmd
 	if (!*env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);
 	return (0);
+}
+
+void	error_pid(int pipe_fd[2])
+{
+	if (pipe_fd[0] != -1)
+		close(pipe_fd[0]);
+    if (pipe_fd[1] != -1)
+		close(pipe_fd[1]);
 }
