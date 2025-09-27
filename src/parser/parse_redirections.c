@@ -14,12 +14,12 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 
 	if (!(*t)->next || (*t)->next->type != WORD)
 	{
-		if (!(*t)->next)
-			print_syntax_error(NULL);
-		else
-			print_syntax_error((*t)->next->raw);
-		*err = 1;
-		return (-1);
+		// if (!(*t)->next)
+		// 	print_syntax_error(NULL);
+		// else
+		// 	print_syntax_error((*t)->next->raw);
+		// *err = 1;
+		return (report_parse_error((*t)->next, err), -1);
 	}
 	new = gc_malloc(sh, sizeof(t_redir_node), GC_TEMP);
 	if (!new)
