@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/09/27 10:37:44 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 21:00:12 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,16 +202,20 @@ int		ft_is_operator(int c);
 ////////////////////////////////////////////////////////////////////////////////
 //								 EXECUTION 									  //
 ////////////////////////////////////////////////////////////////////////////////
+
 int		execute_start(t_cmd_node *node, t_shell *sh);
 int		is_builtin(t_cmd *cmd);
 int		execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh);
 int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
+
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env);
+void	error_pid(int pipe_fd[2]);
 
 int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
+void	close_pipe_parent(int prev_fd, int *prev_fd_ptr, t_cmd_node *cmd_node, int pipe_fd[2]);
 int		handle_redirections(t_cmd *cmd);
 int		wait_for_children(pid_t last_child);
 
