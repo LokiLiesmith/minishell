@@ -7,7 +7,7 @@ static int	ft_is_delim(char c)
 
 static int	is_operator(char c)
 {
-	return (c == '|' || c == '<' || c == '>' || c == '&');
+	return (c == '|' || c == '<' || c == '>');
 }
 
 int	ctx_split_len(char *str, char *context, int i)
@@ -17,15 +17,28 @@ int	ctx_split_len(char *str, char *context, int i)
 	if (!str || !str[i])
 		return (0);
 	if ((context[i] == '0' || context[i] == 'e') && ft_is_delim(str[i]))
-		return (0);
+	{
+		while (str[i] && (context[i] == '0' || context[i] == 'e')
+			&& ft_is_delim(str[i]))
+				i++;
+			return (0);
+	}
 	if ((context[i] == '0' || context[i] == 'e') && is_operator(str[i]))
-		return (1);
+		{
+			if (str[i] == '>' && str[i + 1] =='>')
+				return (2);
+			if (str[i] == '<' && str[i + 1] =='<')
+				return (2);
+			return (1);
+		}
 	len = 0;
 	while (str[i + len])
 	{
-		if ((context[i + len] == '0' || context[i + len] == 'e')
-			&& (ft_is_delim(str[i + len]) || is_operator(str[i + len])))
-			break;
+		if ((context[i + len] == '0' || context[i + len] == 'e'))
+		{
+			if (ft_is_delim(str[i + len]) || is_operator(str[i + len]))
+				break;
+		}
 		len++;
 	}
 	return (len);

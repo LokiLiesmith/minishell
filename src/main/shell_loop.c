@@ -1,5 +1,17 @@
 #include "minishell.h"
 
+int is_only_spaces(const char *s)
+{
+    int i = 0;
+    while (s[i])
+    {
+        if (!ft_is_space((unsigned char)s[i]))
+            return (0);
+        i++;
+    }
+    return (1);
+}
+
 static char	*append_line(char *input, char *line)
 {
 	char	*tmp;
@@ -38,12 +50,13 @@ static char	*read_until_closed_quotes(t_shell *sh)
 		}
 		input = append_line(input, line);
 	}
-	(void)tokens;
+	(void)tokens;//TODO fishy..
 	return (input);
 }
 
 int	build_pipeline(char *line, t_shell *sh)
 {
+	printf("build_pipeline\n");
 	t_token	*tokens;
 	bool	open_quotes;
 
@@ -52,18 +65,23 @@ int	build_pipeline(char *line, t_shell *sh)
 	if (!tokens)
 	{
 		if (open_quotes)
+		{
+			printf("open_quotes-> return -1\n");
 			return (-1);
+		}
 		sh->pipeline = NULL;
 		return (0);
 	}
 	if (expand_tokens(sh, &tokens) < 0)
 	{
+		printf("expand_tokens < 0\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
 	sh->pipeline = parse(tokens, sh);
 	if (!sh->pipeline)
 	{
+		printf("!sh->pipeline\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
@@ -87,23 +105,50 @@ static void	handle_exit(t_shell *sh)
 	exit(sh->last_exit_code);
 }
 
+// static void handle_command(char *line, t_shell *sh)
+// {
+// 	add_history(line);
+// 	if (build_pipeline(line, sh) < 0)
+// 	{
+// 		sh->last_exit_code = 2;
+// 		gc_free_scope(sh, GC_TEMP);
+// 		return ;
+// 	}
+// 	if (!sh->pipeline)
+// 	{
+// 		sh->last_exit_code = 0;
+// 		return ;
+// 	}
+// 		sh->last_exit_code = execute_start(sh->pipeline, sh);
+// 		sh->pipeline = NULL;
+// }
+
 static void handle_command(char *line, t_shell *sh)
 {
+	printf("handle_command\n");
+	int	status;
+
 	add_history(line);
-	if (build_pipeline(line, sh) < 0)
+	status = build_pipeline(line, sh);
+	if (status < 0)
 	{
+		printf("status < 0\n");
 		sh->last_exit_code = 2;
 		gc_free_scope(sh, GC_TEMP);
 		return ;
 	}
 	if (!sh->pipeline)
 	{
+		printf("!sh->pipeline\n");
 		sh->last_exit_code = 0;
 		return ;
 	}
-		sh->last_exit_code = execute_start(sh->pipeline, sh);
-		sh->pipeline = NULL;
+	printf("executing\n");
+	print_pipeline(sh->pipeline);
+	sh->last_exit_code = execute_start(sh->pipeline, sh);
+	sh->pipeline = NULL;
 }
+
 
 void	shell_loop(t_shell *sh)
 {
@@ -114,7 +159,7 @@ void	shell_loop(t_shell *sh)
 		line = read_until_closed_quotes(sh);
 		if (!line)
 			handle_exit(sh);
-		if (*line)
+		if (*line && !is_only_spaces(line))
 			handle_command(line, sh);
 		free(line);
 		gc_free_scope(sh, GC_TEMP);

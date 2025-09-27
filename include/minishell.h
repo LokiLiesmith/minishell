@@ -262,7 +262,9 @@ typedef struct s_strlist
 t_cmd_node		*parse(t_token *tokens, t_shell *sh);
 int		handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst);
 int		handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err);
-void	print_syntax_error(const char *unexpected);
+// void	print_syntax_error(const char *unexpected);
+t_token *report_parse_error(t_token *token, int *err);
+
 t_builtin	get_builtin_type(char *s);
 t_redir_type	map_token_to_redir(t_token_type t);
 void	append_redir(t_redir_node **head, t_redir_node *new);
