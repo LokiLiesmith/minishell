@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/26 00:13:02 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 07:56:20 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,12 @@
 //	-----------------------------------------------------	-----------------------------------------------------
 
 
-
 // ls | grep s	> test.txt	= "src" in test.txt
 // ls -> ... into pipe (pipe should be stdout for that child process)
 // pipe -> grep s -> stdout (after returning to the parent process, we restore stdout)
 
 // return on error
-static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int prev_fd)
+static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int prev_fd, t_shell *sh)
 {
 	int			pipe_fd[2];		// fd[0] - read; fd[1] - write	
 	char		*path;
@@ -50,11 +49,11 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int prev_fd
 
 	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
-		return (execute_single_builtin(cmd_node->cmd, env));
+		return (execute_single_builtin(cmd_node->cmd, env, sh));
 
 	path = find_path(cmd_node->cmd, env);
 	if (!path)
-		return (ft_putstr_fd("Command not found", 2), 1);
+		return (ft_putstr_fd("Command not found\n", 2), 1);
 	env_array = env_to_array(env);
 	if (!env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);
@@ -100,7 +99,7 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 
 	while (curr)
 	{
-		if (execute_cmd(curr, env, &pid, prev_fd))
+		if (execute_cmd(curr, env, &pid, prev_fd, sh))
 			return (1);
 		curr = curr->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 00:59:34 by mel               #+#    #+#             */
-/*   Updated: 2025/09/25 23:09:47 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/26 19:57:28 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	builtin_unset(t_cmd *cmd, t_env *env)
 		{
 			temp = current->next;
 			current->next = temp->next;
-			// free(temp->type); free(temp->value); free(temp);
 		}
 		i++;
 	}
