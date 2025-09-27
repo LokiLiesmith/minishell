@@ -91,40 +91,34 @@ static void	handle_quote(t_token *t, const char *str, t_exp *exp)
 		t->value[exp->j++] = str[exp->i++];
 	}
 }
-
-
+//TODO REFACTOR TO <25
 int expand_tokens(t_shell *sh, t_token **head)
 {
     int     exp_len;
-    t_token **link = head;
+    t_token **link;
+	t_token *curr;
 
+	link = head;
     while (*link)
     {
-        t_token *curr = *link;
-
+    	curr = *link;
         if (curr->type == WORD)
         {
             exp_len = expansion_len(sh, curr->raw);
             if (exp_len < 0)
                 return (-1);
-
             if (expand_and_strip(sh, curr, exp_len) < 0)
                 return (-1);
-
             if (ctx_split_to_list(sh, link) < 0)
                 return (-1);
-
-            // If ctx_split_to_list replaced *link with new nodes,
-            // they have was_expanded == true → walk over them.
-            if (*link && (*link)->was_expanded)
+            if (*link && (*link)->was_expanded)//was_expanded = true, so walk over them
             {
                 while (*link && (*link)->was_expanded)
                     link = &(*link)->next;
             }
-            else
+            else //no split
             {
-                // No split happened: move past the current node
-                link = &curr->next;  // equivalent to &(*link)->next
+                link = &curr->next;
             }
         }
         else
@@ -134,34 +128,6 @@ int expand_tokens(t_shell *sh, t_token **head)
     }
     return (0);
 }
-
-// int	expand_tokens(t_shell *sh, t_token **head)
-// {
-// 	int		exp_len;
-// 	t_token	**link;
-// 	t_token	*curr;
-
-// 	link = head;
-// 	while (*link)
-// 	{
-// 		curr = *link;
-// 		if (curr->type == WORD)
-// 		{
-// 			exp_len = expansion_len(sh, curr->raw);
-// 			if (exp_len < 0)
-// 				return (-1);
-// 			if (expand_and_strip(sh, curr, exp_len) < 0)
-// 				return (-1);
-// 			if (ctx_split_to_list(sh, link) < 0)
-// 				return (-1);
-// 			while (*link && (*link)->type == WORD && (*link)->was_expanded)
-// 				link = &(*link)->next;
-// 		}
-// 		else
-// 			link = &(*link)->next;
-// 	}
-// 	return (0);
-// }
 
 static int	handle_dollar(t_shell *sh, t_token *t, char *str, t_exp *exp)
 {

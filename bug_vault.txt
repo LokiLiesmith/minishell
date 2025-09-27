@@ -1,0 +1,10 @@
+Happy hunting!
+
+you can check the pipeline tokens with "print_pipeline(sh->pipeline);"
+right before execute_start() in handle_command
+
+input								result							status
+--------------------------------------------------------------------------
+" "									Segfault;						[x]
+echo "" or ls | " "					Segfault;						[x]
+echo mark " " > test.txt -> mark	(3 spaces, bash produces 2);	[ ]
