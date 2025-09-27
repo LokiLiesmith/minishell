@@ -50,10 +50,14 @@ int	build_pipeline(char *line, t_shell *sh)
 	open_quotes = false;
 	tokens = tokenize(sh, line, &open_quotes);
 	if (!tokens)
-		return (-1);
+	{
+		if (open_quotes)
+			return (-1);
+		sh->pipeline = NULL;
+		return (0);
+	}
 	if (expand_tokens(sh, &tokens) < 0)
 	{
-		// free_tokens(tokens);
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
@@ -63,7 +67,6 @@ int	build_pipeline(char *line, t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
-	// free_tokens(tokens);
 	return (0);
 }
 
@@ -91,12 +94,15 @@ static void handle_command(char *line, t_shell *sh)
 	{
 		sh->last_exit_code = 2;
 		gc_free_scope(sh, GC_TEMP);
+		return ;
 	}
-	else
+	if (!sh->pipeline)
 	{
+		sh->last_exit_code = 0;
+		return ;
+	}
 		sh->last_exit_code = execute_start(sh->pipeline, sh);
 		sh->pipeline = NULL;
-	}
 }
 
 void	shell_loop(t_shell *sh)
