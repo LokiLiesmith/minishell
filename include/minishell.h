@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/09 01:55:37 by mrazem           ###   ########.fr       */
-/*   Updated: 2025/09/25 18:53:29 by mel              ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/09/27 10:37:44 by mel              ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
@@ -204,15 +204,23 @@ int		ft_is_operator(int c);
 ////////////////////////////////////////////////////////////////////////////////
 int		execute_start(t_cmd_node *node, t_shell *sh);
 int		is_builtin(t_cmd *cmd);
-int		execute_single_builtin(t_cmd *cmd, t_env *env);
+int		execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh);
+int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env);
+
 int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
 int		handle_redirections(t_cmd *cmd);
 int		wait_for_children(pid_t last_child);
 
+int		builtin_cd(t_cmd *cmd, t_env *env);
+int		builtin_echo(t_cmd *cmd);
+int		builtin_env(t_cmd *cmd, t_env *env);
+int		builtin_export(t_cmd *cmd, t_env *env, t_shell *sh);
+int		builtin_pwd(void);
+int		builtin_unset(t_cmd *cmd, t_env *env);
 
 // void	save_redirs(t_cmd *cmd);
 
@@ -260,15 +268,15 @@ typedef struct s_strlist
 }	t_strlist;
 
 t_cmd_node		*parse(t_token *tokens, t_shell *sh);
-int		handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst);
-int		handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err);
+int				handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst);
+int				handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err);
 // void	print_syntax_error(const char *unexpected);
 t_token *report_parse_error(t_token *token, int *err);
 
-t_builtin	get_builtin_type(char *s);
+t_builtin		get_builtin_type(char *s);
 t_redir_type	map_token_to_redir(t_token_type t);
-void	append_redir(t_redir_node **head, t_redir_node *new);
-t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err);
+void			append_redir(t_redir_node **head, t_redir_node *new);
+t_token			*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  GARBAGE COLLECTOR							  //
@@ -307,12 +315,5 @@ void	gc_fatal(void);
 void	print_tokens(t_token *head, int last_exit_code);
 void	print_env(t_env *env);
 void	print_pipeline(const t_cmd_node *pipeline);
-
-int		builtin_cd(t_cmd *cmd, t_env *env);
-int		builtin_echo(t_cmd *cmd);
-int		builtin_env(t_cmd *cmd, t_env *env);
-int		builtin_export(t_cmd *cmd, t_env *env);
-int		builtin_pwd(void);
-int		builtin_unset(t_cmd *cmd, t_env *env);
 
 #endif

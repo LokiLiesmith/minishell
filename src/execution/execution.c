@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/25 18:58:53 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 10:40:18 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,53 +36,67 @@
 //	-----------------------------------------------------	-----------------------------------------------------
 
 
-
 // ls | grep s	> test.txt	= "src" in test.txt
 // ls -> ... into pipe (pipe should be stdout for that child process)
 // pipe -> grep s -> stdout (after returning to the parent process, we restore stdout)
 
-
-
 // return on error
-static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid)
+static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_fd_ptr, t_shell *sh)
 {
-	int			pipe_fd[2];		// fd[0] - read; fd[1] - write
-	static int	prev_fd = -1;	
+	int			pipe_fd[2] = {-1, -1};		// fd[0] - read; fd[1] - write	
 	char		*path;
 	char		**env_array;
+	int			prev_fd = *prev_fd_ptr;
 
-	// SINGLE BUILTIN - NO PIPES. HANDLE REDIRECTIONS
+	// SINGLE BUILTIN - NO PIPES
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
-		return (execute_single_builtin(cmd_node->cmd, env));
+		return (execute_single_builtin(cmd_node->cmd, env, sh));
 
-	path = find_path(cmd_node->cmd, env);
-	if (!path)
-		return (ft_putstr_fd("Command not found", 2), 1);
-	env_array = env_to_array(env);
-	if (!env_array)
-		return (ft_putstr_fd("env_array() error", 2), 1);
-
-	// PIPE before fork
-	if (cmd_node->next && pipe(pipe_fd) == -1)
-		return (perror("pipe() error"), 1);
-
-	*pid = fork(); // fork returns twice; when fork, fds copy over
-	if (*pid < 0)
-		return (perror("fork() error"), 1);
-	else if (*pid == 0) // return 0 = child process
+	if (prepare_execve(cmd_node->cmd, env, &path, &env_array))
+		return (1);
+	// printf("%s\n", path);
+	if (cmd_node->next != NULL)
 	{
-		if (cmd_node->next)
-			handle_pipe_child(cmd_node, pipe_fd, prev_fd);
+		if (pipe(pipe_fd) == -1)
+			return (perror("pipe() error"), 1);
+		// printf("pipe set up\n");
+	}
+	*pid = fork();
+	if (*pid < 0)
+	{
+		if (pipe_fd[0] != -1)
+			close(pipe_fd[0]);
+        if (pipe_fd[1] != -1)
+			close(pipe_fd[1]);
+		return (perror("fork() error"), 1);
+	}
+	else if (*pid == 0)
+	{
+		if (handle_pipe_child(cmd_node, pipe_fd, prev_fd))
+			exit(1);
+		// printf("child ready\n");
 		execute_child(path, cmd_node->cmd, env_array);
 	}
 	else
 	{
+		// printf("i am parent\n");
 		if (prev_fd != -1)
+		{
 			close(prev_fd);
+			*prev_fd_ptr = -1;
+		}
 		if (cmd_node->next)
 		{
 			close(pipe_fd[1]);		// close write end in parent
-			prev_fd = pipe_fd[0];	// save read end for next cmd
+			*prev_fd_ptr = pipe_fd[0];	// save read end for next cmd
+		}
+		else
+		{
+			if (pipe_fd[0] != -1)
+				close(pipe_fd[0]);
+			if (pipe_fd[1] != -1)
+				close(pipe_fd[1]);
+			*prev_fd_ptr = -1;
 		}
 	}
 	return (0);
@@ -94,14 +108,22 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 	pid_t		pid;
 	int 		last_status;
 	t_cmd_node	*curr;
+	int			prev_fd;
 
 	env = sh->env;
 	curr = cmd_node;
+	prev_fd = -1;
+
 	while (curr)
 	{
-		if (execute_cmd(curr, env, &pid))
+		if (execute_cmd(curr, env, &pid, &prev_fd, sh))
 			return (1);
 		curr = curr->next;
+	}
+	if (prev_fd != -1)
+	{
+		close(prev_fd);
+		prev_fd = -1;		
 	}
 	last_status = wait_for_children(pid);
 	return (WEXITSTATUS(last_status)); // returns exit code of the last command

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 18:53:05 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 10:30:08 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ char	**env_to_array(t_env *env)
 		return (NULL);
 	env_array[env_len] = NULL;
 	
-	// convert env table to a char* array to pass to execve
 	current = env;
 	while (current != NULL)
 	{
@@ -65,7 +64,13 @@ char	**env_to_array(t_env *env)
 	return (env_array);
 }
 
-// void	shell_lvl(char **env)
-// {
-	// update lvl of shell with getenv
-// }
+int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array) //cmd_node->cmd, env, &path, &env_array)
+{
+	*path = find_path(cmd, env);
+	if (!*path)
+		return (ft_putstr_fd("Command not found\n", 2), 1);
+	*env_array = env_to_array(env);
+	if (!*env_array)
+		return (ft_putstr_fd("env_array() error", 2), 1);
+	return (0);
+}

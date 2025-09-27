@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 16:39:46 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 10:29:57 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ static char	*search_directories(char **directories, char *command)
 	int		i;
 
 	i = 0;
-	// search in every directory
 	while (directories[i] != NULL)
 	{
 		part_path = ft_strjoin(directories[i], "/");
@@ -48,7 +47,6 @@ char	*find_path(t_cmd *cmd, t_env *env)
 			return (ft_strdup(command));
 		return (NULL);
 	}
-	// find path to the command from env list
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
 	if (!current)

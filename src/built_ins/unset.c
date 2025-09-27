@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 00:59:34 by mel               #+#    #+#             */
-/*   Updated: 2025/09/12 18:52:36 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/26 19:57:28 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,14 @@ int	builtin_unset(t_cmd *cmd, t_env *env)
 		return (1);
 	while (cmd->argv[i] != NULL)
 	{
-		while (ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i]))
-			&& current->next != NULL)
+		while (current->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])))
 		{
 			current = current->next;
 		}
-		if (ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])) == 0)
+		if (current->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])) == 0)
 		{
 			temp = current->next;
 			current->next = temp->next;
-			// free(temp->type); free(temp->value); free(temp);
 		}
 		i++;
 	}
