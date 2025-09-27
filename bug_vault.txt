@@ -3,8 +3,9 @@ Happy hunting!
 you can check the pipeline tokens with "print_pipeline(sh->pipeline);"
 right before execute_start() in handle_command
 
-input								result							status
---------------------------------------------------------------------------
+input								result							status	fix
+--------------------------------------------------------------------------------------------------------------------
 " "									Segfault;						[x]
 echo "" or ls | " "					Segfault;						[x]
-echo mark " " > test.txt -> mark	(3 spaces, bash produces 2);	[ ]
+echo mark " " > test.txt -> mark	(3 spaces, bash produces 2);	[x]		parsing-> handle_word_tkn was pushing
+																			an extra empty element into argv when it was empty and unquoted
