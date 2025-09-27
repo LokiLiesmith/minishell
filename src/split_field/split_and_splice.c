@@ -40,50 +40,29 @@ t_token	*ctx_new_token(t_shell *sh, const t_token *old, int start, int len)
 	return (new);
 }
 
-
-void splice_list(t_token **splice_node, t_token **new_h, t_token **new_t)
+void    splice_list(t_token **splice_node, t_token **new_h, t_token **new_t)
 {
-    t_token *old_next;
-    t_token *tail;
+        t_token *old;
+        t_token *tail;
 
-    if (!splice_node || !*splice_node || !new_h || !*new_h)
-        return;
-
-    // figure out tail if not passed in
-    tail = (new_t && *new_t) ? *new_t : *new_h;
-    while (tail->next)
-        tail = tail->next;
-
-    old_next = (*splice_node)->next;
-
-    // replace current node with new head
-    *splice_node = *new_h;
-
-    // connect tail to old_next
-    tail->next = old_next;
+        if (!splice_node || !new_h || !*new_h)
+                return ;
+        old = *splice_node;
+        tail = (new_t && *new_t) ? *new_t : *new_h;
+        while (tail->next)
+                tail = tail->next;
+        if (old)
+                tail->next = old->next;
+        else
+                tail->next = NULL;
+        *splice_node = *new_h;
+        if (new_h)
+                *new_h = NULL;
+        if (new_t)
+                *new_t = tail;
+        if (old)
+                old->next = NULL;
 }
-
-
-// void	splice_list(t_token **splice_node, t_token **new_h, t_token **new_t)
-// {
-// 	t_token	**link;
-// 	t_token	*next;
-
-// 	if (!splice_node || !*splice_node || !new_h || !*new_h)
-// 		return ;
-
-// 	printf("start of splice list\n");
-// 	link = splice_node;
-// 	printf("link = splice_node\n");
-
-// 	next = (*link)->next;
-// 	printf("next = (*link)->next;\n");
-
-// 	*link = *new_h;
-// 	printf("*link = *new_h;\n");
-// 	(*new_t)->next = next;
-// 	printf("(*new_t)->next = next;\n");
-// }
 
 static void	init_splice_vars(t_splice *s, t_token **t)
 {
