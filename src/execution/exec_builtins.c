@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:23 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 22:30:12 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/26 20:16:53 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	is_builtin(t_cmd *cmd)
 	return (1);
 }
 
-int	find_builtin(t_cmd *cmd, t_env *env)
+int	find_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 {
 	if (cmd->builtin == ECHO)
 		return (builtin_echo(cmd));
@@ -30,7 +30,7 @@ int	find_builtin(t_cmd *cmd, t_env *env)
 	else if (cmd->builtin == ENV)
 		return (builtin_env(cmd, env));
 	else if (cmd->builtin == EXPORT)
-		return (builtin_export(cmd, env));
+		return (builtin_export(cmd, env, sh));
 	else if (cmd->builtin == UNSET)
 		return (builtin_unset(cmd, env));
 	else if (cmd->builtin == EXIT)
@@ -50,7 +50,7 @@ int	find_builtin(t_cmd *cmd, t_env *env)
 //         perror("dup() error in save_fds");
 // }
 
-int execute_single_builtin(t_cmd *cmd, t_env *env)
+int execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 {
 	static int	saved_stdin;
 	static int	saved_stdout;
@@ -72,7 +72,7 @@ int execute_single_builtin(t_cmd *cmd, t_env *env)
 			return (1);
 		}
 	}
-	ret = find_builtin(cmd, env);
+	ret = find_builtin(cmd, env, sh);
 	if (cmd->redirs != NULL)
 	{
     	if (saved_stdin >= 0)

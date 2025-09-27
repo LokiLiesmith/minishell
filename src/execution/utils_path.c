@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 16:39:46 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/27 09:21:35 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ static char	*search_directories(char **directories, char *command)
 	int		i;
 
 	i = 0;
-	// search in every directory
 	while (directories[i] != NULL)
 	{
 		part_path = ft_strjoin(directories[i], "/");
