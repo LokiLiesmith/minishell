@@ -88,40 +88,13 @@ int	build_pipeline(char *line, t_shell *sh)
 	return (0);
 }
 
-
-// static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
-// {
-// 	// (void)pipeline;//TODO build the damn thing;
-// 	print_pipeline(pipeline);
-// 	printf("in t_shell:%d\n", sh->last_exit_code);
-// 	printf("HANDOFF SUCCESSFUL!\n");
-// 	return (0);
-// }
-
 static void	handle_exit(t_shell *sh)
 {
-	write(1, "Exit\n", 5);
+	if (isatty(STDIN_FILENO))
+		write(1, "exit\n", 5);
 	gc_free_all(sh);
 	exit(sh->last_exit_code);
 }
-
-// static void handle_command(char *line, t_shell *sh)
-// {
-// 	add_history(line);
-// 	if (build_pipeline(line, sh) < 0)
-// 	{
-// 		sh->last_exit_code = 2;
-// 		gc_free_scope(sh, GC_TEMP);
-// 		return ;
-// 	}
-// 	if (!sh->pipeline)
-// 	{
-// 		sh->last_exit_code = 0;
-// 		return ;
-// 	}
-// 		sh->last_exit_code = execute_start(sh->pipeline, sh);
-// 		sh->pipeline = NULL;
-// }
 
 static void handle_command(char *line, t_shell *sh)
 {
@@ -149,14 +122,16 @@ static void handle_command(char *line, t_shell *sh)
 	sh->pipeline = NULL;
 }
 
-
 void	shell_loop(t_shell *sh)
 {
 	char	*line;
 
 	while (420)
 	{
-		line = read_until_closed_quotes(sh);
+		if (isatty(STDIN_FILENO))
+			line = read_until_closed_quotes(sh);
+		else
+			line = get_next_line(STDIN_FILENO);
 		if (!line)
 			handle_exit(sh);
 		if (*line && !is_only_spaces(line))
@@ -165,7 +140,3 @@ void	shell_loop(t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 	}
 }
-
-
-
-
