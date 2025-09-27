@@ -10,6 +10,7 @@ static int	is_operator(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
+//TODO <25
 int	ctx_split_len(char *str, char *context, int i)
 {
 	int	len;
@@ -43,31 +44,6 @@ int	ctx_split_len(char *str, char *context, int i)
 	}
 	return (len);
 }
-
-
-// int	ctx_split_len(char *str, char *context, int i)
-// {
-// 	int	len;
-
-// 	len = 0;
-// 	while (str[i])
-// 	{
-// 		if ((context[i] == '0' || context[i] == 'e') && (ft_is_delim(str[i])))
-// 			return (len);
-// 		i++;
-// 		len++;
-// 	}
-// 	return (len);
-// }
-
-/*
-** Returns the length of the next token starting at str[i].
-** - Whitespace just terminates a token (not part of any token).
-** - Operators like | < > & are always their own single-character token.
-** - Otherwise, consumes characters until next delimiter or operator.
-*/
-
-
 
 // void free_list(t_token *head)
 // {
