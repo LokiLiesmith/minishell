@@ -56,14 +56,28 @@ static int	is_redir_token(t_token_type type)
 		|| type == T_APPEND || type == T_HEREDOC);
 }
 
-static t_token	*report_parse_error(t_token *token, int *err)
+// static t_token	*report_parse_error(t_token *token, int *err)
+// {
+// 	*err = 1;
+// 	if (token)
+// 		print_syntax_error(token->raw);
+// 	else
+// 		print_syntax_error(NULL);
+// 	*err = 1;
+// 	return (NULL);
+// }
+
+t_token *report_parse_error(t_token *token, int *err)
 {
-	if (token)
-		print_syntax_error(token->raw);
-	else
-		print_syntax_error(NULL);
-	*err = 1;
-	return (NULL);
+    *err = 1;
+    if (token)
+        fprintf(stderr,
+            "syntax error near unexpected token `%s`\n",
+            token->raw && *token->raw ? token->raw : "newline");
+    else
+        fprintf(stderr,
+            "syntax error near unexpected token `newline`\n");
+    return NULL;
 }
 
 static void	set_builtin(t_cmd *cmd)
@@ -83,7 +97,10 @@ t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err)
 	arglst = NULL;
 	*err = 0;
 	if (!tokens)
-		return (report_parse_error(NULL, err));
+	{
+		*err = 0;//GPT?
+		return (NULL);
+	}
 	if (tokens->type == PIPE)
 		return (report_parse_error(tokens, err));
 	while (tokens && tokens->type != PIPE)
@@ -185,10 +202,11 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 	return (p.head);
 }
 
-void	print_syntax_error(const char *unexpected)
-{
-	if (!unexpected || *unexpected == '\0')
-		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
-	else
-		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
-}
+// void	print_syntax_error(const char *unexpected)
+// {
+// 	if (!unexpected || *unexpected == '\0')
+// 		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
+// 	else
+// 		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
+// }
+
