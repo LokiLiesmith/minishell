@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 22:09:41 by mel               #+#    #+#             */
-/*   Updated: 2025/09/13 01:22:54 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/09/26 19:57:49 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-// #include "../../include/libft/ft_putstr_fd.c"
-// #include "../../include/libft/ft_putchar_fd.c"
-// #include "../../include/libft/ft_strlen.c"
 
 int	builtin_pwd(void)
 {
