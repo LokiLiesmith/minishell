@@ -47,3 +47,17 @@ void	increment_counters(int *i, int *b)
 	(*i)++;
 	(*b)++;
 }
+
+char *get_env_value(t_shell *sh, char *varname)
+{
+	t_env *env;
+	
+	env = sh->env;
+	while (env)
+	{
+		if (ft_strcmp(env->type, varname) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}

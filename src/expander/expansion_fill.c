@@ -40,7 +40,7 @@ static int	handle_var_expansion(t_shell *sh, t_token *t, char *str, t_exp *exp)
 	varname = extract_varname(sh, str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = getenv(varname); //TODO: swap with own get_env_value
+	temp = get_env_value(sh, varname);
 	if (!temp)
 		temp = "";
 	exp->in_exp = true;
