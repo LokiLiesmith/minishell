@@ -185,6 +185,8 @@ int		varname_len(char *str);
 char	*extract_varname(t_shell *sh, char *str, int *i);
 bool	is_valid_var_start(char c);
 bool	is_var_char(char c);
+char	*get_env_value(t_shell *sh, char *varname);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // //							  LEXER										  //

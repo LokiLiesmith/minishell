@@ -79,7 +79,7 @@ static int	handle_var_expansion_len(t_shell *sh, char *str, t_exp *exp)
 	varname = extract_varname(sh, str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = getenv(varname); // TODO: needs to read from env LList not from actual env
+	temp = get_env_value(sh, varname); // TODO: needs to read from env LList not from actual env
 	if (!temp)
 		temp = "";
 	var_len = ft_strlen(temp);

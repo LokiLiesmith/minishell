@@ -1,13 +1,5 @@
 #include "minishell.h"
 
-// void	init_cmd_node(t_cmd_node *node)
-// {
-
-// 	node->cmd->argv = NULL;
-// 	node->cmd->redirs = NULL;
-// 	node->next = NULL;
-// }
-
 void init_cmd_node(t_shell *sh, t_cmd_node *node)
 {
     node->cmd = gc_malloc(sh, sizeof(t_cmd), GC_TEMP);
@@ -55,17 +47,6 @@ static int	is_redir_token(t_token_type type)
 	return (type == T_IN || type == T_OUT
 		|| type == T_APPEND || type == T_HEREDOC);
 }
-
-// static t_token	*report_parse_error(t_token *token, int *err)
-// {
-// 	*err = 1;
-// 	if (token)
-// 		print_syntax_error(token->raw);
-// 	else
-// 		print_syntax_error(NULL);
-// 	*err = 1;
-// 	return (NULL);
-// }
 
 t_token *report_parse_error(t_token *token, int *err)
 {
@@ -145,6 +126,24 @@ t_builtin get_builtin_type(char *s)
 	return (NONE);
 }
 
+static int	is_quoted_empty(t_token *token)
+{
+	int i;
+
+	i = 0;
+	if (!token || !token->value || token->value[0] != '\0')
+		return (0);
+	if (!token->context)
+		return (0);
+	while (token->context[i])
+	{
+		if (token->context[i] == 's' || token->context[i] == 'd')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+//TODO <25
 // gather all WORD tokens into a LL
 int	handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst)
 {
@@ -153,6 +152,11 @@ int	handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst)
 	t_token		*token;
 
 	token = *t;
+	if (token->value[0] == '\0' && !is_quoted_empty(token))
+	{
+		*t = token->next;
+		return 0;
+	}
 	new = gc_malloc(sh, sizeof(t_strlist), GC_TEMP);
 	if (!new || !token || !token->value)
 		return (*err = 1, -1);
@@ -170,7 +174,7 @@ int	handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst)
 	*t = token->next;
 	return (0);
 }
-
+//TODO <25
 t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 {
 	t_pars		p;
