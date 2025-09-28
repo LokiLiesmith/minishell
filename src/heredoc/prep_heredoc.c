@@ -37,10 +37,12 @@ static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 			return (1);
 		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
 		{
+			printf("[DEBUG] heredoc at delim: %s\n", r->delimiter);
 			free(line);
 			break ;
 		}
 		// 	EXPAND STUFF HERE !!
+		printf("[DEBUG] got line!!!: '%s'\n", line);
 		line = expand_heredoc(sh, r, line);
 		write_to_pipe(line, fd_out);
 	}
