@@ -32,8 +32,11 @@ static void    print_redirs(const t_redir_node *head)
         printf("    %s %s", redir_type_str(cur->r.type),
         cur->r.target ? cur->r.target : "(null)");
 		/* If you store an opened fd, show it for debug */
-		if (cur->r.fd == 0 || cur->r.fd == 1 || cur->r.fd == 2)
-			printf("  [fd=%d]", cur->r.fd);
+		// if (cur->r.fd == 0 || cur->r.fd == 1 || cur->r.fd == 2)
+		// 	printf("  [fd=%d]", cur->r.fd);
+        if (cur->r.fd == 0 || cur->r.fd == -1)
+        	printf("  [fd=%d]", cur->r.fd);
+
 		printf("\n");
         cur = cur->next;
     }
