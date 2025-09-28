@@ -100,8 +100,10 @@ static void handle_command(char *line, t_shell *sh)
 {
 	printf("handle_command\n");
 	int	status;
+	int	heredoc_exit;
 
 	add_history(line);
+	heredoc_exit = 0;
 	status = build_pipeline(line, sh);
 	if (status < 0)
 	{
@@ -118,6 +120,7 @@ static void handle_command(char *line, t_shell *sh)
 	}
 	printf("executing\n");
 	print_pipeline(sh->pipeline);
+	heredoc_exit = prepare_heredoc(sh->pipeline, sh);
 	sh->last_exit_code = execute_start(sh->pipeline, sh);
 	sh->pipeline = NULL;
 }

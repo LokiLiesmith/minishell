@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/09/27 21:00:12 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 18:25:43 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,6 @@ int		execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh);
 int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
-
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env);
 void	error_pid(int pipe_fd[2]);
@@ -229,10 +228,14 @@ int		builtin_export(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_pwd(void);
 int		builtin_unset(t_cmd *cmd, t_env *env);
 
-// void	save_redirs(t_cmd *cmd);
+////////////////////////////////////////////////////////////////////////////////
+//								 HEREDOC 									  //
+////////////////////////////////////////////////////////////////////////////////
+
+int prepare_heredoc(t_cmd_node *pipeline, t_shell *sh);
 
 ////////////////////////////////////////////////////////////////////////////////
-//								 MAIN 									  //
+//								 MAIN 										  //
 ////////////////////////////////////////////////////////////////////////////////
 
 void	shell_loop(t_shell *sh);
