@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/09/28 19:51:28 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 21:06:10 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,7 @@ int		wait_for_children(pid_t last_child);
 int		builtin_cd(t_cmd *cmd, t_env *env);
 int		builtin_echo(t_cmd *cmd);
 int		builtin_env(t_cmd *cmd, t_env *env);
+void	builtin_exit(t_shell *sh);
 int		builtin_export(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_pwd(void);
 int		builtin_unset(t_cmd *cmd, t_env *env);

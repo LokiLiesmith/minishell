@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/27 10:29:57 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 21:16:20 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ char	*find_path(t_cmd *cmd, t_env *env)
 	}
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
-	if (!current)
-		return (NULL);
 	if (ft_strncmp(current->type, "PATH", 4) == 0)
 	{
 		directories = ft_split(current->value, ':');

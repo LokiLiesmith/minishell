@@ -60,7 +60,7 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/execution/execution.c src/execution/exec_builtins.c \
 			src/execution/utils_path.c src/execution/utils.c \
 			src/built_ins/cd.c src/built_ins/echo.c \
-			src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c \
+			src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c src/built_ins/exit.c \
 			src/heredoc/prep_heredoc.c
 
 # ========= Resolve chosen set =========

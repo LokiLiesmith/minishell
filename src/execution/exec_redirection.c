@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 14:44:44 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/28 19:50:42 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 21:17:07 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static int	redirect(t_redir_node *redir_node)
 			return (1);
 	}
 	else
-		return (ft_putstr_fd("Uknown redirection\n", 2), 1);
+		return (ft_putstr_fd("uknown redirection\n", 2), 1);
 	return (0);
 }
 

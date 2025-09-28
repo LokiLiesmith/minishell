@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 00:59:34 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 18:48:16 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 20:55:07 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,22 @@ int	builtin_unset(t_cmd *cmd, t_env *env)
 	int		i;
 
 	current = env;
-	i = 0;
+	i = 1;
 	if (cmd->argv[1] == NULL)
 		return (1);
 	while (cmd->argv[i] != NULL)
 	{
-		while (current->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])))
-		{
+		while (current->next->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])))
 			current = current->next;
-		}
-		if (current->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])) == 0)
+		if (current->next->next == NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])) == 0)
 		{
 			temp = current->next;
-			current->next = temp->next;
+			current->next = NULL;
+		}
+		else if (current->next != NULL && ft_strncmp(current->next->type, cmd->argv[i], ft_strlen(cmd->argv[i])) == 0)
+		{
+			temp = current->next->next;
+			current->next = temp;
 		}
 		i++;
 	}
