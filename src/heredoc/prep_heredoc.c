@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 17:06:46 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 18:43:08 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 19:51:21 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,11 @@ static int	read_write_to_pipe(char *delimiter, int fd_out)
 	return (0);
 }
 
-int prepare_heredoc(t_cmd_node *pipeline, t_shell *sh)
+int prepare_heredoc(t_cmd_node *pipeline)
 {
 	t_redir_node	*redir;
 	int				pipe_fd[2];
 	int				pid;
-	int				fd_len;
-	char			*store_fd;
 	
 	redir = pipeline->cmd->redirs;
 	pipe_fd[0] = -1;
@@ -79,11 +77,7 @@ int prepare_heredoc(t_cmd_node *pipeline, t_shell *sh)
 				waitpid(pid, NULL, 0);
 			}
 			redir->r.type = R_IN;
-			store_fd = ft_itoa(pipe_fd[0]);
-			fd_len = ft_strlen(store_fd);
-			redir->r.target = gc_malloc(sh, fd_len + 1, GC_TEMP);
-			redir->r.target[fd_len] = '\0';
-			ft_strlcpy(redir->r.target, store_fd, fd_len);
+			redir->r.fd = pipe_fd[0];
 		}
 		redir = redir->next;
 	}

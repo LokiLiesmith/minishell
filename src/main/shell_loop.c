@@ -119,9 +119,9 @@ static void handle_command(char *line, t_shell *sh)
 		return ;
 	}
 	printf("executing\n");
-	heredoc_exit = prepare_heredoc(sh->pipeline, sh);
+	heredoc_exit = prepare_heredoc(sh->pipeline);
 	printf("heredoc-exit:%d\n", heredoc_exit);
-	print_pipeline(sh->pipeline);
+	// print_pipeline(sh->pipeline);
 
 	sh->last_exit_code = execute_start(sh->pipeline, sh);
 	sh->pipeline = NULL;

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/27 19:42:44 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 18:55:44 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static void	export_print(t_env *env)
 		current = current->next;
 	}
 }
+
 static	int change_export_value(t_shell *sh, t_env *current, char *value)
 {
 	current->value = gc_malloc(sh, ft_strlen(value) + 1, GC_GLOBAL);

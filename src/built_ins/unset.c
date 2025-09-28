@@ -6,13 +6,11 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 00:59:34 by mel               #+#    #+#             */
-/*   Updated: 2025/09/26 19:57:28 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 18:48:16 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-// go through the args to unset vars
 
 int	builtin_unset(t_cmd *cmd, t_env *env)
 {

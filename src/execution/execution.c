@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/27 20:14:09 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 18:53:07 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,22 +42,21 @@
 
 static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_fd_ptr, t_shell *sh)
 {
-	int			pipe_fd[2] = {-1, -1};		// fd[0] - read; fd[1] - write	
+	int			pipe_fd[2];
 	char		*path;
 	char		**env_array;
 	int			prev_fd = *prev_fd_ptr;
 
-	// SINGLE BUILTIN - NO PIPES
+	pipe_fd[0] = -1;
+	pipe_fd[1] = -1;
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
 		return (execute_single_builtin(cmd_node->cmd, env, sh));
 	if (prepare_execve(cmd_node->cmd, env, &path, &env_array))
 		return (1);
-	// printf("%s\n", path);
 	if (cmd_node->next != NULL)
 	{
 		if (pipe(pipe_fd) == -1)
 			return (perror("pipe() error"), 1);
-		// printf("pipe set up\n");
 	}
 	*pid = fork();
 	if (*pid < 0)
@@ -66,14 +65,10 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_f
 	{
 		if (handle_pipe_child(cmd_node, pipe_fd, prev_fd))
 			exit(1);
-		// printf("child ready\n");
 		execute_child(path, cmd_node->cmd, env_array);
 	}
 	else
-	{
-		// printf("i am parent\n");
 		close_pipe_parent(prev_fd, prev_fd_ptr, cmd_node, pipe_fd);
-	}
 	return (0);
 }
 
@@ -88,7 +83,6 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 	env = sh->env;
 	curr = cmd_node;
 	prev_fd = -1;
-
 	while (curr)
 	{
 		if (execute_cmd(curr, env, &pid, &prev_fd, sh))
@@ -101,5 +95,5 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 		prev_fd = -1;		
 	}
 	last_status = wait_for_children(pid);
-	return (WEXITSTATUS(last_status)); // returns exit code of the last command
+	return (WEXITSTATUS(last_status));
 }
