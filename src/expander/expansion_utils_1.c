@@ -16,7 +16,7 @@ void	init_exp_struct(t_exp *exp)
 {
 	exp->i = 0;
 	exp->j = 0;
-	// exp->k = 0;
+	exp->k = 0;
 	exp->count = 0;
 	exp->in_sq = false;
 	exp->in_dq = false;

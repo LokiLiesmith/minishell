@@ -119,7 +119,7 @@ static void handle_command(char *line, t_shell *sh)
 		return ;
 	}
 	printf("executing\n");
-	heredoc_exit = prepare_heredoc(sh->pipeline);
+	heredoc_exit = prepare_heredoc(sh, sh->pipeline);
 	printf("heredoc-exit:%d\n", heredoc_exit);
 	// print_pipeline(sh->pipeline);
 

@@ -2,7 +2,7 @@
 
 static int	expand_and_strip(t_shell *sh, t_token *t, int exp_len);
 
-static size_t	write_exit_code(char *dst, int last_exit_code)
+size_t	write_exit_code(char *dst, int last_exit_code)
 {
 	char	buffer[12];
 	long	num;

@@ -36,7 +36,13 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 	if (!new)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
-	new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+	if (new->r.type == R_HEREDOC)
+	{
+		new->r.delimiter = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+		new->r.heredoc_quoted = token_is_quoted((*t)->next);
+	}
+	else
+		new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
 	if (!new->r.target)
 		return (*err = 1, -1);
 	new->r.fd = set_fd(new->r.type);

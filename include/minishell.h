@@ -164,7 +164,7 @@ typedef struct s_exp
 {
 	int		i;
 	int		j;
-	// int		k;
+	int		k;
 	int		count;
 	bool	in_dq;
 	bool	in_sq;
@@ -180,6 +180,8 @@ void	increment_counters(int *i, int *b);
 char	get_context(bool in_sq, bool in_dq, bool in_exp);
 void	update_quotes(char c, bool *in_sq, bool *in_dq);
 void	init_exp_struct(t_exp *exp);
+size_t	write_exit_code(char *dst, int last_exit_code);
+
 
 // var_utils.c
 int		get_error_len(int last_exit_code);
@@ -234,7 +236,11 @@ int		builtin_unset(t_cmd *cmd, t_env *env);
 //								 HEREDOC 									  //
 ////////////////////////////////////////////////////////////////////////////////
 
-int prepare_heredoc(t_cmd_node *pipeline);
+// int		prepare_heredoc(t_cmd_node *pipeline);
+int		prepare_heredoc(t_shell *sh, t_cmd_node *pipeline);
+char	*expand_heredoc(t_shell *sh, t_redir *r, char *line);
+char	*expand_string(t_shell *sh, char *str);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //								 MAIN 										  //

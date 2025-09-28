@@ -23,7 +23,7 @@ static void	write_to_pipe(char *line, int fd_out)
 	ft_putchar_fd('\n', fd_out);
 }
 
-static int	read_write_to_pipe(char *delimiter, int fd_out)
+static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 {
 	char	*line;
 
@@ -35,18 +35,19 @@ static int	read_write_to_pipe(char *delimiter, int fd_out)
 			line = get_next_line(STDIN_FILENO);
 		if (!line)
 			return (1);
-		if (delimiter && ft_strcmp(line, delimiter) == 0)
+		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
 		{
 			free(line);
 			break ;
 		}
 		// 	EXPAND STUFF HERE !!
+		line = expand_heredoc(sh, r, line);
 		write_to_pipe(line, fd_out);
 	}
 	return (0);
 }
 
-int prepare_heredoc(t_cmd_node *pipeline)
+int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
 {
 	t_redir_node	*redir;
 	int				pipe_fd[2];
@@ -66,7 +67,7 @@ int prepare_heredoc(t_cmd_node *pipeline)
 				return (error_pid(pipe_fd), perror("fork() error"), 1);
 			else if (pid == 0) // child
 			{
-				if (read_write_to_pipe(redir->r.delimiter, pipe_fd[1]))
+				if (read_write_to_pipe(sh, &redir->r, pipe_fd[1]))
 					return (close(pipe_fd[0]), exit(1), 1);
 				close(pipe_fd[0]);
 				exit(0);

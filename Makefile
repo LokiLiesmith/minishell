@@ -61,7 +61,7 @@ SRC_COMMON := src/lexer/scan_operator.c src/lexer/scan_word.c src/lexer/tokenize
 			src/execution/utils_path.c src/execution/utils.c \
 			src/built_ins/cd.c src/built_ins/echo.c \
 			src/built_ins/env.c src/built_ins/export.c src/built_ins/pwd.c src/built_ins/unset.c src/built_ins/exit.c \
-			src/heredoc/prep_heredoc.c
+			src/heredoc/prep_heredoc.c src/heredoc/expand_heredoc.c
 
 # ========= Resolve chosen set =========
 SELECTED_SRC := $(SRC_$(UC_T)) $(SRC_COMMON)
