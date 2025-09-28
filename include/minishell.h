@@ -82,6 +82,7 @@ typedef struct s_redir
 	char				*target;	//filepath? destination?
 	char				*delimiter;
 	int					fd;			//0, 1
+	bool				heredoc_quoted;
 }	t_redir;
 
 //Redirection LinkedList (bunch of t_redir nodes pointing to the next one)

@@ -9,6 +9,22 @@ static int	set_fd(t_redir_type t)
 	return (0);
 }
 
+static bool token_is_quoted(t_token *t)
+{
+	int	i;
+	
+	if (!t || !t->context)
+		return (false);
+	i = 0;
+	while (t->context[i])
+	{
+		if (t->context[i] == 'd' || t->context[i] == 's')
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
 //Handle token, advance 2(first valuable nextnode)
 int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 {
@@ -20,14 +36,7 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 	if (!new)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
-
-	if (new->r.type == R_HEREDOC)
-	{
-		new->r.delimiter = gc_strdup(sh, (*t)->next->value, GC_TEMP);
-		// check quote state?
-	}
-	else
-		new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+	new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
 	if (!new->r.target)
 		return (*err = 1, -1);
 	new->r.fd = set_fd(new->r.type);
