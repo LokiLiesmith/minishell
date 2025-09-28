@@ -80,6 +80,7 @@ typedef struct s_redir
 {
 	t_redir_type		type;		//IN, OUT, APPEND, HEREDOC
 	char				*target;	//filepath? destination?
+	char				*delimiter;
 	int					fd;			//0, 1
 }	t_redir;
 
