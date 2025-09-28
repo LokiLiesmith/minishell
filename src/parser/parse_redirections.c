@@ -2,9 +2,11 @@
 
 static int	set_fd(t_redir_type t)
 {
-	if (t == R_IN || t == R_HEREDOC)
-		return (0);
-	return (1);
+	if (t != R_HEREDOC)
+		return (-1);
+	// if (t == R_IN || t == R_HEREDOC)
+		// return (0);
+	return (0);
 }
 
 //Handle token, advance 2(first valuable nextnode)
@@ -13,19 +15,19 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 	t_redir_node	*new;
 
 	if (!(*t)->next || (*t)->next->type != WORD)
-	{
-		// if (!(*t)->next)
-		// 	print_syntax_error(NULL);
-		// else
-		// 	print_syntax_error((*t)->next->raw);
-		// *err = 1;
 		return (report_parse_error((*t)->next, err), -1);
-	}
 	new = gc_malloc(sh, sizeof(t_redir_node), GC_TEMP);
 	if (!new)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
-	new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+
+	if (new->r.type == R_HEREDOC)
+	{
+		new->r.delimiter = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+		// check quote state?
+	}
+	else
+		new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
 	if (!new->r.target)
 		return (*err = 1, -1);
 	new->r.fd = set_fd(new->r.type);
