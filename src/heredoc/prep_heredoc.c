@@ -89,7 +89,7 @@ int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
                     close(pipe_fd[0]);
                     return (1); // abort pipeline
                 }
-				if (WIFEXITED(status) && WEXITSTATUS(status) != 0) //Ctrl-D
+				if (WIFEXITED(status) && WEXITSTATUS(status) != 0) //Ctrl-D case, prints whast inside but warns
                     fprintf(stderr, "warning: heredoc delimited by EOF\n");
 			}
 			redir->r.type = R_IN;
