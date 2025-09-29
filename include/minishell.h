@@ -248,6 +248,9 @@ char	*expand_string(t_shell *sh, char *str);
 
 void	shell_loop(t_shell *sh);
 void	signal_setup(void);
+void	set_child_signals(void);
+void	set_parent_wait_signals(void);
+
 int		build_pipeline(char *line, t_shell *sh);
 
 ////////////////////////////////////////////////////////////////////////////////
