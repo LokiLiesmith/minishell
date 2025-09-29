@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander_test.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 16:35:37 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/01 23:51:04 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/09/28 21:29:04 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ int	main(void)
 		}
 		// printf("%s\n", input);
 		expand_tokens(tokens, last_exit_code);
-		print_tokens(tokens, last_exit_code);
+		// print_tokens(tokens, last_exit_code);
 		free_tokens(tokens);
 		free(input);
 	}

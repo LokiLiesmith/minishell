@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 18:55:44 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 21:27:43 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
 	{
 		value = ft_strrchr(cmd->argv[1], '=');
 		if (!value)
-			return (ft_putstr_fd("Invalid input\n", 2), 1);
+			return (ft_putstr_fd("invalid input\n", 2), 1);
 		value = value + 1;
 		*(value - 1)= '\0';
 		type = cmd->argv[1];

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/09/28 21:06:10 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/28 21:28:33 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -332,8 +332,8 @@ void	gc_fatal(void);
 ////////////////////////////////////////////////////////////////////////////////
 //								  TESTING									  //
 ////////////////////////////////////////////////////////////////////////////////
-void	print_tokens(t_token *head, int last_exit_code);
-void	print_env(t_env *env);
-void	print_pipeline(const t_cmd_node *pipeline);
+// void	print_tokens(t_token *head, int last_exit_code);
+// void	print_env(t_env *env);
+// void	print_pipeline(const t_cmd_node *pipeline);
 
 #endif

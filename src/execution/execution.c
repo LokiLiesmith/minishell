@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 18:53:07 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 15:17:51 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_f
 
 	pipe_fd[0] = -1;
 	pipe_fd[1] = -1;
+	// if (ft_strcmp(cmd_node->cmd->argv[0], "") == 0)
+	// 	return (ft_putstr_fd("command not found\n", 2), 1);
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
 		return (execute_single_builtin(cmd_node->cmd, env, sh));
 	if (prepare_execve(cmd_node->cmd, env, &path, &env_array))

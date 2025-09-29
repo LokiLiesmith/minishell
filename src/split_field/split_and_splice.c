@@ -36,7 +36,7 @@ t_token	*ctx_new_token(t_shell *sh, const t_token *old, int start, int len)
 	new->raw = old->raw;	//Sharing pointer, since GC will free?
 	new->was_expanded = true;
 	new->next = NULL;
-	printf("[split] '%s'\n", new->value);
+	// printf("[split] '%s'\n", new->value);
 	return (new);
 }
 
