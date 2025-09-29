@@ -37,12 +37,9 @@ static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 			return (1);
 		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
 		{
-			// printf("[DEBUG] heredoc at delim: %s\n", r->delimiter);
 			free(line);
 			break ;
 		}
-		// 	EXPAND STUFF HERE !!
-		// printf("[DEBUG] got line!!!: '%s'\n", line);
 		line = expand_heredoc(sh, r, line);
 		write_to_pipe(line, fd_out);
 	}
@@ -54,33 +51,56 @@ int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
 	t_redir_node	*redir;
 	int				pipe_fd[2];
 	int				pid;
+<<<<<<< HEAD
 	// int status;
+=======
+	int				status;
+>>>>>>> heredoc-signals
 	
 	redir = pipeline->cmd->redirs;
-	pipe_fd[0] = -1;
-	pipe_fd[1] = -1;
 	while (redir != NULL)
 	{
 		if (redir->r.type == R_HEREDOC)
 		{
+			pipe_fd[0] = -1;
+			pipe_fd[1] = -1;
 			if (pipe(pipe_fd) == -1)
-				return (1);
+				return (perror("pipe"), 1);
 			pid = fork();
 			if (pid < 0)
-				return (error_pid(pipe_fd), perror("fork() error"), 1);
+				return (error_pid(pipe_fd), perror("fork"), 1);
 			else if (pid == 0) // child
 			{
-				if (read_write_to_pipe(sh, &redir->r, pipe_fd[1]))
-					return (close(pipe_fd[0]), exit(1), 1);
+				set_child_signals();
 				close(pipe_fd[0]);
+				if (read_write_to_pipe(sh, &redir->r, pipe_fd[1]))
+				{
+					close(pipe_fd[1]);
+					exit(1);
+				}
+				close(pipe_fd[1]);
 				exit(0);
 			}
 			else // parent
 			{
+				set_parent_wait_signals();
 				close(pipe_fd[1]);
+<<<<<<< HEAD
 				redir->r.type = R_IN;
 				redir->r.fd = pipe_fd[0];
 				waitpid(pid, NULL, 0);
+=======
+				waitpid(pid, &status, 0);
+				signal_setup(); //revert signal handling to regular shell
+				if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+                {
+                    sh->last_exit_code = 130;
+                    close(pipe_fd[0]);
+                    return (1); // abort pipeline
+                }
+				if (WIFEXITED(status) && WEXITSTATUS(status) != 0) //Ctrl-D case, prints whast inside but warns
+                    fprintf(stderr, "warning: heredoc delimited by EOF\n");
+>>>>>>> heredoc-signals
 			}
 			// redir->r.type = R_IN;
 			// redir->r.fd = pipe_fd[0];
