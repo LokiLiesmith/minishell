@@ -73,14 +73,14 @@ static void	init_splice_vars(t_splice *s, t_token **t)
 	s->new_tail = NULL;
 }
 
-int	ctx_split_to_list(t_shell *sh, t_token **t)
+int ctx_split_to_list(t_shell *sh, t_token **t)
 {
-	t_splice	s;
-	t_token		*new;
+    t_splice s;
+    t_token  *new;
 
 	if (!t || !*t || !(*t)->value || !(*t)->context)
-		return (0);
-	init_splice_vars(&s, t);
+		return 0;
+    init_splice_vars(&s, t);
 	while (s.old && s.old->value[s.i])
 	{
 		s.len = ctx_split_len(s.old->value, s.old->context, s.i);
@@ -88,16 +88,18 @@ int	ctx_split_to_list(t_shell *sh, t_token **t)
 		{
 			new = ctx_new_token(sh, s.old, s.i, s.len);
 			if (!new)
-				return (-1);
-			if (new->value[0] != '\0')
-				token_append(&s.new_head, &s.new_tail, new);
+				return -1;
+            if (new->value[0] != '\0' || is_quoted_empty(new))
+                token_append(&s.new_head, &s.new_tail, new);
 			s.i += s.len;
 		}
 		else
+        {
 			s.i++;
-	}
+    	}
+    }
 	if (!s.new_head || !s.new_tail)
-		return (0);
-	splice_list(t, &s.new_head, &s.new_tail);
-	return (0);
+		return 0;
+    splice_list(t, &s.new_head, &s.new_tail);
+    return 0;
 }

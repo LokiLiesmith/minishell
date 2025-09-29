@@ -35,7 +35,12 @@ static char	**convert_arglst(t_shell *sh, t_strlist *list)
 	i = 0;
 	while (list)
 	{
-		argv[i++] = list->str;
+		argv[i] = list->str;
+		if (argv[i][0] == '\0')
+            printf("[argv %d] quoted-empty token: ''\n", i);
+        else
+            printf("[argv %d] '%s'\n", i, argv[i]);
+		i++;
 		list = list->next;
 	}
 	argv[i] = NULL;
@@ -126,21 +131,14 @@ t_builtin get_builtin_type(char *s)
 	return (NONE);
 }
 
-static int	is_quoted_empty(t_token *token)
+int	is_quoted_empty(t_token *token)
 {
-	int i;
-
-	i = 0;
-	if (!token || !token->value || token->value[0] != '\0')
+	if (!token || !token->value)
 		return (0);
-	if (!token->context)
+	if (token->value[0] != '\0')
 		return (0);
-	while (token->context[i])
-	{
-		if (token->context[i] == 's' || token->context[i] == 'd')
-			return (1);
-		i++;
-	}
+	if (token->context && (token->context[0] == 's' || token->context[0] == 'd'))
+		return (1);
 	return (0);
 }
 //TODO <25
@@ -205,12 +203,3 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 	}
 	return (p.head);
 }
-
-// void	print_syntax_error(const char *unexpected)
-// {
-// 	if (!unexpected || *unexpected == '\0')
-// 		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
-// 	else
-// 		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
-// }
-

@@ -9,3 +9,5 @@ input								result							status	fix
 echo "" or ls | " "					Segfault;						[x]
 echo mark " " > test.txt -> mark	(3 spaces, bash produces 2);	[x]		parsing-> handle_word_tkn was pushing
 																			an extra empty element into argv when it was empty and unquoted
+"" or _""							doesnt produce a token			[x]		is_quoted_empty, context[len] has to be 2 for '\0'(and not an exact copy of value).
+																			added tag_quoted_empty since I was never reaching the case because of value being empty

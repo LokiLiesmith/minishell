@@ -144,6 +144,20 @@ static int	handle_dollar(t_shell *sh, t_token *t, char *str, t_exp *exp)
 		handle_char(t, str, exp);
 	return (0);
 }
+//empty token "" case
+static void tag_quoted_empty(t_token *t)
+{
+	if (!t || !t->raw)
+		return;
+
+	if (t->value[0] == '\0')
+	{
+		if (ft_strchr(t->raw, '"'))
+			strcpy(t->context, "d");
+		else if (ft_strchr(t->raw, '\''))
+			strcpy(t->context, "s");
+	}
+}
 
 static int	expand_and_strip(t_shell *sh, t_token *t, int exp_len)
 {
@@ -151,7 +165,7 @@ static int	expand_and_strip(t_shell *sh, t_token *t, int exp_len)
 	char	*str;
 
 	t->value = gc_calloc(sh, exp_len + 1, sizeof(char), GC_TEMP);
-	t->context = gc_calloc(sh, exp_len + 1, sizeof(char), GC_TEMP);
+	t->context = gc_calloc(sh, exp_len + 2, sizeof(char), GC_TEMP);
 	if (!t->value || !t->context)
 		return (-1);
 	str = t->raw;
@@ -170,5 +184,6 @@ static int	expand_and_strip(t_shell *sh, t_token *t, int exp_len)
 	}
 	t->value[exp.j] = '\0';
 	t->context[exp.j] = '\0';
+	tag_quoted_empty(t);
 	return (0);
 }

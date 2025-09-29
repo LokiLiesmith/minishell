@@ -295,6 +295,8 @@ t_builtin		get_builtin_type(char *s);
 t_redir_type	map_token_to_redir(t_token_type t);
 void			append_redir(t_redir_node **head, t_redir_node *new);
 t_token			*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err);
+int				is_quoted_empty(t_token *token);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  GARBAGE COLLECTOR							  //
