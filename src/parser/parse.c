@@ -36,10 +36,10 @@ static char	**convert_arglst(t_shell *sh, t_strlist *list)
 	while (list)
 	{
 		argv[i] = list->str;
-		if (argv[i][0] == '\0')
-            printf("[argv %d] quoted-empty token: ''\n", i);
-        else
-            printf("[argv %d] '%s'\n", i, argv[i]);
+		// if (argv[i][0] == '\0')
+        //     printf("[argv %d] quoted-empty token: ''\n", i);
+        // else
+        //     printf("[argv %d] '%s'\n", i, argv[i]);
 		i++;
 		list = list->next;
 	}

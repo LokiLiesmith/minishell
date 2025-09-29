@@ -30,19 +30,19 @@ static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 	while (1)
 	{
 		if (is_atty())
-			line = readline("> ");
+			line = readline("heredoc> ");
 		else
 			line = get_next_line(STDIN_FILENO);
 		if (!line)
 			return (1);
 		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
 		{
-			printf("[DEBUG] heredoc at delim: %s\n", r->delimiter);
+			// printf("[DEBUG] heredoc at delim: %s\n", r->delimiter);
 			free(line);
 			break ;
 		}
 		// 	EXPAND STUFF HERE !!
-		printf("[DEBUG] got line!!!: '%s'\n", line);
+		// printf("[DEBUG] got line!!!: '%s'\n", line);
 		line = expand_heredoc(sh, r, line);
 		write_to_pipe(line, fd_out);
 	}

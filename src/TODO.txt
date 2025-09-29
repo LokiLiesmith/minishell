@@ -19,6 +19,27 @@ HEREDOC PREP after the pipeline is built, then check for heredoc node and handle
 
 [ ] HEREDOC
 
+[ ] Signals
+
+In the child: you want SIGINT (Ctrl-C) to kill the child → restore SIG_DFL.
+In the parent: you must not let Ctrl-C kill your shell. Usually you ignore SIGINT while waiting.
+After waitpid, restore the normal signal handler.
+Exit code handling
+You currently do waitpid(pid, NULL, 0).
+But you need to check if the child exited due to SIGINT.
+If yes → set sh->last_exit_code = 130, close pipe_fd[0], abort execution of this pipeline.
+
+[ ] Multiple heredocs
+
+With your current loop, every heredoc creates a new pipe.
+That’s fine — but remember: only the last one will actually get duped to stdin.
+So after dup2, you must close all old heredoc fds that weren’t used.
+
+[ ] Resource cleanup
+
+In the child: you should close both ends of the pipe except the one you’re writing to.
+In the parent: if child fails, don’t forget to close pipe_fd[0] to avoid leaks
+
 ////////////////////////////////////////////////////////////////////////////////////////
 ERROR handling
 	[x] syntaxx ERROR (unmatched operator, nothing after a |)

@@ -18,3 +18,13 @@ void	signal_setup(void)
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
+
+// void	set_child_signals(void)
+// {
+// 	struct sigaction	sa;
+
+// 	ft_memset(&sa, 0, sizeof(sa));
+// 	sa.sa_handler = SIG_DFL;
+// 	sigaction(SIGINT, &sa, NULL);
+
+// }

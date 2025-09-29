@@ -42,7 +42,7 @@ static char	*read_until_closed_quotes(t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 		if (!open_quotes)
 			break ;
-		line = readline("> ");
+		line = readline("quote> ");
 		if (!line)
 		{
 			free(input);
@@ -56,7 +56,7 @@ static char	*read_until_closed_quotes(t_shell *sh)
 
 int	build_pipeline(char *line, t_shell *sh)
 {
-	printf("build_pipeline\n");
+	// printf("build_pipeline\n");
 	t_token	*tokens;
 	bool	open_quotes;
 
@@ -66,7 +66,7 @@ int	build_pipeline(char *line, t_shell *sh)
 	{
 		if (open_quotes)
 		{
-			printf("open_quotes-> return -1\n");
+			// printf("open_quotes-> return -1\n");
 			return (-1);
 		}
 		sh->pipeline = NULL;
@@ -74,14 +74,14 @@ int	build_pipeline(char *line, t_shell *sh)
 	}
 	if (expand_tokens(sh, &tokens) < 0)
 	{
-		printf("expand_tokens < 0\n");
+		// printf("expand_tokens < 0\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
 	sh->pipeline = parse(tokens, sh);
 	if (!sh->pipeline)
 	{
-		printf("!sh->pipeline\n");
+		// printf("!sh->pipeline\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
@@ -98,7 +98,7 @@ static void	handle_exit(t_shell *sh)
 
 static void handle_command(char *line, t_shell *sh)
 {
-	printf("handle_command\n");
+	// printf("handle_command\n");
 	int	status;
 	int	heredoc_exit;
 
@@ -107,19 +107,20 @@ static void handle_command(char *line, t_shell *sh)
 	status = build_pipeline(line, sh);
 	if (status < 0)
 	{
-		printf("status < 0\n");
+		// printf("status < 0\n");
 		sh->last_exit_code = 2;
 		gc_free_scope(sh, GC_TEMP);
 		return ;
 	}
 	if (!sh->pipeline)
 	{
-		printf("!sh->pipeline\n");
+		// printf("!sh->pipeline\n");
 		sh->last_exit_code = 0;
 		return ;
 	}
-	printf("executing\n");
+	printf("prepare_heredoc\n");
 	heredoc_exit = prepare_heredoc(sh, sh->pipeline);
+	printf("executing\n");
 	printf("heredoc-exit:%d\n", heredoc_exit);
 	// print_pipeline(sh->pipeline);
 
