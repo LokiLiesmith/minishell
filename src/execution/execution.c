@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/29 15:17:51 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 16:04:51 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_f
 	pipe_fd[0] = -1;
 	pipe_fd[1] = -1;
 	// if (ft_strcmp(cmd_node->cmd->argv[0], "") == 0)
-	// 	return (ft_putstr_fd("command not found\n", 2), 1);
+		// return (ft_putstr_fd("command not found\n", 2), 1);
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
 		return (execute_single_builtin(cmd_node->cmd, env, sh));
 	if (prepare_execve(cmd_node->cmd, env, &path, &env_array))
@@ -81,12 +81,23 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 	int 		last_status;
 	t_cmd_node	*curr;
 	int			prev_fd;
+	int			flag;
 
 	env = sh->env;
 	curr = cmd_node;
 	prev_fd = -1;
+	flag = 0;
 	while (curr)
 	{
+		if (ft_strcmp(curr->cmd->argv[0], "") == 0)
+		{
+			// ft_putstr_fd(" : command not found\n", 2);
+			flag = 1;
+			if (curr->next != NULL)
+				curr = curr->next;
+			else
+				return (ft_putstr_fd(" : command not found\n", 2), 127);
+		}
 		if (execute_cmd(curr, env, &pid, &prev_fd, sh))
 			return (1);
 		curr = curr->next;
@@ -97,5 +108,7 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 		prev_fd = -1;		
 	}
 	last_status = wait_for_children(pid);
+	if (flag)
+		ft_putstr_fd(" : command not found\n", 2);
 	return (WEXITSTATUS(last_status));
 }

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 21:27:43 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 16:29:52 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
 		export_print(env);
 	else
 	{
+		if (cmd->argv[1][0] == '=' || cmd->argv[1][0] == '\0')
+			return (ft_putstr_fd("not a valid identifier\n", 2), 1);
 		value = ft_strrchr(cmd->argv[1], '=');
 		if (!value)
 			return (ft_putstr_fd("invalid input\n", 2), 1);
