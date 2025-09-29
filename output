@@ -1,0 +1,9 @@
+COMMAND     PID USER   FD   TYPE DEVICE  SIZE/OFF                NODE NAME
+minishell 19035  mel  cwd    DIR    1,4       288         12895373324 /Users/mel/Documents/minishell_git_repo/minishell/bin
+minishell 19035  mel  txt    REG    1,4    170056         12895373961 /Users/mel/Documents/minishell_git_repo/minishell/bin/minishell
+minishell 19035  mel  txt    REG    1,4    295656         12895327800 /usr/local/Cellar/readline/8.3.1/lib/libreadline.8.3.dylib
+minishell 19035  mel  txt    REG    1,4   2547856 1152921500312766763 /usr/lib/dyld
+minishell 19035  mel  txt    REG    1,4   3159136         12894588751 /Library/Developer/CommandLineTools/usr/lib/clang/12.0.5/lib/darwin/libclang_rt.asan_osx_dynamic.dylib
+minishell 19035  mel    0u   CHR   16,3 0t3047048                 653 /dev/ttys003
+minishell 19035  mel    1u   CHR   16,3 0t3047048                 653 /dev/ttys003
+minishell 19035  mel    2u   CHR   16,3 0t3047048                 653 /dev/ttys003

@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 17:06:46 by mel               #+#    #+#             */
-/*   Updated: 2025/09/28 23:34:53 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 19:01:24 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,7 @@ int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
 	t_redir_node	*redir;
 	int				pipe_fd[2];
 	int				pid;
-<<<<<<< HEAD
-	// int status;
-=======
 	int				status;
->>>>>>> heredoc-signals
 	
 	redir = pipeline->cmd->redirs;
 	while (redir != NULL)
@@ -85,11 +81,6 @@ int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
 			{
 				set_parent_wait_signals();
 				close(pipe_fd[1]);
-<<<<<<< HEAD
-				redir->r.type = R_IN;
-				redir->r.fd = pipe_fd[0];
-				waitpid(pid, NULL, 0);
-=======
 				waitpid(pid, &status, 0);
 				signal_setup(); //revert signal handling to regular shell
 				if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
@@ -100,10 +91,9 @@ int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
                 }
 				if (WIFEXITED(status) && WEXITSTATUS(status) != 0) //Ctrl-D case, prints whast inside but warns
                     fprintf(stderr, "warning: heredoc delimited by EOF\n");
->>>>>>> heredoc-signals
 			}
-			// redir->r.type = R_IN;
-			// redir->r.fd = pipe_fd[0];
+			redir->r.type = R_IN;
+			redir->r.fd = pipe_fd[0];
 		}
 		redir = redir->next;
 	}

@@ -118,10 +118,6 @@ static void handle_command(char *line, t_shell *sh)
 		sh->last_exit_code = 0;
 		return ;
 	}
-<<<<<<< HEAD
-	// printf("executing\n");
-	heredoc_exit = prepare_heredoc(sh, sh->pipeline);
-=======
 	printf("prepare_heredoc\n");
 	// heredoc_exit = prepare_heredoc(sh, sh->pipeline);
 	if (prepare_heredoc(sh, sh->pipeline))
@@ -131,7 +127,6 @@ static void handle_command(char *line, t_shell *sh)
 	}
 	// signal_setup(); //done in the heredoc itself)
 	printf("executing\n");
->>>>>>> heredoc-signals
 	// printf("heredoc-exit:%d\n", heredoc_exit);
 	// print_pipeline(sh->pipeline);
 
