@@ -13,18 +13,31 @@ void	signal_setup(void)
 {
 	struct sigaction	sa;
 
-	ft_memset(&sa, 0, sizeof(sa));
+	ft_memset(&sa, 0, sizeof(sa)); //zero errything
 	sa.sa_handler = handle_sigint;
+	// sigemptyset(&sa.sa_mask);
+	// sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
-// void	set_child_signals(void)
-// {
-// 	struct sigaction	sa;
+void	set_child_signals(void)
+{
+	struct sigaction	sa;
 
-// 	ft_memset(&sa, 0, sizeof(sa));
-// 	sa.sa_handler = SIG_DFL;
-// 	sigaction(SIGINT, &sa, NULL);
+	ft_memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = SIG_DFL;
+	sigaction(SIGINT, &sa, NULL);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa, NULL);
+}
 
-// }
+void set_parent_wait_signals(void)
+{
+	struct sigaction	sa;
+	
+	ft_memset(&sa, 0, sizeof(sa));
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGINT, &sa, NULL);
+}
