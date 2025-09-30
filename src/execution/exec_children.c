@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:44 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/28 22:21:49 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 19:29:53 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 void	execute_child(char *path, t_cmd *cmd, char **env_array)
 {
-	if (!path || !cmd->argv || !env_array)
+	if (!path)
+		exit(126);
+	if (!cmd->argv || !env_array)
 		exit(1);
 	if (cmd->redirs && handle_redirections(cmd))
     	exit(1);
 	if (execve(path, cmd->argv, env_array))
 	{
 		perror("execve() error");
-		exit(EXIT_FAILURE); // return 127?
+		exit(127);
 	}
 }

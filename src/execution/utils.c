@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/29 15:25:00 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 19:27:13 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array)
 	// || ft_strcmp(cmd->argv[0], "") == 0
 	*path = find_path(cmd, env);
 	if (!*path)
-		return (ft_putstr_fd("command not found\n", 2), 1);
+		return (ft_putstr_fd("command not found\n", 2), 127);
 	*env_array = env_to_array(env);
 	if (!*env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);

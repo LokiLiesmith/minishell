@@ -6,7 +6,7 @@
 /*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/09/29 16:04:51 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/29 19:35:30 by mel              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid, int *prev_f
 	if (is_builtin(cmd_node->cmd) && cmd_node->next == NULL)
 		return (execute_single_builtin(cmd_node->cmd, env, sh));
 	if (prepare_execve(cmd_node->cmd, env, &path, &env_array))
-		return (1);
+		return (sh->last_exit_code = 127, 1); // 127
 	if (cmd_node->next != NULL)
 	{
 		if (pipe(pipe_fd) == -1)
