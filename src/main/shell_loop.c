@@ -118,7 +118,7 @@ static void handle_command(char *line, t_shell *sh)
 		sh->last_exit_code = 0;
 		return ;
 	}
-	printf("prepare_heredoc\n");
+	// printf("prepare_heredoc\n");
 	// heredoc_exit = prepare_heredoc(sh, sh->pipeline);
 	if (prepare_heredoc(sh, sh->pipeline))
 	{
@@ -126,7 +126,7 @@ static void handle_command(char *line, t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 	}
 	// signal_setup(); //done in the heredoc itself)
-	printf("executing\n");
+	// printf("executing\n");
 	// printf("heredoc-exit:%d\n", heredoc_exit);
 	// print_pipeline(sh->pipeline);
 
