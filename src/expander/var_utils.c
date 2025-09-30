@@ -43,7 +43,7 @@ char	*extract_varname(t_shell *sh, char *str, int *i)
 		varname[k++] = str[j++];
 	varname[k] = '\0';
 	*i = j;
-	// printf("%s\n", varname);
+	// printf("EXTRACT VARNAME%s\n", varname);
 	return(varname);
 }
 
