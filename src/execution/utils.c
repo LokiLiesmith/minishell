@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/29 19:27:13 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/30 19:56:17 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ char	**env_to_array(t_env *env)
 {
 	char	**env_array;
 	char	*temp;
+	char	*temp2;
 	t_env	*current;
 	int		i;
 	size_t	env_len;
@@ -56,20 +57,26 @@ char	**env_to_array(t_env *env)
 	while (current != NULL)
 	{
 		temp = ft_strjoin(current->type, "=");
-		env_array[i] = ft_strjoin(temp, current->value);
+		temp2 = ft_strjoin(temp, current->value);
+		env_array[i] = temp2; // ft_strjoin(temp, current->value);
 		free(temp);
+		free(temp2);
 		i++;
 		current = current->next;
 	}
 	return (env_array);
 }
 
-int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array)
+int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array, t_shell *sh)
 {
 	// || ft_strcmp(cmd->argv[0], "") == 0
 	*path = find_path(cmd, env);
 	if (!*path)
-		return (ft_putstr_fd("command not found\n", 2), 127);
+	{
+		ft_putstr_fd("command not found\n", 2);
+		sh->last_exit_code = 127;
+		return (127);
+	}
 	*env_array = env_to_array(env);
 	if (!*env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);

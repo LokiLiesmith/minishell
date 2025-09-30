@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 20:58:47 by mel               #+#    #+#             */
-/*   Updated: 2025/09/29 16:55:55 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/30 19:19:07 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	builtin_exit(t_shell *sh, t_cmd *cmd)
 			sh->last_exit_code = ft_atoi(cmd->argv[1]);
 		else
 		{
-			sh->last_exit_code = 255;
+			sh->last_exit_code = 2; // 255 for mac
 			ft_putstr_fd("exit: numeric argument required\n", 2);
 			clean_exit(sh);
 		}

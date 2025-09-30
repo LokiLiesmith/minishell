@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/09/29 16:41:42 by mel              ###   ########.fr       */
+/*   Updated: 2025/09/30 19:33:44 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ int		ft_is_operator(int c);
 int		execute_start(t_cmd_node *node, t_shell *sh);
 int		is_builtin(t_cmd *cmd);
 int		execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh);
-int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array);
+int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array, t_shell *sh);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
 char	*find_path(t_cmd *cmd, t_env *env);
