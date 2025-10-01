@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtins.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 22:04:23 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/29 16:41:25 by mel              ###   ########.fr       */
+/*   Updated: 2025/10/01 01:41:12 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int	find_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 	else if (cmd->builtin == EXIT)
 		builtin_exit(sh, cmd);
 	ft_putstr_fd("command not found\n", 2);
+	sh->last_exit_code = 127;
 	return (1);
 }
 // void save_fds(int saved_stdin, int saved_stdout)

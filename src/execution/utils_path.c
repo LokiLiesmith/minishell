@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/10/01 01:05:29 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/01 03:02:09 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ static char	*search_directories(char **directories, char *command)
 	{
 		part_path = ft_strjoin(directories[i], "/");
 		temp = ft_strjoin(part_path, command);
-		full_path = temp; // ft_strjoin(part_path, command);
+		full_path = temp;
 		free(part_path);
-		free(temp);
+		// free(temp);
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
 		i++;
@@ -67,7 +67,16 @@ char	*find_path(t_cmd *cmd, t_env *env)
 	}
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
-	if (ft_strncmp(current->type, "PATH", 4) == 0)
+	if (!current || !current->value || current->value[0] == '\0')
+	{
+    	directories = ft_split("/bin:/usr/bin", ':');
+    	if (!directories)
+        	return (NULL);
+    	path = search_directories(directories, command);
+    	free_split(directories);
+	    return path;
+	}
+	else if (ft_strncmp(current->type, "PATH", 4) == 0)
 	{
 		directories = ft_split(current->value, ':');
 		if (!directories)
@@ -75,5 +84,7 @@ char	*find_path(t_cmd *cmd, t_env *env)
 		path = search_directories(directories, command);
 		free_split(directories);
 	}
+	// path = search_directories(directories, command);
+    // free_split(directories);
 	return (path);
 }

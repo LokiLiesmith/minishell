@@ -14,7 +14,7 @@ endif
 # ========= Config =========
 LIBFT_PATH := include/libft
 CC         := cc
-CFLAGS     := -Wall -Wextra -Werror -I include -g -fsanitize=address
+CFLAGS     := -Wall -Wextra -Werror -I include ## -g -fsanitize=address
 LIBFT_LIB  := $(LIBFT_PATH)/libft.a
 
 # pick which test to build: make T=parser (defaults ot minishell)
