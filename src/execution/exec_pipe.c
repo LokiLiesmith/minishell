@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 23:55:38 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/27 19:51:36 by mel              ###   ########.fr       */
+/*   Updated: 2025/10/02 17:45:30 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void	close_pipe_parent(int prev_fd, int *prev_fd_ptr, t_cmd_node *cmd_node, int 
 	}
 	if (cmd_node->next)
 	{
-		close(pipe_fd[1]);			// close write end in parent
-		*prev_fd_ptr = pipe_fd[0];	// save read end for next cmd
+		close(pipe_fd[1]);
+		*prev_fd_ptr = pipe_fd[0];
 	}
 	else
 	{

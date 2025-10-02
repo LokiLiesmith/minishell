@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/30 19:56:17 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/02 18:02:17 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,34 +31,62 @@ int	wait_for_children(pid_t last_child)
 	return (last_status);
 }
 
-char	**env_to_array(t_env *env)
+// int	put_env(t_env *env, char ***env_array)
+// {
+// 	t_env	*current;
+// 	int		i;
+// 	char	*temp;
+// 	char	*temp2;
+	
+// 	i = 0;
+// 	current = env;
+// 	while (current != NULL)
+// 	{
+// 		temp = ft_strjoin(current->type, "=");
+// 		if (!temp)
+// 			return (1);
+// 		temp2 = ft_strjoin(temp, current->value);
+// 		if (!temp2)
+// 			return (1);
+// 		*env_array[i] = temp2;
+// 		free(temp);
+// 		free(temp2);
+// 		i++;
+// 		current = current->next;
+// 	}
+// 	return (0);
+// }
+
+
+char	**env_to_array(t_env *env, t_shell *sh)
 {
 	char	**env_array;
 	char	*temp;
 	char	*temp2;
 	t_env	*current;
-	int		i;
 	size_t	env_len;
 
-	i = 0;
 	current = env;
 	env_len = 0;
+	int i = 0;
 	while (current != NULL)
 	{
 		current = current->next;
 		env_len++;
 	}
-	env_array = malloc(sizeof(char *) * (env_len + 1));
+	env_array = gc_malloc(sh, sizeof(char *) * (env_len + 1), GC_GLOBAL);
 	if (!env_array)
 		return (NULL);
 	env_array[env_len] = NULL;
 	
+	// if (put_env(env, &env_array))
+	// 	return (NULL);
 	current = env;
 	while (current != NULL)
 	{
 		temp = ft_strjoin(current->type, "=");
 		temp2 = ft_strjoin(temp, current->value);
-		env_array[i] = temp2; // ft_strjoin(temp, current->value);
+		env_array[i] = temp2;
 		free(temp);
 		free(temp2);
 		i++;
@@ -69,7 +97,6 @@ char	**env_to_array(t_env *env)
 
 int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array, t_shell *sh)
 {
-	// || ft_strcmp(cmd->argv[0], "") == 0
 	*path = find_path(cmd, env);
 	if (!*path)
 	{
@@ -77,7 +104,7 @@ int	prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array, t_she
 		sh->last_exit_code = 127;
 		return (127);
 	}
-	*env_array = env_to_array(env);
+	*env_array = env_to_array(env, sh);
 	if (!*env_array)
 		return (ft_putstr_fd("env_array() error", 2), 1);
 	return (0);
