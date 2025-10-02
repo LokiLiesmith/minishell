@@ -1,1 +1,16 @@
-echo test
+bin
+bug_vault.txt
+EOF.txt
+heredoc.txt
+hi
+include
+i.txt
+Makefile
+obj
+output
+README.md
+src
+sub.sub
+test2.txt
+test3.txt
+test.txt

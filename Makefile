@@ -110,7 +110,8 @@ run-%:
 	@$(MAKE) T=$* $(BINDIR)/$*
 	@$(BINDIR)/$*
 
-VG_FLAGS := --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1
+VG_FLAGS := valgrind --leak-check=full  --show-leak-kinds=all --track-fds=yes --suppressions=sub.sub
+# VG_FLAGS := --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1
 debug: CFLAGS += -g
 debug: clean all
 
