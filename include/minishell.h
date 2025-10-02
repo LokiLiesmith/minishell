@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/10/02 18:01:47 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/02 22:50:16 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,6 +218,7 @@ void	execute_child(char *path, t_cmd *cmd, char **env_array);
 
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env, t_shell *sh);
+
 void	error_pid(int pipe_fd[2]);
 
 int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);

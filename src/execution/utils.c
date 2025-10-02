@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 15:54:03 by msalangi          #+#    #+#             */
-/*   Updated: 2025/10/02 18:02:17 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/02 22:42:17 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int	wait_for_children(pid_t last_child)
 	return (last_status);
 }
 
+//was commented
 // int	put_env(t_env *env, char ***env_array)
 // {
 // 	t_env	*current;
@@ -56,6 +57,8 @@ int	wait_for_children(pid_t last_child)
 // 	}
 // 	return (0);
 // }
+
+
 
 
 char	**env_to_array(t_env *env, t_shell *sh)
@@ -86,7 +89,7 @@ char	**env_to_array(t_env *env, t_shell *sh)
 	{
 		temp = ft_strjoin(current->type, "=");
 		temp2 = ft_strjoin(temp, current->value);
-		env_array[i] = temp2;
+		env_array[i] = gc_strdup(sh, temp2, GC_GLOBAL);
 		free(temp);
 		free(temp2);
 		i++;
@@ -117,3 +120,4 @@ void	error_pid(int pipe_fd[2])
     if (pipe_fd[1] != -1)
 		close(pipe_fd[1]);
 }
+

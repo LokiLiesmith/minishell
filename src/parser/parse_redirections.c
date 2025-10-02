@@ -42,9 +42,11 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 		new->r.heredoc_quoted = token_is_quoted((*t)->next);
 	}
 	else
+	{
 		new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
-	if (!new->r.target)
-		return (*err = 1, -1);
+		if (!new->r.target)
+			return (*err = 1, -1);
+	}
 	new->r.fd = set_fd(new->r.type);
 	new->next = NULL;
 	append_redir(&cmd->redirs, new);

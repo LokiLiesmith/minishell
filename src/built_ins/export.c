@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/09/29 16:29:52 by mel              ###   ########.fr       */
+/*   Updated: 2025/10/02 20:39:26 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
 	char	*type;
 
 	current = env;
+	if (current->next && current->type[0] == '_')
+		current = current->next;
 	if (cmd->argv[1] == NULL)
 		export_print(env);
 	else
@@ -81,7 +83,7 @@ int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
 		value = value + 1;
 		*(value - 1)= '\0';
 		type = cmd->argv[1];
-		while (current->next != NULL && current->type[0] <= type[0] && ft_strcmp(current->type, type) != 0)
+		while (current->next != NULL && ft_strcmp(current->type, type) != 0)
 			current = current->next;
 		if (ft_strcmp(current->type, type) == 0)
 			return (change_export_value(sh, current, value));

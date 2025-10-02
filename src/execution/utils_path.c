@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/10/01 03:02:09 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/02 22:42:01 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,16 +67,17 @@ char	*find_path(t_cmd *cmd, t_env *env)
 	}
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
-	if (!current || !current->value || current->value[0] == '\0')
-	{
-    	directories = ft_split("/bin:/usr/bin", ':');
-    	if (!directories)
-        	return (NULL);
-    	path = search_directories(directories, command);
-    	free_split(directories);
-	    return path;
-	}
-	else if (ft_strncmp(current->type, "PATH", 4) == 0)
+	// does nothing:
+	// if (!current || !current->value || current->value[0] == '\0')
+	// {
+    // 	directories = ft_split("/bin:/usr/bin", ':');
+    // 	if (!directories)
+    //     	return (NULL);
+    // 	path = search_directories(directories, command);
+    // 	free_split(directories);
+	//     return path;
+	// }
+	if (ft_strncmp(current->type, "PATH", 4) == 0)
 	{
 		directories = ft_split(current->value, ':');
 		if (!directories)
@@ -84,7 +85,5 @@ char	*find_path(t_cmd *cmd, t_env *env)
 		path = search_directories(directories, command);
 		free_split(directories);
 	}
-	// path = search_directories(directories, command);
-    // free_split(directories);
 	return (path);
 }
