@@ -18,78 +18,157 @@
 
 // export		- print declare -x w env variables in ascending ascii order
 // export x=1	- add env var
-	
-static void	export_print(t_env *env)
-{
-	t_env	*current;
 
-	current = env;
-	while (current != NULL)
-	{
-		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(current->type, 1);
-		ft_putchar_fd('=', 1);
-		ft_putchar_fd('"', 1);
-		ft_putstr_fd(current->value, 1);
-		ft_putchar_fd('"', 1);
-		ft_putchar_fd('\n', 1);
-		current = current->next;
-	}
+
+///ORIGINAL
+// static void	export_print(t_env *env)
+// {
+// 	t_env	*current;
+
+// 	current = env;
+// 	while (current != NULL)
+// 	{
+// 		ft_putstr_fd("declare -x ", 1);
+// 		ft_putstr_fd(current->type, 1);
+// 		ft_putchar_fd('=', 1);
+// 		ft_putchar_fd('"', 1);
+// 		ft_putstr_fd(current->value, 1);
+// 		ft_putchar_fd('"', 1);
+// 		ft_putchar_fd('\n', 1);
+// 		current = current->next;
+// 	}
+// }
+
+// static	int change_export_value(t_shell *sh, t_env *current, char *value)
+// {
+// 	current->value = gc_malloc(sh, ft_strlen(value) + 1, GC_GLOBAL);
+// 	if (!current->value)
+// 		return (1);
+// 	ft_strlcpy(current->value, value, ft_strlen(value) + 1);
+// 	return (0);
+// }
+
+// static int	export_allocate(t_shell *sh, t_env *current, t_env *temp, char *type, char *value)
+// {
+// 	current->next = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);
+// 	if (!current->next)
+// 		return (1);
+// 	current->next->type = gc_malloc(sh, ft_strlen(type) + 1, GC_GLOBAL);
+// 	current->next->value = gc_malloc(sh, ft_strlen(value) + 1, GC_GLOBAL);
+// 	if (!current->next->value || !current->next->type)
+// 		return (1);
+// 	ft_strlcpy(current->next->type, type, ft_strlen(type) + 1);
+// 	ft_strlcpy(current->next->value, value, ft_strlen(value) + 1);
+// 	current->next->next = temp;
+// 	return (0);
+// }
+
+// int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
+// {
+// 	t_env	*current;
+// 	t_env	*temp;
+// 	char	*value;
+// 	char	*type;
+
+// 	current = env;
+// 	if (current->next && current->type[0] == '_')
+// 		current = current->next;
+// 	if (cmd->argv[1] == NULL)
+// 		export_print(env);
+// 	else
+// 	{
+// 		if (cmd->argv[1][0] == '=' || cmd->argv[1][0] == '\0')
+// 			return (ft_putstr_fd("not a valid identifier\n", 2), 1);
+// 		value = ft_strrchr(cmd->argv[1], '=');
+// 		if (!value)
+// 			return (ft_putstr_fd("invalid input\n", 2), 1);
+// 		value = value + 1;
+// 		*(value - 1)= '\0';
+// 		type = cmd->argv[1];
+// 		while (current->next != NULL && ft_strcmp(current->type, type) != 0)
+// 			current = current->next;
+// 		if (ft_strcmp(current->type, type) == 0)
+// 			return (change_export_value(sh, current, value));
+// 		temp = current->next;
+// 		if (export_allocate(sh, current, temp, type, value))
+// 			return (1);
+// 	}
+// 	return (0);
+// }
+
+
+//GPT SUGGESTED CHANGES
+#include "../../include/minishell.h"
+
+static int is_valid_identifier(const char *s)
+{
+    int i = 0;
+
+    if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+        return 0;
+    while (s[i] && s[i] != '=') // stop at '='
+    {
+        if (!ft_isalnum(s[i]) && s[i] != '_')
+            return 0;
+        i++;
+    }
+    return 1;
 }
 
-static	int change_export_value(t_shell *sh, t_env *current, char *value)
+static void export_print(t_env *env)
 {
-	current->value = gc_malloc(sh, ft_strlen(value) + 1, GC_GLOBAL);
-	if (!current->value)
-		return (1);
-	ft_strlcpy(current->value, value, ft_strlen(value) + 1);
-	return (0);
+    while (env)
+    {
+        ft_putstr_fd("declare -x ", 1);
+        ft_putstr_fd(env->type, 1);
+        if (env->value)
+        {
+            ft_putstr_fd("=\"", 1);
+            ft_putstr_fd(env->value, 1);
+            ft_putchar_fd('"', 1);
+        }
+        ft_putchar_fd('\n', 1);
+        env = env->next;
+    }
 }
 
-static int	export_allocate(t_shell *sh, t_env *current, t_env *temp, char *type, char *value)
+int builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
 {
-	current->next = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);
-	if (!current->next)
-		return (1);
-	current->next->type = gc_malloc(sh, ft_strlen(type) + 1, GC_GLOBAL);
-	current->next->value = gc_malloc(sh, ft_strlen(value) + 1, GC_GLOBAL);
-	if (!current->next->value || !current->next->type)
-		return (1);
-	ft_strlcpy(current->next->type, type, ft_strlen(type) + 1);
-	ft_strlcpy(current->next->value, value, ft_strlen(value) + 1);
-	current->next->next = temp;
-	return (0);
-}
+    char *eq;
+    char *key;
+    char *value;
+    int   i = 1;
 
-int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
-{
-	t_env	*current;
-	t_env	*temp;
-	char	*value;
-	char	*type;
+    if (!cmd->argv[1])
+        return (export_print(env), 0);
 
-	current = env;
-	if (current->next && current->type[0] == '_')
-		current = current->next;
-	if (cmd->argv[1] == NULL)
-		export_print(env);
-	else
-	{
-		if (cmd->argv[1][0] == '=' || cmd->argv[1][0] == '\0')
-			return (ft_putstr_fd("not a valid identifier\n", 2), 1);
-		value = ft_strrchr(cmd->argv[1], '=');
-		if (!value)
-			return (ft_putstr_fd("invalid input\n", 2), 1);
-		value = value + 1;
-		*(value - 1)= '\0';
-		type = cmd->argv[1];
-		while (current->next != NULL && ft_strcmp(current->type, type) != 0)
-			current = current->next;
-		if (ft_strcmp(current->type, type) == 0)
-			return (change_export_value(sh, current, value));
-		temp = current->next;
-		if (export_allocate(sh, current, temp, type, value))
-			return (1);
-	}
-	return (0);
+    while (cmd->argv[i])
+    {
+        eq = ft_strchr(cmd->argv[i], '=');
+        if (eq)
+        {
+            key = ft_substr(cmd->argv[i], 0, eq - cmd->argv[i]);
+            value = eq + 1;
+        }
+        else
+        {
+            key = cmd->argv[i];
+            value = "";
+        }
+
+        if (!is_valid_identifier(key))
+        {
+            ft_putstr_fd("minishell: export: `", 2);
+            ft_putstr_fd(cmd->argv[i], 2);
+            ft_putendl_fd("': not a valid identifier", 2);
+            if (eq) free(key);
+            return 1;
+        }
+
+        set_env_value(sh, env, key, value);
+
+        if (eq) free(key); // only free if we malloc'd
+        i++;
+    }
+    return 0;
 }

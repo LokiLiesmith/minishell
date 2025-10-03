@@ -24,7 +24,7 @@ int	find_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 	if (cmd->builtin == ECHO)
 		return (builtin_echo(cmd));
 	else if (cmd->builtin == CD)
-		return (builtin_cd(cmd, env));
+		return (builtin_cd(cmd, env, sh));
 	else if (cmd->builtin == PWD)
 		return (builtin_pwd());
 	else if (cmd->builtin == ENV)
@@ -32,10 +32,11 @@ int	find_builtin(t_cmd *cmd, t_env *env, t_shell *sh)
 	else if (cmd->builtin == EXPORT)
 		return (builtin_export(cmd, env, sh));
 	else if (cmd->builtin == UNSET)
-		return (builtin_unset(cmd, env));
+		return (builtin_unset(cmd, &sh->env));//GPT
 	else if (cmd->builtin == EXIT)
-		builtin_exit(sh, cmd);
-	ft_putstr_fd("command not found\n", 2);
+		return (builtin_exit(sh, cmd));
+	else
+		ft_putstr_fd("command not found\n", 2);//was printing on exit 1 2
 	sh->last_exit_code = 127;
 	return (1);
 }

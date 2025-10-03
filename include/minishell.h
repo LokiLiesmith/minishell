@@ -226,13 +226,18 @@ void	close_pipe_parent(int prev_fd, int *prev_fd_ptr, t_cmd_node *cmd_node, int 
 int		handle_redirections(t_cmd *cmd);
 int		wait_for_children(pid_t last_child);
 
-int		builtin_cd(t_cmd *cmd, t_env *env);
+int		builtin_cd(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_echo(t_cmd *cmd);
 int		builtin_env(t_cmd *cmd, t_env *env);
-void	builtin_exit(t_shell *sh, t_cmd *cmd);
+int		builtin_exit(t_shell *sh, t_cmd *cmd);
+// void	builtin_exit(t_shell *sh, t_cmd *cmd); //preGPT
 int		builtin_export(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_pwd(void);
-int		builtin_unset(t_cmd *cmd, t_env *env);
+// int		builtin_unset(t_cmd *cmd, t_env *env);
+int		builtin_unset(t_cmd *cmd, t_env **env);//GPT
+
+void	set_env_value(t_shell *sh, t_env *env, const char *key, const char *new_value);//GPT
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //								 HEREDOC 									  //
