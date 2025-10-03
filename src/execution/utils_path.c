@@ -11,42 +11,119 @@
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+// ORIGINAL
+// static char	*search_directories(char **directories, char *command)
+// {
+// 	char	*full_path;
+// 	char	*part_path;
+// 	char 	*temp;
+// 	int		i;
 
+// 	i = 0;
+// 	while (directories[i] != NULL)
+// 	{
+// 		part_path = ft_strjoin(directories[i], "/");
+// 		temp = ft_strjoin(part_path, command);
+// 		full_path = temp;
+// 		free(part_path);
+// 		// free(temp);
+// 		if (access(full_path, F_OK | X_OK) == 0)
+// 			return (full_path);
+// 		i++;
+// 	}
+// 	return (NULL);
+// }
+
+// void    free_split(char **arr)
+// {
+//     int i;
+
+//     if (!arr)
+//         return;
+//     i = 0;
+//     while (arr[i])
+//     {
+//         free(arr[i]);
+//         i++;
+//     }
+//     free(arr);
+// }
+
+// char	*find_path(t_cmd *cmd, t_env *env)
+// {
+// 	char	*path;
+// 	char	**directories;
+// 	t_env	*current;
+// 	char	*command;
+
+// 	path = NULL;
+// 	current = env;
+// 	command = cmd->argv[0];
+// 	if (ft_strchr(command, '/'))
+// 	{
+// 		if (access(command, F_OK | X_OK) == 0)
+// 			return (ft_strdup(command));
+// 		return (NULL);
+// 	}
+// 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
+// 		current = current->next;
+// 	// does nothing:
+// 	// if (!current || !current->value || current->value[0] == '\0')
+// 	// {
+//     // 	directories = ft_split("/bin:/usr/bin", ':');
+//     // 	if (!directories)
+//     //     	return (NULL);
+//     // 	path = search_directories(directories, command);
+//     // 	free_split(directories);
+// 	//     return path;
+// 	// }
+// 	if (ft_strncmp(current->type, "PATH", 4) == 0)
+// 	{
+// 		directories = ft_split(current->value, ':');
+// 		if (!directories)
+// 			return (NULL);
+// 		path = search_directories(directories, command);
+// 		free_split(directories);
+// 	}
+// 	return (path);
+// }
+
+
+//GPT SUGGESTED FIXES
 static char	*search_directories(char **directories, char *command)
 {
 	char	*full_path;
 	char	*part_path;
-	char 	*temp;
 	int		i;
 
 	i = 0;
 	while (directories[i] != NULL)
 	{
 		part_path = ft_strjoin(directories[i], "/");
-		temp = ft_strjoin(part_path, command);
-		full_path = temp;
+		if (!part_path)
+			return (NULL);
+		full_path = ft_strjoin(part_path, command);
 		free(part_path);
-		// free(temp);
+		if (!full_path)
+			return (NULL);
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
+		free(full_path);
 		i++;
 	}
 	return (NULL);
 }
 
-void    free_split(char **arr)
+void	free_split(char **arr)
 {
-    int i;
+	int	i;
 
-    if (!arr)
-        return;
-    i = 0;
-    while (arr[i])
-    {
-        free(arr[i]);
-        i++;
-    }
-    free(arr);
+	if (!arr)
+		return;
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
 }
 
 char	*find_path(t_cmd *cmd, t_env *env)
@@ -57,33 +134,31 @@ char	*find_path(t_cmd *cmd, t_env *env)
 	char	*command;
 
 	path = NULL;
-	current = env;
 	command = cmd->argv[0];
+
+	// If the command already contains a slash, check directly
 	if (ft_strchr(command, '/'))
 	{
 		if (access(command, F_OK | X_OK) == 0)
 			return (ft_strdup(command));
 		return (NULL);
 	}
+
+	// Search PATH in environment
+	current = env;
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
-	// does nothing:
-	// if (!current || !current->value || current->value[0] == '\0')
-	// {
-    // 	directories = ft_split("/bin:/usr/bin", ':');
-    // 	if (!directories)
-    //     	return (NULL);
-    // 	path = search_directories(directories, command);
-    // 	free_split(directories);
-	//     return path;
-	// }
-	if (ft_strncmp(current->type, "PATH", 4) == 0)
-	{
+
+	// If PATH is missing, use fallback
+	if (!current || !current->value || current->value[0] == '\0')
+		directories = ft_split("/bin:/usr/bin", ':');
+	else
 		directories = ft_split(current->value, ':');
-		if (!directories)
-			return (NULL);
-		path = search_directories(directories, command);
-		free_split(directories);
-	}
+
+	if (!directories)
+		return (NULL);
+
+	path = search_directories(directories, command);
+	free_split(directories);
 	return (path);
 }
