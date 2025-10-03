@@ -113,11 +113,13 @@ static int execute_cmd(t_cmd_node *cmd_node, t_env *env, pid_t *pid,
     }
     else if (*pid == 0)
     {
+		set_child_signals();
         if (handle_pipe_child(cmd_node, pipe_fd, prev_fd))
             exit(1);
         // child uses 'path' and 'env_array' in execve
         execute_child(path, cmd_node->cmd, env_array);
         // If execute_child returns, it typically exits; no manual frees needed here
+		exit(127);
     }
     else
     {
@@ -174,7 +176,9 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 		close(prev_fd);
 		prev_fd = -1;		
 	}
+	set_parent_wait_signals();
 	last_status = wait_for_children(pid);
+	signal_setup();
 	if (flag)
 	{
 		ft_putstr_fd(" : command not found\n", 2);

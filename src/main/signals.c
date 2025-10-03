@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L //signals were complaining 
 #include "minishell.h"
 
 static void	handle_sigint(int signum)
@@ -8,6 +9,7 @@ static void	handle_sigint(int signum)
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
+
 
 void	signal_setup(void)
 {
@@ -21,6 +23,27 @@ void	signal_setup(void)
 	sa.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &sa, NULL);
 }
+
+// void	signal_setup(void)
+// {
+// 	struct sigaction	sa;
+
+// 	ft_memset(&sa, 0, sizeof(sa)); //zero errything
+// 	if (isatty(STDIN_FILENO))
+// 	{
+// 		sa.sa_handler = handle_sigint;
+// 		sigaction(SIGINT, &sa, NULL);
+
+// 		sa.sa_handler = SIG_IGN;
+// 		sigaction(SIGQUIT, &sa, NULL);
+// 	}
+// 	else
+// 	{
+// 		sa.sa_handler = SIG_DFL;
+// 		sigaction(SIGINT, &sa, NULL);
+// 		sigaction(SIGQUIT, &sa, NULL);
+// 	}
+// }
 
 void	set_child_signals(void)
 {
