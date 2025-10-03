@@ -26,6 +26,7 @@ static void	write_to_pipe(char *line, int fd_out)
 static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 {
 	char	*line;
+	char	*newline;
 
 	while (1)
 	{
@@ -35,6 +36,9 @@ static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
 			line = get_next_line(STDIN_FILENO);
 		if (!line)
 			return (1);
+		newline = ft_strchr(line, '\n');//find newline, replace /n with '\0'
+		if (newline)
+			*newline = '\0';
 		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
 		{
 			free(line);

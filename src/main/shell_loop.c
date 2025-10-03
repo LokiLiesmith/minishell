@@ -56,7 +56,6 @@ static char	*read_until_closed_quotes(t_shell *sh)
 
 int	build_pipeline(char *line, t_shell *sh)
 {
-	// printf("build_pipeline\n");
 	t_token	*tokens;
 	bool	open_quotes;
 
@@ -66,7 +65,6 @@ int	build_pipeline(char *line, t_shell *sh)
 	{
 		if (open_quotes)
 		{
-			// printf("open_quotes-> return -1\n");
 			return (-1);
 		}
 		sh->pipeline = NULL;
@@ -74,14 +72,12 @@ int	build_pipeline(char *line, t_shell *sh)
 	}
 	if (expand_tokens(sh, &tokens) < 0)
 	{
-		// printf("expand_tokens < 0\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
 	sh->pipeline = parse(tokens, sh);
 	if (!sh->pipeline)
 	{
-		// printf("!sh->pipeline\n");
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
@@ -98,38 +94,27 @@ static void	handle_exit(t_shell *sh)
 
 static void handle_command(char *line, t_shell *sh)
 {
-	// printf("handle_command\n");
 	int	status;
-	// int	heredoc_exit;
 
 	add_history(line);
-	// heredoc_exit = 0;
 	status = build_pipeline(line, sh);
 	if (status < 0)
 	{
-		// printf("status < 0\n");
 		sh->last_exit_code = 2;
 		gc_free_scope(sh, GC_TEMP);
 		return ;
 	}
 	if (!sh->pipeline)
 	{
-		// printf("!sh->pipeline\n");
 		sh->last_exit_code = 0;
 		return ;
 	}
-	// printf("prepare_heredoc\n");
-	// heredoc_exit = prepare_heredoc(sh, sh->pipeline);
 	if (prepare_heredoc(sh, sh->pipeline))
 	{
 		sh->pipeline = NULL;
 		gc_free_scope(sh, GC_TEMP);
+		return ; // returns on failure and doesnt go into execution, where the heredoc signal interrupt err code gets overwritten
 	}
-	// signal_setup(); //done in the heredoc itself)
-	// printf("executing\n");
-	// printf("heredoc-exit:%d\n", heredoc_exit);
-	// print_pipeline(sh->pipeline);
-
 	sh->last_exit_code = execute_start(sh->pipeline, sh);
 	sh->pipeline = NULL;
 }
