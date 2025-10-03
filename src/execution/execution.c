@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/10/04 00:36:30 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 00:49:05 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ static int	execute_cmd(t_cmd_node *cmd_node, pid_t *pid, int *prev_fd,
 		return (1);
 	if (*pid == 0)
 	{
+		set_child_signals();
 		if (handle_pipe_child(cmd_node, pipe_fd, *prev_fd))
 			exit(1);
 		execute_child(path, cmd_node->cmd, env_array);
@@ -83,7 +84,9 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 	}
 	if (prev_fd != -1)
 		reset_prev_fd(&prev_fd);
+	set_parent_wait_signals();
 	last_status = wait_for_children(pid);
+	signal_setup();
 	if_flag(flag);
 	return (WEXITSTATUS(last_status));
 }
