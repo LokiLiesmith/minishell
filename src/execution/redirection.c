@@ -1,53 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 22:59:11 by mel               #+#    #+#             */
-/*   Updated: 2025/10/03 22:24:29 by msalangi         ###   ########.fr       */
+/*   Created: 2025/10/03 17:02:53 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/03 22:27:46 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-static int	skip_n(char *s)
+int	handle_redirections(t_cmd *cmd)
 {
-	int	i;
+	t_redir_node	*current;
 
-	if (!s || s[0] != '-')
-		return (0);
-	i = 1;
-	while (s[i])
+	current = cmd->redirs;
+	while (current)
 	{
-		if (s[i] != 'n')
-			return (0);
-		i++;
+		if (redirect(current))
+			return (1);
+		current = current->next;
 	}
-	return (1);
-}
-
-int	builtin_echo(t_cmd *cmd)
-{
-	int	i;
-	int	no_newline;
-
-	i = 1;
-	no_newline = 0;
-	while (cmd->argv[i] && skip_n(cmd->argv[i]))
-	{
-		no_newline = 1;
-		i++;
-	}
-	while (cmd->argv[i])
-	{
-		ft_putstr_fd(cmd->argv[i], 1);
-		if (cmd->argv[i + 1])
-			write(1, " ", 1);
-		i++;
-	}
-	if (!no_newline)
-		write(1, "\n", 1);
 	return (0);
 }

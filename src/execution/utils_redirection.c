@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_redirection.c                                 :+:      :+:    :+:   */
+/*   utils_redirection.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 14:44:44 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/28 21:17:07 by mel              ###   ########.fr       */
+/*   Updated: 2025/10/03 22:29:09 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 static int	r_out(t_redir_node *redir_node)
 {
-	int fd;
-	int dup;
-	
+	int	fd;
+	int	dup;
+
 	fd = -1;
 	dup = -1;
 	fd = open(redir_node->r.target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -31,9 +31,9 @@ static int	r_out(t_redir_node *redir_node)
 
 static int	r_append(t_redir_node *redir_node)
 {
-	int fd;
-	int dup;
-	
+	int	fd;
+	int	dup;
+
 	fd = -1;
 	dup = -1;
 	fd = open(redir_node->r.target, O_WRONLY | O_CREAT | O_APPEND, 0644);
@@ -63,7 +63,7 @@ static int	r_in(t_redir_node *redir_node)
 	return (0);
 }
 
-int	r_heredoc(t_redir_node *redir_node)
+static int	r_heredoc(t_redir_node *redir_node)
 {
 	int	dup;
 
@@ -75,7 +75,7 @@ int	r_heredoc(t_redir_node *redir_node)
 	return (0);
 }
 
-static int	redirect(t_redir_node *redir_node)
+int	redirect(t_redir_node *redir_node)
 {
 	if (redir_node && redir_node->r.type == R_IN && redir_node->r.fd == -1)
 	{
@@ -101,23 +101,3 @@ static int	redirect(t_redir_node *redir_node)
 		return (ft_putstr_fd("uknown redirection\n", 2), 1);
 	return (0);
 }
-
-int	handle_redirections(t_cmd *cmd)
-{
-	t_redir_node *current;
-
-	current = cmd->redirs;
-	while (current)
-	{
-		if (redirect(current))
-			return (1);
-		current = current->next;
-	}
-	return (0);
-}
-
-// cmd 1           cmd 2
-//   ls  |   grep s	   >    test.txt		= "src" in test.txt
-
-// "ls" = exec child command w/o redirs, but change stdout to pipe (cmd->next != NULL); change next stdin to stdout
-// "grep s > test.txt" = read from previous stdout; exec cmd w redirs; change stdout to test.txt

@@ -6,38 +6,13 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 01:17:33 by mel               #+#    #+#             */
-/*   Updated: 2025/10/02 20:39:26 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/03 22:25:43 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-// x=y y					- output x="y"
-// x="y y"					- output x="y y"
-// x = y OR x= y OR x =y	- error
-
-// export		- print declare -x w env variables in ascending ascii order
-// export x=1	- add env var
-
-
-///ORIGINAL
-// static void	export_print(t_env *env)
-// {
-// 	t_env	*current;
-
-// 	current = env;
-// 	while (current != NULL)
-// 	{
-// 		ft_putstr_fd("declare -x ", 1);
-// 		ft_putstr_fd(current->type, 1);
-// 		ft_putchar_fd('=', 1);
-// 		ft_putchar_fd('"', 1);
-// 		ft_putstr_fd(current->value, 1);
-// 		ft_putchar_fd('"', 1);
-// 		ft_putchar_fd('\n', 1);
-// 		current = current->next;
-// 	}
-// }
+// // /ORIGINAL
 
 // static	int change_export_value(t_shell *sh, t_env *current, char *value)
 // {
@@ -48,7 +23,8 @@
 // 	return (0);
 // }
 
-// static int	export_allocate(t_shell *sh, t_env *current, t_env *temp, char *type, char *value)
+// static int	export_allocate(t_shell *sh, t_env *current, t_env *temp,
+		//char *type, char *value)
 // {
 // 	current->next = gc_malloc(sh, sizeof(t_env), GC_GLOBAL);
 // 	if (!current->next)
@@ -96,79 +72,80 @@
 // 	return (0);
 // }
 
-
-//GPT SUGGESTED CHANGES
 #include "../../include/minishell.h"
 
-static int is_valid_identifier(const char *s)
+static int	is_valid_identifier(char *s)
 {
-    int i = 0;
+	int	i;
 
-    if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
-        return 0;
-    while (s[i] && s[i] != '=') // stop at '='
-    {
-        if (!ft_isalnum(s[i]) && s[i] != '_')
-            return 0;
-        i++;
-    }
-    return 1;
+	i = 0;
+	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+		return (0);
+	while (s[i] && s[i] != '=')
+	{
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-static void export_print(t_env *env)
+static void	export_print(t_env *env)
 {
-    while (env)
-    {
-        ft_putstr_fd("declare -x ", 1);
-        ft_putstr_fd(env->type, 1);
-        if (env->value)
-        {
-            ft_putstr_fd("=\"", 1);
-            ft_putstr_fd(env->value, 1);
-            ft_putchar_fd('"', 1);
-        }
-        ft_putchar_fd('\n', 1);
-        env = env->next;
-    }
+	while (env)
+	{
+		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd(env->type, 1);
+		if (env->value)
+		{
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(env->value, 1);
+			ft_putchar_fd('"', 1);
+		}
+		ft_putchar_fd('\n', 1);
+		env = env->next;
+	}
 }
 
-int builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
+void	print_invalid(t_cmd *cmd, int i, char **equal, char **type)
 {
-    char *eq;
-    char *key;
-    char *value;
-    int   i = 1;
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(cmd->argv[i], 2);
+	ft_putendl_fd("': not a valid identifier", 2);
+	if (*equal)
+		free(*type);
+}
 
-    if (!cmd->argv[1])
-        return (export_print(env), 0);
+void	set_type_value(char **type, char **value, char *t_val, char *v_val)
+{
+	*type = t_val;
+	*value = v_val;
+}
 
-    while (cmd->argv[i])
-    {
-        eq = ft_strchr(cmd->argv[i], '=');
-        if (eq)
-        {
-            key = ft_substr(cmd->argv[i], 0, eq - cmd->argv[i]);
-            value = eq + 1;
-        }
-        else
-        {
-            key = cmd->argv[i];
-            value = "";
-        }
+int	builtin_export(t_cmd *cmd, t_env *env, t_shell *sh)
+{
+	char	*equal;
+	char	*type;
+	char	*value;
+	int		i;
 
-        if (!is_valid_identifier(key))
-        {
-            ft_putstr_fd("minishell: export: `", 2);
-            ft_putstr_fd(cmd->argv[i], 2);
-            ft_putendl_fd("': not a valid identifier", 2);
-            if (eq) free(key);
-            return 1;
-        }
-
-        set_env_value(sh, env, key, value);
-
-        if (eq) free(key); // only free if we malloc'd
-        i++;
-    }
-    return 0;
+	i = 1;
+	if (!cmd->argv[1])
+		return (export_print(env), 0);
+	while (cmd->argv[i])
+	{
+		equal = ft_strchr(cmd->argv[i], '=');
+		if (equal)
+			set_type_value(&type, &value, ft_substr(cmd->argv[i], 0, equal
+					- cmd->argv[i]), equal + 1);
+		else
+			set_type_value(&type, &value, cmd->argv[i], "");
+		if (!is_valid_identifier(type))
+			return (print_invalid(cmd, i, &equal, &type), 1);
+		set_env_value(sh, env, type, value);
+		if (equal)
+			free(type);
+		i++;
+	}
+	return (0);
 }

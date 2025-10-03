@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/10/02 22:50:16 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 00:07:02 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,37 +213,33 @@ int		ft_is_operator(int c);
 int		execute_start(t_cmd_node *node, t_shell *sh);
 int		is_builtin(t_cmd *cmd);
 int		execute_single_builtin(t_cmd *cmd, t_env *env, t_shell *sh);
-int		prepare_execve(t_cmd *cmd, t_env *env, char **path, char ***env_array, t_shell *sh);
+int		prepare_execve(t_cmd *cmd, char **path, char ***env_array, t_shell *sh);
 void	execute_child(char *path, t_cmd *cmd, char **env_array);
-
 char	*find_path(t_cmd *cmd, t_env *env);
 char	**env_to_array(t_env *env, t_shell *sh);
-
 void	error_pid(int pipe_fd[2]);
-
 int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
 void	close_pipe_parent(int prev_fd, int *prev_fd_ptr, t_cmd_node *cmd_node, int pipe_fd[2]);
 int		handle_redirections(t_cmd *cmd);
+int		redirect(t_redir_node *redir_node);
 int		wait_for_children(pid_t last_child);
-
 int		builtin_cd(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_echo(t_cmd *cmd);
 int		builtin_env(t_cmd *cmd, t_env *env);
 int		builtin_exit(t_shell *sh, t_cmd *cmd);
-// void	builtin_exit(t_shell *sh, t_cmd *cmd); //preGPT
 int		builtin_export(t_cmd *cmd, t_env *env, t_shell *sh);
 int		builtin_pwd(void);
-// int		builtin_unset(t_cmd *cmd, t_env *env);
-int		builtin_unset(t_cmd *cmd, t_env **env);//GPT
-
-void	set_env_value(t_shell *sh, t_env *env, const char *key, const char *new_value);//GPT
-
+int		builtin_unset(t_cmd *cmd, t_env **env);
+void	set_env_value(t_shell *sh, t_env *env, char *type, char *new_value);
+void	fork_error(int pipe_fd[2], char **path);
+int		empty_check(t_cmd_node *curr, t_shell *sh, int *flag);
+void	reset_prev_fd(int *prev_fd);
+void	if_flag(int flag);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								 HEREDOC 									  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// int		prepare_heredoc(t_cmd_node *pipeline);
 int		prepare_heredoc(t_shell *sh, t_cmd_node *pipeline);
 char	*expand_heredoc(t_shell *sh, t_redir *r, char *line);
 char	*expand_string(t_shell *sh, char *str);
