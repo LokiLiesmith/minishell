@@ -1,16 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shell_loop.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/04 01:45:31 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:45:32 by msalangi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int is_only_spaces(const char *s)
-{
-    int i = 0;
-    while (s[i])
-    {
-        if (!ft_is_space((unsigned char)s[i]))
-            return (0);
-        i++;
-    }
-    return (1);
-}
+#include "minishell.h"
 
 static char	*append_line(char *input, char *line)
 {
@@ -50,7 +50,7 @@ static char	*read_until_closed_quotes(t_shell *sh)
 		}
 		input = append_line(input, line);
 	}
-	(void)tokens;//TODO fishy..
+	(void)tokens;
 	return (input);
 }
 
@@ -64,9 +64,7 @@ int	build_pipeline(char *line, t_shell *sh)
 	if (!tokens)
 	{
 		if (open_quotes)
-		{
 			return (-1);
-		}
 		sh->pipeline = NULL;
 		return (0);
 	}
@@ -84,15 +82,7 @@ int	build_pipeline(char *line, t_shell *sh)
 	return (0);
 }
 
-static void	handle_exit(t_shell *sh)
-{
-	if (isatty(STDIN_FILENO))
-		write(1, "exit\n", 5);
-	gc_free_all(sh);
-	exit(sh->last_exit_code);
-}
-
-static void handle_command(char *line, t_shell *sh)
+static void	handle_command(char *line, t_shell *sh)
 {
 	int	status;
 
@@ -113,7 +103,7 @@ static void handle_command(char *line, t_shell *sh)
 	{
 		sh->pipeline = NULL;
 		gc_free_scope(sh, GC_TEMP);
-		return ; // returns on failure and doesnt go into execution, where the heredoc signal interrupt err code gets overwritten
+		return ;
 	}
 	sh->last_exit_code = execute_start(sh->pipeline, sh);
 	sh->pipeline = NULL;

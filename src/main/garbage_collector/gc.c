@@ -1,24 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gc.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/04 01:46:31 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:49:04 by msalangi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-//exit on fatal error, allocation failed --> no sh struct
-void	gc_fatal(void)
-{
-	write(STDERR_FILENO, "fatal error\n", 12);
-	exit(EXIT_FAILURE);
-}
-
-t_gc	*gc_newnode(void *ptr, t_scope scope)
-{
-	t_gc	*node;
-
-	node = malloc(sizeof(t_gc));
-	if (!node)
-		gc_fatal();
-	node->ptr = ptr;
-	node->scope = scope;
-	node->next = NULL;
-	return (node);
-}
 
 void	*gc_malloc(t_shell *sh, size_t size, t_scope scope)
 {
@@ -131,4 +123,3 @@ void	*gc_calloc(t_shell *sh, size_t count, size_t size, t_scope scope)
 
 // 	return (0);
 // }
-

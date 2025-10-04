@@ -6,10 +6,8 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/10/04 00:07:02 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 02:14:24 by msalangi         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
-
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
@@ -33,6 +31,7 @@
 # include "libft/libft.h"
 # include "get_next_line/get_next_line.h"
 
+// #define _POSIX_C_SOURCE 200809L
 # define TRUE	1
 # define FALSE	0
 // forward declare missing readline prototype
@@ -72,17 +71,17 @@ typedef enum e_redir_type
 
 typedef struct s_env
 {
-	char			*type;//var_name
+	char			*type;
 	char			*value;
 	struct s_env	*next;
 }	t_env;
 
 typedef struct s_redir
 {
-	t_redir_type		type;		//IN, OUT, APPEND, HEREDOC
-	char				*target;	//filepath? destination?
+	t_redir_type		type;
+	char				*target;
 	char				*delimiter;
-	int					fd;			//0, 1
+	int					fd;
 	bool				heredoc_quoted;
 }	t_redir;
 
@@ -93,29 +92,27 @@ typedef struct s_redir_node
 	struct s_redir_node	*next;
 }	t_redir_node;
 
-// One command -> pipe to pipe (pipe is a delimiter, kinda. redirects are part of the same command)
+// One command -> pipe to pipe (pipe is a delimiter, kinda. 
+// redirects are part of the same command)
+//argv[0]...argv[n+1]=NULL, array of strings,
+// here is where the -n flag would also be
+//list of redirects, NULL = no redirects
+//builtin number based on the enum
 typedef struct s_cmd
 {
-	char				**argv;		//argv[0]...argv[n+1]=NULL, array of strings, here is where the -n flag would also be
-	t_redir_node		*redirs;	//list of redirects, NULL = no redirects
-	t_builtin			builtin;	//builtin number based on the enum
+	char				**argv;
+	t_redir_node		*redirs;
+	t_builtin			builtin;
 }	t_cmd;
 
-// Command LinkedList (cmd node pointing to the next one, ends with NULL, thats also when we are done?)
+// Command LinkedList (cmd node pointing to the next one, ends with NULL)
 typedef struct s_cmd_node
 {
 	t_cmd				*cmd;
 	struct s_cmd_node	*next;
 }	t_cmd_node;
 
-// typedef struct s_env
-// {
-// 	char			*type;
-// 	char			*value;
-// 	struct s_env	*next;
-// }	t_env;
-
-typedef struct	s_gc t_gc;
+typedef struct			s_gc t_gc;
 
 typedef struct s_shell
 {
@@ -255,6 +252,9 @@ void	set_child_signals(void);
 void	set_parent_wait_signals(void);
 
 int		build_pipeline(char *line, t_shell *sh);
+t_env	*dup_env(t_shell *sh, char **envp);
+void	handle_exit(t_shell *sh);
+int		is_only_spaces(const char *s);
 
 ////////////////////////////////////////////////////////////////////////////////
 //								  FIELD SPLIT								  //
@@ -295,7 +295,7 @@ t_cmd_node		*parse(t_token *tokens, t_shell *sh);
 int				handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst);
 int				handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err);
 // void	print_syntax_error(const char *unexpected);
-t_token *report_parse_error(t_token *token, int *err);
+t_token 		*report_parse_error(t_token *token, int *err);
 
 t_builtin		get_builtin_type(char *s);
 t_redir_type	map_token_to_redir(t_token_type t);

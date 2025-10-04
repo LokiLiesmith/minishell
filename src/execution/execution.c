@@ -6,7 +6,7 @@
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/10/04 00:49:05 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 02:05:35 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,7 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 			return (last_status);
 		curr = curr->next;
 	}
-	if (prev_fd != -1)
-		reset_prev_fd(&prev_fd);
-	set_parent_wait_signals();
+	reset_prev_fd(&prev_fd);
 	last_status = wait_for_children(pid);
 	signal_setup();
 	if_flag(flag);

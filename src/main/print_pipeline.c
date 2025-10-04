@@ -1,24 +1,36 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_pipeline.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/04 01:48:19 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:48:20 by msalangi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+// #include "minishell.h"
 
 // static const char *builtin_str(t_builtin b)
 // {
-// 	if (b == ECHO)   return "ECHO";
-// 	if (b == CD)     return "CD";
-// 	if (b == PWD)    return "PWD";
-// 	if (b == EXPORT) return "EXPORT";
-// 	if (b == UNSET)  return "UNSET";
-// 	if (b == ENV)    return "ENV";
-// 	if (b == EXIT)   return "EXIT";
-// 	return "NONE";
+// 	if (b == ECHO)   return ("ECHO");
+// 	if (b == CD)     return ("CD");
+// 	if (b == PWD)    return ("PWD");
+// 	if (b == EXPORT) return ("EXPORT");
+// 	if (b == UNSET)  return ("UNSET");
+// 	if (b == ENV)    return ("ENV");
+// 	if (b == EXIT)   return ("EXIT");
+// 	return ("NONE");
 // }
 
 // static const char *redir_type_str(t_redir_type t)
 // {
-// 	if (t == R_IN)      return "<";
-// 	if (t == R_OUT)     return ">";
-// 	if (t == R_APPEND)  return ">>";
-// 	if (t == R_HEREDOC) return "<<";
-// 	return "?";
+// 	if (t == R_IN)      return ("<");
+// 	if (t == R_OUT)     return (">");
+// 	if (t == R_APPEND)  return (">>");
+// 	if (t == R_HEREDOC) return ("<<");
+// 	return ("?");
 // }
 
 // static void    print_redirs(const t_redir_node *head)
@@ -60,13 +72,14 @@
 //                 printf("argv[%d]: %s\n", i, node->cmd->argv[i]);
 //                 i++;
 //             }
-            
+
 //         }
 //         else
 //             printf("None\n");
 
 //         print_redirs(node->cmd->redirs);
-//         printf("builtin: %s (%d)\n", builtin_str(node->cmd->builtin), node->cmd->builtin);
+//         printf("builtin: %s (%d)\n", builtin_str(node->cmd->builtin),
+//	node->cmd->builtin);
 //         printf("===============\n");
 //         node = node->next;
 //     }
