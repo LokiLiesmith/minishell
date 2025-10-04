@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 22:10:26 by mel               #+#    #+#             */
-/*   Updated: 2025/10/04 02:05:35 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 06:22:25 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ int	pipe_fork_check(t_cmd_node *cmd_node, int (*pipe_fd)[2], pid_t *pid,
 	{
 		fork_error(*pipe_fd, path);
 		return (perror("fork() error"), 1);
+	}
+	if (*path == NULL)
+	{
+		close(*pipe_fd[0]);
+		close(*pipe_fd[1]);
 	}
 	return (0);
 }
@@ -48,22 +53,20 @@ static int	execute_cmd(t_cmd_node *cmd_node, pid_t *pid, int *prev_fd,
 		return (1);
 	if (*pid == 0)
 	{
-		set_child_signals();
 		if (handle_pipe_child(cmd_node, pipe_fd, *prev_fd))
 			exit(1);
 		execute_child(path, cmd_node->cmd, env_array);
 	}
 	else
 		close_pipe_parent(*prev_fd, prev_fd, cmd_node, pipe_fd);
+	if (path)
+		free(path);
 	return (0);
 }
-// if (path)
-// free(path);
 
 int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 {
 	pid_t		pid;
-	int			last_status;
 	t_cmd_node	*curr;
 	int			prev_fd;
 	int			flag;
@@ -77,14 +80,15 @@ int	execute_start(t_cmd_node *cmd_node, t_shell *sh)
 			return (127);
 		else if (empty_check(curr, sh, &flag) == 2 && curr->next != NULL)
 			curr = curr->next;
-		last_status = execute_cmd(curr, &pid, &prev_fd, sh);
-		if (last_status)
-			return (last_status);
+		sh->last_exit_code = execute_cmd(curr, &pid, &prev_fd, sh);
+		if (sh->last_exit_code)
+			return (reset_prev_fd(&prev_fd), sh->last_exit_code);
 		curr = curr->next;
 	}
 	reset_prev_fd(&prev_fd);
-	last_status = wait_for_children(pid);
+	set_parent_wait_signals();
+	sh->last_exit_code = wait_for_children(pid);
 	signal_setup();
 	if_flag(flag);
-	return (WEXITSTATUS(last_status));
+	return (WEXITSTATUS(sh->last_exit_code));
 }

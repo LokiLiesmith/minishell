@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_exec.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 21:30:16 by msalangi          #+#    #+#             */
-/*   Updated: 2025/10/04 02:06:34 by msalangi         ###   ########.fr       */
+/*   Updated: 2025/10/04 06:21:35 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void	reset_prev_fd(int *prev_fd)
 		close(*prev_fd);
 		*prev_fd = -1;
 	}
-	set_parent_wait_signals();
 }
 
 int	empty_check(t_cmd_node *curr, t_shell *sh, int *flag)

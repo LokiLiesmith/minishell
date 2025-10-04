@@ -3,103 +3,97 @@
 /*                                                        :::      ::::::::   */
 /*   prep_heredoc.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 17:06:46 by mel               #+#    #+#             */
-/*   Updated: 2025/09/29 19:01:24 by mel              ###   ########.fr       */
+/*   Updated: 2025/10/04 04:38:08 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-static int	is_atty(void)
+static int	handle_heredoc_child(t_shell *sh, t_redir *redir, int *pipe_fd)
 {
-	return (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO));
-}
-
-static void	write_to_pipe(char *line, int fd_out)
-{
-	ft_putstr_fd(line, fd_out);
-	ft_putchar_fd('\n', fd_out);
-}
-
-static int	read_write_to_pipe(t_shell *sh, t_redir *r, int fd_out)
-{
-	char	*line;
-	char	*newline;
-
-	while (1)
+	set_child_signals();
+	close(pipe_fd[0]);
+	if (read_write_to_pipe(sh, redir, pipe_fd[1]))
 	{
-		if (is_atty())
-			line = readline("heredoc> ");
-		else
-			line = get_next_line(STDIN_FILENO);
-		if (!line)
-			return (1);
-		newline = ft_strchr(line, '\n');//find newline, replace /n with '\0'
-		if (newline)
-			*newline = '\0';
-		if (r->delimiter && ft_strcmp(line, r->delimiter) == 0)
-		{
-			free(line);
-			break ;
-		}
-		line = expand_heredoc(sh, r, line);
-		write_to_pipe(line, fd_out);
+		close(pipe_fd[1]);
+		exit(1);
+	}
+	close(pipe_fd[1]);
+	exit(0);
+}
+
+static int	handle_heredoc_parent(t_shell *sh, int pid, int *pipe_fd)
+{
+	int	status;
+
+	set_parent_wait_signals();
+	close(pipe_fd[1]);
+	waitpid(pid, &status, 0);
+	signal_setup();
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		sh->last_exit_code = 130;
+		close(pipe_fd[0]);
+		write(STDOUT_FILENO, "\n", 1);
+		return (1);
+	}
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+	{
+		fprintf(stderr, "warning: heredoc delimited by EOF\n");
+		close(pipe_fd[0]);
+		return (1);
 	}
 	return (0);
 }
 
-int prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
+static int	pipe_setup(int (*pipe_fd)[2], int *pid)
 {
-	t_redir_node	*redir;
+	if (pipe(*pipe_fd) == -1)
+		return (perror("pipe"), 1);
+	*pid = fork();
+	if (*pid < 0)
+		return (error_pid(*pipe_fd), perror("fork"), 1);
+	return (0);
+}
+
+static int	process_hdoc(t_shell *sh, t_redir_node *r)
+{
 	int				pipe_fd[2];
 	int				pid;
-	int				status;
-	
-	redir = pipeline->cmd->redirs;
-	while (redir != NULL)
+
+	if (pipe_setup(&pipe_fd, &pid))
+		return (1);
+	if (pid == 0)
+		handle_heredoc_child(sh, &r->r, pipe_fd);
+	else if (handle_heredoc_parent(sh, pid, pipe_fd))
+		return (1);
+	r->r.type = R_IN;
+	r->r.fd = pipe_fd[0];
+	return (0);
+}
+
+int	prepare_heredoc(t_shell *sh, t_cmd_node *pipeline)
+{
+	t_redir_node	*redir;
+	t_cmd_node		*curr;
+
+	curr = pipeline;
+	while (curr != NULL)
 	{
-		if (redir->r.type == R_HEREDOC)
+		redir = curr->cmd->redirs;
+		while (redir)
 		{
-			pipe_fd[0] = -1;
-			pipe_fd[1] = -1;
-			if (pipe(pipe_fd) == -1)
-				return (perror("pipe"), 1);
-			pid = fork();
-			if (pid < 0)
-				return (error_pid(pipe_fd), perror("fork"), 1);
-			else if (pid == 0) // child
+			if (redir->r.type == R_HEREDOC)
 			{
-				set_child_signals();
-				close(pipe_fd[0]);
-				if (read_write_to_pipe(sh, &redir->r, pipe_fd[1]))
-				{
-					close(pipe_fd[1]);
-					exit(1);
-				}
-				close(pipe_fd[1]);
-				exit(0);
+				if (process_hdoc(sh, redir))
+					return (1);
 			}
-			else // parent
-			{
-				set_parent_wait_signals();
-				close(pipe_fd[1]);
-				waitpid(pid, &status, 0);
-				signal_setup(); //revert signal handling to regular shell
-				if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-                {
-                    sh->last_exit_code = 130;
-                    close(pipe_fd[0]);
-                    return (1); // abort pipeline
-                }
-				if (WIFEXITED(status) && WEXITSTATUS(status) != 0) //Ctrl-D case, prints whast inside but warns
-                    fprintf(stderr, "warning: heredoc delimited by EOF\n");
-			}
-			redir->r.type = R_IN;
-			redir->r.fd = pipe_fd[0];
+			redir = redir->next;
 		}
-		redir = redir->next;
+		curr = curr->next;
 	}
 	return (0);
 }

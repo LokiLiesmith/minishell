@@ -1,14 +1,14 @@
-// /* ************************************************************************** */
-// /*                                                                            */
-// /*                                                        :::      ::::::::   */
-// /*   expansion_len.c                                    :+:      :+:    :+:   */
-// /*                                                    +:+ +:+         +:+     */
-// /*   By: mrazem <mrazem@student.42heilbronn.de>     +#+  +:+       +#+        */
-// /*                                                +#+#+#+#+#+   +#+           */
-// /*   Created: 2025/09/01 20:35:30 by mrazem            #+#    #+#             */
-// /*   Updated: 2025/09/01 22:21:35 by mrazem           ###   ########.fr       */
-// /*                                                                            */
-// /* ************************************************************************** */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion_len.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/03 22:04:13 by mrazem            #+#    #+#             */
+/*   Updated: 2025/10/03 23:31:33 by mrazem           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -63,7 +63,6 @@ static int	handle_dollar_len(t_shell *sh, char *str, t_exp *exp)
 	}
 	else if (is_valid_var_start(str[exp->i + 1]))
 		return (handle_var_expansion_len(sh, str, exp));
-	// Only count the '$' as a literal char; leave next char for next loop
 	exp->i++;
 	exp->count++;
 	return (0);
@@ -79,7 +78,7 @@ static int	handle_var_expansion_len(t_shell *sh, char *str, t_exp *exp)
 	varname = extract_varname(sh, str, &exp->i);
 	if (!varname)
 		return (-1);
-	temp = get_env_value(sh, varname); // TODO: needs to read from env LList not from actual env
+	temp = get_env_value(sh, varname);
 	if (!temp)
 		temp = "";
 	var_len = ft_strlen(temp);

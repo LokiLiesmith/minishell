@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/01 20:36:27 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/05 22:36:48 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/10/03 22:12:57 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,10 @@ void	increment_counters(int *i, int *b)
 	(*b)++;
 }
 
-char *get_env_value(t_shell *sh, char *varname)
+char	*get_env_value(t_shell *sh, char *varname)
 {
-	t_env *env;
-	
+	t_env	*env;
+
 	env = sh->env;
 	while (env)
 	{
