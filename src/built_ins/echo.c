@@ -3,31 +3,51 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 22:59:11 by mel               #+#    #+#             */
-/*   Updated: 2025/09/27 08:22:29 by mel              ###   ########.fr       */
+/*   Updated: 2025/12/19 23:37:46 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
+static int	skip_n(char *s)
+{
+	int	i;
+
+	if (!s || s[0] != '-')
+		return (0);
+	i = 1;
+	while (s[i])
+	{
+		if (s[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	builtin_echo(t_cmd *cmd)
 {
-	int i;
+	int	i;
+	int	no_newline;
 
-	if (ft_strncmp("-n", cmd->argv[1], 3) != 0)
-		i = 1;
-	else
-		i = 2;
-	while (cmd->argv[i] != NULL)
+	i = 1;
+	no_newline = 0;
+	while (cmd->argv[i] && skip_n(cmd->argv[i]))
+	{
+		no_newline = 1;
+		i++;
+	}
+	while (cmd->argv[i])
 	{
 		ft_putstr_fd(cmd->argv[i], 1);
-		if (cmd->argv[i + 1] != NULL)
+		if (cmd->argv[i + 1])
 			write(1, " ", 1);
 		i++;
 	}
-	if (ft_strncmp("-n", cmd->argv[1], 3) != 0)
-		ft_putstr_fd("\n", 1);
+	if (!no_newline)
+		write(1, "\n", 1);
 	return (0);
 }

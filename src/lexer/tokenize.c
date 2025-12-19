@@ -6,50 +6,11 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 21:04:13 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/09 02:04:09 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:47:12 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-////////////////////////////////////////////////////////////////////////////////
-//							TOKENIZE?										  //
-////////////////////////////////////////////////////////////////////////////////
-// TOKENIZE LOOP
-// skip whitespace
-// if operator(push_token based on operator)
-// else its a word, and push_token with len of the word and the string
-t_token	*token_create(t_shell *sh, t_token_type type, char *start, int len)
-{
-	t_token	*new;
-
-	new = gc_malloc(sh, sizeof(t_token), GC_TEMP);
-	new->type = type;
-	new->raw = gc_malloc(sh, (sizeof(char) * len + 1), GC_TEMP);
-	ft_memcpy(new->raw, start, len);
-	new->raw[len] = '\0';
-	new->value = NULL;
-	new->context = NULL;
-	new->next = NULL;
-	new->was_expanded = false;
-	return (new);
-}
-
-void	token_append(t_token **head, t_token **tail, t_token *new)
-{
-	if (!new)
-		return ;
-	if (!*head)
-	{
-		*head = new;
-		*tail = new;
-	}
-	else
-	{
-		(*tail)->next = new;
-		*tail = new;
-	}
-}
 
 static void	init_lexer(t_lexer *lex)
 {
@@ -81,7 +42,7 @@ static int	handle_word(t_shell *sh, t_lexer *lex, char *str, bool *open_quotes)
 	lex->len = scan_word(str, lex->i);
 	if (lex->len < 0)
 	{
-		if (open_quotes) // so they can be NULL, used in main
+		if (open_quotes)
 			*open_quotes = true;
 		return (0);
 	}
@@ -91,7 +52,7 @@ static int	handle_word(t_shell *sh, t_lexer *lex, char *str, bool *open_quotes)
 	return (1);
 }
 
-t_token *tokenize(t_shell *sh, char *str, bool *open_quotes)
+t_token	*tokenize(t_shell *sh, char *str, bool *open_quotes)
 {
 	t_lexer	lex;
 
@@ -109,6 +70,3 @@ t_token *tokenize(t_shell *sh, char *str, bool *open_quotes)
 	}
 	return (lex.head);
 }
-
-
-

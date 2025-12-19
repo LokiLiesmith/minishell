@@ -1,10 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_redirections.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/03 22:57:52 by mrazem            #+#    #+#             */
+/*   Updated: 2025/10/04 02:17:07 by mrazem           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	set_fd(t_redir_type t)
 {
-	if (t == R_IN || t == R_HEREDOC)
-		return (0);
-	return (1);
+	if (t != R_HEREDOC)
+		return (-1);
+	return (0);
+}
+
+static bool	token_is_quoted(t_token *t)
+{
+	int	i;
+
+	if (!t || !t->context)
+		return (false);
+	i = 0;
+	while (t->context[i])
+	{
+		if (t->context[i] == 'd' || t->context[i] == 's')
+			return (true);
+		i++;
+	}
+	return (false);
 }
 
 //Handle token, advance 2(first valuable nextnode)
@@ -13,25 +41,26 @@ int	handle_redir_token(t_shell *sh, t_token **t, t_cmd *cmd, int *err)
 	t_redir_node	*new;
 
 	if (!(*t)->next || (*t)->next->type != WORD)
-	{
-		if (!(*t)->next)
-			print_syntax_error(NULL);
-		else
-			print_syntax_error((*t)->next->raw);
-		*err = 1;
-		return (-1);
-	}
+		return (report_parse_error((*t)->next, err), -1);
 	new = gc_malloc(sh, sizeof(t_redir_node), GC_TEMP);
 	if (!new)
 		return (*err = 1, -1);
 	new->r.type = map_token_to_redir((*t)->type);
-	new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
-	if (!new->r.target)
-		return (*err = 1, -1);
+	if (new->r.type == R_HEREDOC)
+	{
+		new->r.delimiter = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+		new->r.heredoc_quoted = token_is_quoted((*t)->next);
+	}
+	else
+	{
+		new->r.target = gc_strdup(sh, (*t)->next->value, GC_TEMP);
+		if (!new->r.target)
+			return (*err = 1, -1);
+	}
 	new->r.fd = set_fd(new->r.type);
 	new->next = NULL;
 	append_redir(&cmd->redirs, new);
-	*t = (*t)->next->next;//move operator and word
+	*t = (*t)->next->next;
 	return (0);
 }
 

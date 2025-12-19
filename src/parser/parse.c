@@ -1,156 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/03 22:58:13 by mrazem            #+#    #+#             */
+/*   Updated: 2025/10/04 03:27:56 by mrazem           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-// void	init_cmd_node(t_cmd_node *node)
-// {
-
-// 	node->cmd->argv = NULL;
-// 	node->cmd->redirs = NULL;
-// 	node->next = NULL;
-// }
-
-void init_cmd_node(t_shell *sh, t_cmd_node *node)
+// parse helper 
+static t_cmd_node	*new_cmd_node(t_shell *sh)
 {
-    node->cmd = gc_malloc(sh, sizeof(t_cmd), GC_TEMP);
-    node->cmd->argv    = NULL;
-    node->cmd->redirs  = NULL;
-    node->cmd->builtin = NONE;
-    node->next = NULL;
-}
+	t_cmd_node	*new;
 
-void	init_parser(t_pars *p)
-{
-	p->head = NULL;
-	p->tail = NULL;
-	p->err = 0;
-}
-
-static char	**convert_arglst(t_shell *sh, t_strlist *list)
-{
-	t_strlist	*tmp;
-	char		**argv;
-	int			i;
-
-	tmp = list;
-	i = 0;
-	while (tmp)
-	{
-		i++;
-		tmp = tmp->next;
-	}
-	argv = gc_malloc(sh, (sizeof(char *) * (i + 1)), GC_TEMP);
-	if (!argv)
+	new = gc_malloc(sh, sizeof(t_cmd_node), GC_TEMP);
+	if (!new)
 		return (NULL);
-	i = 0;
-	while (list)
+	init_cmd_node(sh, new);
+	return (new);
+}
+
+static int	check_pipe_syntax(t_token **tokens, int *err)
+{
+	if (*tokens && (*tokens)->type == PIPE)
 	{
-		argv[i++] = list->str;
-		list = list->next;
-	}
-	argv[i] = NULL;
-	return (argv);
-}
-
-static int	is_redir_token(t_token_type type)
-{
-	return (type == T_IN || type == T_OUT
-		|| type == T_APPEND || type == T_HEREDOC);
-}
-
-static t_token	*report_parse_error(t_token *token, int *err)
-{
-	if (token)
-		print_syntax_error(token->raw);
-	else
-		print_syntax_error(NULL);
-	*err = 1;
-	return (NULL);
-}
-
-static void	set_builtin(t_cmd *cmd)
-{
-	char	*first;
-
-	first = NULL;
-	if (cmd->argv)
-		first = cmd->argv[0];
-	cmd->builtin = get_builtin_type(first);
-}
-
-t_token	*parse_command(t_shell *sh, t_token *tokens, t_cmd *cmd, int *err)
-{
-	t_strlist	*arglst;
-
-	arglst = NULL;
-	*err = 0;
-	if (!tokens)
-		return (report_parse_error(NULL, err));
-	if (tokens->type == PIPE)
-		return (report_parse_error(tokens, err));
-	while (tokens && tokens->type != PIPE)
-	{
-		if (tokens->type == WORD)
+		if (!(*tokens)->next)
 		{
-			if (handle_word_tkn(sh, &tokens, err, &arglst) < 0)
-				return (NULL);
+			report_parse_error(NULL, err);
+			return (-1);
 		}
-		else if (is_redir_token(tokens->type))
-		{
-			if (handle_redir_token(sh, &tokens, cmd, err) < 0)
-				return (NULL);
-		}
-		else
-			return (report_parse_error(tokens, err));
+		*tokens = (*tokens)->next;
 	}
-	cmd->argv = convert_arglst(sh, arglst);  // arglst (not &arglst)
-	set_builtin(cmd);
-	return (tokens);
-}
-
-// strcmp = 0, if match found.
-t_builtin get_builtin_type(char *s)
-{
-	if (!s)
-		return (NONE);
-	if (!ft_strcmp(s, "echo"))
-		return (ECHO);
-	if (!ft_strcmp(s, "cd"))
-		return (CD);
-	if (!ft_strcmp(s, "pwd"))
-		return (PWD);
-	if (!ft_strcmp(s, "export"))
-		return (EXPORT);
-	if (!ft_strcmp(s, "unset"))
-		return (UNSET);
-	if (!ft_strcmp(s, "env"))
-		return (ENV);
-	if (!ft_strcmp(s, "exit"))
-		return (EXIT);
-	return (NONE);
-}
-
-// gather all WORD tokens into a LL
-int	handle_word_tkn(t_shell *sh, t_token **t, int *err, t_strlist **arglst)
-{
-	t_strlist	*new;
-	t_strlist	*current;
-	t_token		*token;
-
-	token = *t;
-	new = gc_malloc(sh, sizeof(t_strlist), GC_TEMP);
-	if (!new || !token || !token->value)
-		return (*err = 1, -1);
-	new->str = token->value;
-	new->next = NULL;
-	if (!*arglst)
-		*arglst = new;
-	else
-	{
-		current = *arglst;
-		while (current->next)
-			current = current->next;
-		current->next = new;
-	}
-	*t = token->next;
 	return (0);
 }
 
@@ -162,33 +46,17 @@ t_cmd_node	*parse(t_token *tokens, t_shell *sh)
 	init_parser(&p);
 	while (tokens)
 	{
-		new = gc_malloc(sh, sizeof(t_cmd_node), GC_TEMP);
-		init_cmd_node(sh, new);
+		new = new_cmd_node(sh);
 		tokens = parse_command(sh, tokens, new->cmd, &p.err);
 		if (p.err)
 			return (NULL);
-		if (!p.head)
-			p.head = new;
-		else
+		if (p.tail)
 			p.tail->next = new;
+		else
+			p.head = new;
 		p.tail = new;
-		if (tokens && tokens->type == PIPE)
-		{
-			if (!tokens->next)
-			{
-				report_parse_error(NULL, &p.err);
-				return (NULL);
-			}
-			tokens = tokens->next;
-		}
+		if (check_pipe_syntax(&tokens, &p.err) < 0)
+			return (NULL);
 	}
 	return (p.head);
-}
-
-void	print_syntax_error(const char *unexpected)
-{
-	if (!unexpected || *unexpected == '\0')
-		fprintf(stderr, "syntax error: unexpected token near 'newline'\n");
-	else
-		fprintf(stderr, "syntax error: near unexpected token %s\n", unexpected);
 }

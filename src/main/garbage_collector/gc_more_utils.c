@@ -1,23 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   gc_more_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/14 23:01:46 by mrazem            #+#    #+#             */
-/*   Updated: 2025/10/02 19:59:30 by msalangi         ###   ########.fr       */
+/*   Created: 2025/10/04 01:47:08 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:47:48 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-int	ft_strcmp(char *s1, char *s2)
+//exit on fatal error, allocation failed --> no sh struct
+void	gc_fatal(void)
 {
-	int	i;
+	write(STDERR_FILENO, "fatal error\n", 12);
+	exit(EXIT_FAILURE);
+}
 
-	i = 0;
-	while (s1[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+t_gc	*gc_newnode(void *ptr, t_scope scope)
+{
+	t_gc	*node;
+
+	node = malloc(sizeof(t_gc));
+	if (!node)
+		gc_fatal();
+	node->ptr = ptr;
+	node->scope = scope;
+	node->next = NULL;
+	return (node);
 }

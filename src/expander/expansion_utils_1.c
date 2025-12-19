@@ -6,7 +6,7 @@
 /*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/01 20:36:27 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/05 22:36:48 by mrazem           ###   ########.fr       */
+/*   Updated: 2025/10/03 22:12:57 by mrazem           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	init_exp_struct(t_exp *exp)
 {
 	exp->i = 0;
 	exp->j = 0;
-	// exp->k = 0;
+	exp->k = 0;
 	exp->count = 0;
 	exp->in_sq = false;
 	exp->in_dq = false;
@@ -46,4 +46,18 @@ void	increment_counters(int *i, int *b)
 {
 	(*i)++;
 	(*b)++;
+}
+
+char	*get_env_value(t_shell *sh, char *varname)
+{
+	t_env	*env;
+
+	env = sh->env;
+	while (env)
+	{
+		if (ft_strcmp(env->type, varname) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
 }

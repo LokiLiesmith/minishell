@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   var_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mrazem <mrazem@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/03 21:38:57 by mrazem            #+#    #+#             */
+/*   Updated: 2025/10/03 22:06:55 by mrazem           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	get_error_len(int last_exit_code)
 {
 	char	*code;
 	int		len;
-	
+
 	code = ft_itoa(last_exit_code);
 	if (!code)
 		return (0);
@@ -43,21 +55,16 @@ char	*extract_varname(t_shell *sh, char *str, int *i)
 		varname[k++] = str[j++];
 	varname[k] = '\0';
 	*i = j;
-	// printf("%s\n", varname);
-	return(varname);
+	return (varname);
 }
 
 bool	is_valid_var_start(char c)
 {
-	return ((c >= 'a' && c <= 'z') ||
-			(c >= 'A' && c <= 'Z') ||
-			(c == '_'));
+	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_'));
 }
 
-bool is_var_char(char c)
+bool	is_var_char(char c)
 {
-	return ((c >= 'a' && c <= 'z') ||
-			(c >= 'A' && c <= 'Z') ||
-			(c >= '0' && c <= '9') ||
-			(c == '_'));
+	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0'
+			&& c <= '9') || (c == '_'));
 }

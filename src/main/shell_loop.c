@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shell_loop.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/04 01:45:31 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:45:32 by msalangi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static char	*append_line(char *input, char *line)
@@ -30,7 +42,7 @@ static char	*read_until_closed_quotes(t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 		if (!open_quotes)
 			break ;
-		line = readline("> ");
+		line = readline("quote> ");
 		if (!line)
 		{
 			free(input);
@@ -50,10 +62,14 @@ int	build_pipeline(char *line, t_shell *sh)
 	open_quotes = false;
 	tokens = tokenize(sh, line, &open_quotes);
 	if (!tokens)
-		return (-1);
+	{
+		if (open_quotes)
+			return (-1);
+		sh->pipeline = NULL;
+		return (0);
+	}
 	if (expand_tokens(sh, &tokens) < 0)
 	{
-		// free_tokens(tokens);
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
@@ -63,40 +79,34 @@ int	build_pipeline(char *line, t_shell *sh)
 		gc_free_scope(sh, GC_TEMP);
 		return (-1);
 	}
-	// free_tokens(tokens);
 	return (0);
 }
 
-
-// static int	execute_pipeline(t_cmd_node *pipeline, t_shell *sh)
-// {
-// 	// (void)pipeline;//TODO build the damn thing;
-// 	print_pipeline(pipeline);
-// 	printf("in t_shell:%d\n", sh->last_exit_code);
-// 	printf("HANDOFF SUCCESSFUL!\n");
-// 	return (0);
-// }
-
-static void	handle_exit(t_shell *sh)
+static void	handle_command(char *line, t_shell *sh)
 {
-	write(1, "Exit\n", 5);
-	gc_free_all(sh);
-	exit(sh->last_exit_code);
-}
+	int	status;
 
-static void handle_command(char *line, t_shell *sh)
-{
 	add_history(line);
-	if (build_pipeline(line, sh) < 0)
+	status = build_pipeline(line, sh);
+	if (status < 0)
 	{
 		sh->last_exit_code = 2;
 		gc_free_scope(sh, GC_TEMP);
+		return ;
 	}
-	else
+	if (!sh->pipeline)
 	{
-		sh->last_exit_code = execute_start(sh->pipeline, sh);
-		sh->pipeline = NULL;
+		sh->last_exit_code = 0;
+		return ;
 	}
+	if (prepare_heredoc(sh, sh->pipeline))
+	{
+		sh->pipeline = NULL;
+		gc_free_scope(sh, GC_TEMP);
+		return ;
+	}
+	sh->last_exit_code = execute_start(sh->pipeline, sh);
+	sh->pipeline = NULL;
 }
 
 void	shell_loop(t_shell *sh)
@@ -105,16 +115,15 @@ void	shell_loop(t_shell *sh)
 
 	while (420)
 	{
-		line = read_until_closed_quotes(sh);
+		if (isatty(STDIN_FILENO))
+			line = read_until_closed_quotes(sh);
+		else
+			line = get_next_line(STDIN_FILENO);
 		if (!line)
 			handle_exit(sh);
-		if (*line)
+		if (*line && !is_only_spaces(line))
 			handle_command(line, sh);
 		free(line);
 		gc_free_scope(sh, GC_TEMP);
 	}
 }
-
-
-
-
