@@ -1,29 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   gc_more_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 22:09:41 by mel               #+#    #+#             */
-/*   Updated: 2025/12/19 23:38:44 by msalangi         ###   ########.fr       */
+/*   Created: 2025/10/04 01:47:08 by msalangi          #+#    #+#             */
+/*   Updated: 2025/10/04 01:47:48 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "minishell.h"
 
-int	builtin_pwd(void)
+//exit on fatal error, allocation failed --> no sh struct
+void	gc_fatal(void)
 {
-	char	*pwd;
+	write(STDERR_FILENO, "fatal error\n", 12);
+	exit(EXIT_FAILURE);
+}
 
-	pwd = getcwd(NULL, 0);
-	if (pwd == NULL)
-	{
-		perror("getcwd() failed");
-		return (1);
-	}
-	ft_putstr_fd(pwd, 1);
-	ft_putchar_fd('\n', 1);
-	free(pwd);
-	return (0);
+t_gc	*gc_newnode(void *ptr, t_scope scope)
+{
+	t_gc	*node;
+
+	node = malloc(sizeof(t_gc));
+	if (!node)
+		gc_fatal();
+	node->ptr = ptr;
+	node->scope = scope;
+	node->next = NULL;
+	return (node);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_path.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 11:29:25 by msalangi          #+#    #+#             */
-/*   Updated: 2025/09/25 16:39:46 by mel              ###   ########.fr       */
+/*   Updated: 2025/12/19 23:40:08 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,33 @@ static char	*search_directories(char **directories, char *command)
 	int		i;
 
 	i = 0;
-	// search in every directory
 	while (directories[i] != NULL)
 	{
 		part_path = ft_strjoin(directories[i], "/");
+		if (!part_path)
+			return (NULL);
 		full_path = ft_strjoin(part_path, command);
 		free(part_path);
+		if (!full_path)
+			return (NULL);
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
+		free(full_path);
 		i++;
 	}
 	return (NULL);
+}
+
+void	free_split(char **arr)
+{
+	int	i;
+
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
 }
 
 char	*find_path(t_cmd *cmd, t_env *env)
@@ -40,7 +56,6 @@ char	*find_path(t_cmd *cmd, t_env *env)
 	char	*command;
 
 	path = NULL;
-	current = env;
 	command = cmd->argv[0];
 	if (ft_strchr(command, '/'))
 	{
@@ -48,17 +63,16 @@ char	*find_path(t_cmd *cmd, t_env *env)
 			return (ft_strdup(command));
 		return (NULL);
 	}
-	// find path to the command from env list
+	current = env;
 	while (current && ft_strncmp(current->type, "PATH", 4) != 0)
 		current = current->next;
-	if (!current)
-		return (NULL);
-	if (ft_strncmp(current->type, "PATH", 4) == 0)
-	{
+	if (!current || !current->value || current->value[0] == '\0')
+		directories = ft_split("/bin:/usr/bin", ':');
+	else
 		directories = ft_split(current->value, ':');
-		if (!directories)
-			return (NULL);
-		path = search_directories(directories, command);
-	}
+	if (!directories)
+		return (NULL);
+	path = search_directories(directories, command);
+	free_split(directories);
 	return (path);
 }

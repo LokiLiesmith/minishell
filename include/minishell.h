@@ -3,195 +3,339 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel <mel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: msalangi <msalangi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/14 21:10:12 by mrazem            #+#    #+#             */
-/*   Updated: 2025/09/25 18:53:29 by mel              ###   ########.fr       */
+/*   Created: 2025/10/04 04:57:30 by mrazem            #+#    #+#             */
+/*   Updated: 2025/12/19 23:37:11 by msalangi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <errno.h>
 # include <fcntl.h>
-# include <unistd.h>
-# include <stdlib.h>
 # include <signal.h>
+# include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
 # include <string.h>
-# include "libft/libft.h"
+# include <sys/wait.h>
+# include <unistd.h>
+
+// READLINE STUFF
+# include <readline/history.h>
+# include <readline/readline.h>
+
+// OUR LIBRARIES
 # include "get_next_line/get_next_line.h"
+# include "libft/libft.h"
 
-#define TRUE	1
-#define FALSE	0
+// forward declare missing readline prototype
+void							rl_replace_line(const char *text,
+									int clear_undo);
 
-/// 						Main struct idea:
-////////////////////////////////////////////////////////////////////////////////
-//								  ENUMS										  //
-////////////////////////////////////////////////////////////////////////////////
+extern volatile sig_atomic_t	g_exit_status;
 
 /// Builtin number enum
 typedef enum e_builtin
 {
 	NONE,
 	ECHO,
-	CD,	
+	CD,
 	PWD,
 	EXPORT,
 	UNSET,
 	ENV,
 	EXIT
-}	t_builtin;
+}								t_builtin;
 
-//Redirection type enum (IN, OUT, APPEND or HEREDOC???)
+// Redirection type enum (IN, OUT, APPEND or HEREDOC???)
 typedef enum e_redir_type
 {
 	R_IN,
 	R_OUT,
 	R_APPEND,
 	R_HEREDOC
-}	t_redir_type;
-
-////////////////////////////////////////////////////////////////////////////////
-//								STRUCTS / LINKED LISTS						  //
-////////////////////////////////////////////////////////////////////////////////
+}								t_redir_type;
 
 typedef struct s_env
 {
-	char			*type;
-	char 			*value;
-	struct s_env	*next;
-}	t_env;
-
-typedef struct s_gc_node
-{
-	void				*garbage;
-	struct s_gc_node	*next;
-}	t_gc_node;
-
-typedef struct s_gc
-{
-	t_gc_node	*head;
-	t_gc_node	*tail;
-	// size_t		size;
-}	t_gc;
+	char						*type;
+	char						*value;
+	struct s_env				*next;
+}								t_env;
 
 typedef struct s_redir
 {
-	t_redir_type		type;		//IN, OUT, APPEND, HEREDOC
-	char				*target;	//filepath? destination?
-	int					fd;			//0, 1
-}	t_redir;
+	t_redir_type				type;
+	char						*target;
+	char						*delimiter;
+	int							fd;
+	bool						heredoc_quoted;
+}								t_redir;
 
-//Redirection LinkedList (bunch of t_redir nodes pointing to the next one)
+// Redirection LinkedList (bunch of t_redir nodes pointing to the next one)
 typedef struct s_redir_node
 {
-	t_redir				r;
-	struct s_redir_node	*next;
-}	t_redir_node;
+	t_redir						r;
+	struct s_redir_node			*next;
+}								t_redir_node;
 
-// One command -> pipe to pipe (pipe is a delimiter, kinda. redirects are part of the same command)
+// One command -> pipe to pipe (pipe is a delimiter, kinda.
+// redirects are part of the same command)
+// argv[0]...argv[n+1]=NULL, array of strings,
+// here is where the -n flag would also be
+// list of redirects, NULL = no redirects
+// builtin number based on the enum
 typedef struct s_cmd
 {
-	char				**argv;		//argv[0]...argv[n+1]=NULL, array of strings, here is where the -n flag would also be
-	t_redir_node		*redirs;	//list of redirects, NULL = no redirects
-	t_builtin			builtin;	//builtin number based on the enum
-}	t_cmd;
+	char						**argv;
+	t_redir_node				*redirs;
+	t_builtin					builtin;
+}								t_cmd;
 
-// Command LinkedList (cmd node pointing to the next one, ends with NULL, thats also when we are done?)
-typedef	struct s_cmd_node
+// Command LinkedList (cmd node pointing to the next one, ends with NULL)
+typedef struct s_cmd_node
 {
-	t_cmd				*cmd;
-	struct s_cmd_node	*next;
-}	t_cmd_node;
+	t_cmd						*cmd;
+	struct s_cmd_node			*next;
+}								t_cmd_node;
 
-////////////////////////////////////////////////////////////////////////////////
-//								HANDOFF EXAMPLES							  //
-////////////////////////////////////////////////////////////////////////////////
+typedef struct s_gc				t_gc;
 
-// // case for ---> echo -n "oh, hi mark"
-// _________________________________________________
-// |	1st_cmd										|
-// |												|
-// |	argv -> ["echo", "-n", "oh, hi mark", NULL]	|
-// |	redirs -> NULL								|
-// |	builtin = ECHO 								|
-// |________________________________________________|
-// 		|
-// 		V
-// _________________________________________________
-// |	NULL										|
-// |												|
-// |												|
-// |												|
-// |				 								|
-// |_______________________________________________|
+typedef struct s_shell
+{
+	t_env						*env;
+	int							last_exit_code;
+	t_cmd_node					*pipeline;
+	t_gc						*gc;
+}								t_shell;
 
-	
-// // case for ---> echo -n "oh, hi mark" > out.txt | grep hi >> log.txt
-//				 	^			1st_cmd			   ^  ^		2nd_cmd	   ^
+typedef enum e_token_type
+{
+	WORD,
+	PIPE,
+	T_IN,
+	T_OUT,
+	T_APPEND,
+	T_HEREDOC,
+}								t_token_type;
 
-// _________________________________________________
-// |	1st_cmd										|
-// |												|
-// |	argv -> ["echo", "-n", "oh, hi mark", NULL]	|
-// |	redirs -> [R_OUT, "out.txxt", 1] -> NULL	|
-// |	builtin = ECHO 								|
-// |_______________________________________________|
-// 		|
-// 		V													here's how the redirection list looks	
-// _________________________________________________		_____________________________________	________________________________
-// |	2nd_cmd										|		|	t_redir_node					|	|	t_redir_node 2				|
-// |												|		|	type = R_APPEND					|	|	type = R_OUT				|
-// |	argv -> ["grep", "hi", NULL]				|		|	target = "log.txt"				|	|	target = "  asdas"			|
-// |	redirs -> [R_APPEND, "log.txt", 1] -> NULL	|		|	fd = 1							|-->|	fd = 0;						|
-// |	builtin = NONE 								|		|	next --------> *t_redirnode 2	|	|	next ---> NULL				|
-// |_______________________________________________|		|___________________________________|	|_______________________________|
-// 		|
-// 		V
-// 		NULL
+typedef struct s_token
+{
+	t_token_type				type;
+	char						*raw;
+	char						*value;
+	char						*context;
+	struct s_token				*next;
+	bool						was_expanded;
+}								t_token;
 
+typedef struct s_lexer
+{
+	t_token_type				op;
+	int							i;
+	ssize_t						len;
+	t_token						*head;
+	t_token						*tail;
+}								t_lexer;
 
-////////////////////////////////////////////////////////////////////////////////
-//								  PARSER									  //
-////////////////////////////////////////////////////////////////////////////////
+typedef struct s_exp
+{
+	int							i;
+	int							j;
+	int							k;
+	int							count;
+	bool						in_dq;
+	bool						in_sq;
+	bool						in_exp;
+}								t_exp;
 
-////////////////////////////////////////////////////////////////////////////////
-//								  LEXER										  //
-////////////////////////////////////////////////////////////////////////////////
+int								expand_and_strip(t_shell *sh, t_token *t,
+									int exp_len);
+int								expand_tokens(t_shell *sh, t_token **head);
+int								expansion_len(t_shell *sh, char *str);
+int								handle_dollar(t_shell *sh, t_token *t,
+									char *str, t_exp *exp);
+void							handle_char(t_token *t, char *str, t_exp *exp);
+void							handle_error(t_token *t, t_exp *exp,
+									t_shell *sh);
+int								expand_var(t_shell *sh, t_token *t, char *str,
+									t_exp *exp);
+void							handle_quote(t_token *t, const char *str,
+									t_exp *exp);
+void							tag_quoted_empty(t_token *t);
+size_t							write_exit_code(char *dst, int last_exit_code);
+// expansion_utils.c
+void							init_exp_struct(t_exp *exp);
+char							get_context(bool in_sq, bool in_dq,
+									bool in_exp);
+void							update_quotes(char c, bool *in_sq, bool *in_dq);
+void							increment_counters(int *i, int *b);
+// var_utils.c
+int								get_error_len(int last_exit_code);
+int								varname_len(char *str);
+char							*extract_varname(t_shell *sh, char *str,
+									int *i);
+bool							is_valid_var_start(char c);
+bool							is_var_char(char c);
+char							*get_env_value(t_shell *sh, char *varname);
 
-////////////////////////////////////////////////////////////////////////////////
-//								 EXECUTION 									  //
-////////////////////////////////////////////////////////////////////////////////
-int		execute_start(t_cmd_node *node, t_env *env);
-int		is_builtin(t_cmd *cmd);
-int		execute_single_builtin(t_cmd *cmd, t_env *env);
-void	execute_child(char *path, t_cmd *cmd, char **env_array);
+ssize_t							scan_operator(const char *str, int i,
+									t_token_type *type);
+ssize_t							scan_word(const char *str, size_t i);
+t_token							*tokenize(t_shell *sh, char *str,
+									bool *open_quotes);
+t_token							*token_create(t_shell *sh, t_token_type type,
+									char *start, int len);
+void							token_append(t_token **head, t_token **tail,
+									t_token *new);
+int								ft_is_space(int c);
+int								ft_is_operator(int c);
 
-char	*find_path(t_cmd *cmd, t_env *env);
-char	**env_to_array(t_env *env);
-int		handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd);
-int		handle_redirections(t_cmd *cmd);
-int		wait_for_children(pid_t last_child);
+int								execute_start(t_cmd_node *node, t_shell *sh);
+int								is_builtin(t_cmd *cmd);
+int								execute_single_builtin(t_cmd *cmd, t_env *env,
+									t_shell *sh);
+int								prepare_execve(t_cmd *cmd, char **path,
+									char ***env_array, t_shell *sh);
+void							execute_child(char *path, t_cmd *cmd,
+									char **env_array);
+char							*find_path(t_cmd *cmd, t_env *env);
+char							**env_to_array(t_env *env, t_shell *sh);
+void							error_pid(int pipe_fd[2]);
+int								handle_pipe_child(t_cmd_node *cmd,
+									int pipe_fd[], int prev_fd);
+void							close_pipe_parent(int prev_fd, int *prev_fd_ptr,
+									t_cmd_node *cmd_node, int pipe_fd[2]);
+int								handle_redirections(t_cmd *cmd);
+int								redirect(t_redir_node *redir_node);
+int								wait_for_children(pid_t last_child);
+int								builtin_cd(t_cmd *cmd, t_env *env, t_shell *sh);
+int								builtin_echo(t_cmd *cmd);
+int								builtin_env(t_cmd *cmd, t_env *env);
+int								builtin_exit(t_shell *sh, t_cmd *cmd);
+int								builtin_export(t_cmd *cmd, t_env *env,
+									t_shell *sh);
+int								builtin_pwd(void);
+int								builtin_unset(t_cmd *cmd, t_env **env);
+void							set_env_value(t_shell *sh, t_env *env,
+									char *type, char *new_value);
+void							fork_error(int pipe_fd[2], char **path);
+int								empty_check(t_cmd_node *curr, t_shell *sh,
+									int *flag);
+void							reset_prev_fd(int *prev_fd);
+void							if_flag(int flag);
 
+int								prepare_heredoc(t_shell *sh,
+									t_cmd_node *pipeline);
+char							*expand_heredoc(t_shell *sh, t_redir *r,
+									char *line);
+char							*expand_string(t_shell *sh, char *str);
+void							handle_var_expand(t_shell *sh, t_exp *exp,
+									char *out, char *str);
+void							handle_exit_code(t_shell *sh, t_exp *exp,
+									char *out, char *str);
+int								hdoc_dollar_len(t_shell *sh, char *str,
+									t_exp *exp);
+int								hdoc_var_expansion_len(t_shell *sh, char *str,
+									t_exp *exp);
+int								hdoc_len(t_shell *sh, char *str);
+int								read_write_to_pipe(t_shell *sh, t_redir *r,
+									int fd_out);
 
-// void	save_redirs(t_cmd *cmd);
+void							shell_loop(t_shell *sh);
+void							signal_setup(void);
+void							set_child_signals(void);
+void							set_parent_wait_signals(void);
+int								build_pipeline(char *line, t_shell *sh);
+t_env							*dup_env(t_shell *sh, char **envp);
+void							handle_exit(t_shell *sh);
+int								is_only_spaces(const char *s);
 
-////////////////////////////////////////////////////////////////////////////////
-//								 BUILT INS 									  //
-////////////////////////////////////////////////////////////////////////////////
+// initialized in ctx_split_to_list
+typedef struct s_splice
+{
+	int							i;
+	int							len;
+	t_token						*old;
+	t_token						*new_head;
+	t_token						*new_tail;
+}								t_splice;
 
-int		builtin_cd(t_cmd *cmd, t_env *env);
-int		builtin_echo(t_cmd *cmd);
-int		builtin_env(t_cmd *cmd, t_env *env);
-int		builtin_export(t_cmd *cmd, t_env *env);
-int		builtin_pwd(void);
-int		builtin_unset(t_cmd *cmd, t_env *env);
+t_token							*ctx_new_token(t_shell *sh, const t_token *old,
+									int start, int len);
+int								ctx_split_to_list(t_shell *sh, t_token **t);
+void							splice_list(t_token **splice_node,
+									t_token **new_h, t_token **new_t);
+int								fill_ctx_token(t_token *new, int i, int len,
+									t_token *old);
+int								ctx_split_len(char *str, char *context, int i);
 
+typedef struct s_pars
+{
+	t_cmd_node					*head;
+	t_cmd_node					*tail;
+	int							err;
+}								t_pars;
 
-////////////////////////////////////////////////////////////////////////////////
-//										GC									  //
-////////////////////////////////////////////////////////////////////////////////
-// void	*gc_malloc(t_gc_node **head, size_t size);
-// void	gc_free_all(t_gc_node **head);
+typedef struct s_strlist
+{
+	char						*str;
+	struct s_strlist			*next;
+}								t_strlist;
+
+t_cmd_node						*parse(t_token *tokens, t_shell *sh);
+int								handle_word_tkn(t_shell *sh, t_token **t,
+									int *err, t_strlist **arglst);
+int								handle_redir_token(t_shell *sh, t_token **t,
+									t_cmd *cmd, int *err);
+t_builtin						get_builtin_type(char *s);
+t_redir_type					map_token_to_redir(t_token_type t);
+void							append_redir(t_redir_node **head,
+									t_redir_node *new);
+t_token							*parse_command(t_shell *sh, t_token *tokens,
+									t_cmd *cmd, int *err);
+int								is_quoted_empty(t_token *token);
+t_token							*report_parse_error(t_token *token, int *err);
+void							init_cmd_node(t_shell *sh, t_cmd_node *node);
+void							init_parser(t_pars *p);
+char							**convert_arglst(t_shell *sh, t_strlist *list);
+int								is_redir_token(t_token_type type);
+t_builtin						get_builtin_type(char *s);
+void							set_builtin(t_cmd *cmd);
+
+// gc.c
+typedef enum e_scope
+{
+	GC_TEMP,
+	GC_GLOBAL
+}								t_scope;
+
+typedef struct s_gc
+{
+	void						*ptr;
+	t_scope						scope;
+	struct s_gc					*next;
+}								t_gc;
+
+void							*gc_malloc(t_shell *sh, size_t size,
+									t_scope scope);
+char							*gc_strdup(t_shell *sh, const char *s,
+									t_scope scope);
+t_gc							*gc_newnode(void *ptr, t_scope scope);
+void							gc_remove_node(t_shell *sh, t_gc *prev,
+									t_gc *curr, t_gc *next);
+void							gc_add(t_shell *sh, void *ptr, t_scope scope);
+void							*gc_calloc(t_shell *sh, size_t count,
+									size_t size, t_scope scope);
+char							*gc_substr_temp(t_shell *sh, const char *s,
+									int start, int len);
+char							*gc_substr_global(t_shell *sh, const char *s,
+									int start, int len);
+void							gc_free_scope(t_shell *sh, t_scope scope);
+void							gc_free_all(t_shell *sh);
+void							gc_fatal(void);
 
 #endif
