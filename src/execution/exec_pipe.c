@@ -12,7 +12,7 @@
 
 #include "../../include/minishell.h"
 
-int	handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd)
+int	handle_pipe_child(t_cmd_node *cmd, int pipe_fd[2], int prev_fd)
 {
 	set_child_signals();
 	if (prev_fd != -1)
@@ -28,6 +28,11 @@ int	handle_pipe_child(t_cmd_node *cmd, int pipe_fd[], int prev_fd)
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 	}
+		
+	// if (cmd->next == NULL)
+	// {
+	// 	// close unused fds
+	// }
 	return (0);
 }
 
